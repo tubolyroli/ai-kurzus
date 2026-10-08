@@ -1,5 +1,5 @@
 /*-- scss:defaults --*/
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Atkinson+Hyperlegible+Next:ital,wght@0,300..800;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap");
 
 $ejc-navy: #C9CDF2;
 $ejc-gold: #D9B85A;
@@ -15,8 +15,10 @@ $primary: #D9B85A;
 $link-color: #A9B3FF;
 $border-color: $ejc-line;
 
-$font-family-sans-serif: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-$font-family-monospace: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+// Címek: Newsreader (munkapapír-karakter); szöveg és kód: Atkinson Hyperlegible (I/l/1, O/0 nem keverhető).
+$font-family-sans-serif: "Atkinson Hyperlegible Next", "Segoe UI", Verdana, system-ui, sans-serif;
+$headings-font-family: "Newsreader", Georgia, "Times New Roman", serif;
+$font-family-monospace: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 $font-size-root: 17px;
 $line-height-base: 1.6;
 $headings-font-weight: 600;

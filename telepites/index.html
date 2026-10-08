@@ -7,7 +7,7 @@
 <title>Telepítés · Saját AI-eszközök</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Atkinson+Hyperlegible+Next:ital,wght@0,300..800;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
 <style>
 /* Elrendezés: bal oldalt ragadós útvonal-sín a lépésekkel (pipálható), jobbra egy olvasóoszlop.
    Rendszer-váltó (Windows/macOS) a fejlécben; a nem releváns blokkok elrejtve. EJC-színek: navy + arany. */
@@ -31,9 +31,9 @@
   --code-dim: #9195B8;
   --code-gold: #E3C36A;
   --code-green: #8FD3A6;
-  --display: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --body: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "Atkinson Hyperlegible Next", "Segoe UI", Verdana, system-ui, sans-serif;
+  --mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --r: 10px;
 }
 @media (prefers-color-scheme: dark) {
@@ -73,7 +73,7 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15;
 h2 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
 h3 { font-size: 1.15rem; font-weight: 600; }
 p { margin: 0; }
-code, kbd { font-family: var(--mono); font-size: 0.86em; }
+code, kbd, pre { font-family: var(--mono); font-size: 0.86em; font-variant-ligatures: none; }
 :not(pre) > code { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 0.05em 0.35em; }
 kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0.05em 0.4em; white-space: nowrap; }
 .eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
@@ -99,7 +99,8 @@ kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-w
 
 /* ---------- Hős ---------- */
 .hero { max-width: 1120px; margin: 0 auto; padding-block: 48px 36px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; }
-.hero h1 { font-size: clamp(2.2rem, 5.2vw, 3.6rem); font-weight: 600; letter-spacing: -0.025em; color: var(--navy); }
+.hero h1 { font-size: clamp(2.3rem, 5.4vw, 3.8rem); font-weight: 500; letter-spacing: -0.015em; color: var(--navy); font-optical-sizing: auto; }
+.hero h1 span { font-style: italic; }
 .hero h1 span { color: var(--gold); }
 .hero .lead { font-size: 1.15rem; color: var(--muted); max-width: 34em; margin-top: 14px; }
 .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
