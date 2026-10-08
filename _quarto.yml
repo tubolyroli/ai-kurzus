@@ -13,11 +13,6 @@ website:
   description: "RAG és AI-ágensek közgazdászoknak. Projektkurzus az Eötvös József Collegium Gazdaságtudományi műhelyében, 2027 tavasz."
   site-url: "https://tubolyroli.github.io/ai-kurzus/"
   navbar:
-    # Quarto 1.10-ben a navbar `logo-alt` kulcsa eltünteti a logót; az alt-szöveg így adható meg.
-    # A teljes címer 40 px-en olvashatatlan, ezért a menüsorban csak a belső embléma szerepel.
-    logo:
-      path: kepek/cimer-emblema.png
-      alt: "Az Eötvös József Collegium címere"
     left:
       - text: "Kezdőlap"
         href: index.qmd
