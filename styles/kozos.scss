@@ -65,6 +65,30 @@ code, pre { font-variant-ligatures: none; }
   box-shadow: 0 0 0 2px rgba($ejc-gold, 0.55), 0 12px 32px rgba(0, 0, 0, 0.22);
 }
 
+/* ---- Notebook-oldalak: letöltés és Colab a cím alatt ---- */
+.notebook-linkek {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  a { font-size: 0.92rem; font-weight: 600; text-decoration: none; border-radius: 999px; padding: 0.35rem 0.9rem; }
+  .nb-gomb { background: $ejc-navy; color: $body-bg; }
+  .nb-colab { border: 1px solid $ejc-line; color: $ejc-muted; }
+}
+kbd { font-size: 0.85em; }
+
+/* ---- Kódblokkok és notebook-kimenetek ---- */
+div.sourceCode, pre.sourceCode { border: 0; border-radius: 8px; }
+pre.sourceCode, pre.sourceCode code { color: #E6E7F2; }
+// A print() kimenete: a szövegszínt a témából kapja, és arany szegély jelzi, hogy ez eredmény, nem kód.
+.cell-output-stdout, .cell-output-stderr {
+  border-left: 3px solid $ejc-gold;
+  padding-left: 0.9rem;
+  margin-block: 0.6rem 1rem;
+  pre, pre code { color: $body-color; background: transparent; font-size: 0.92rem; }
+}
+.cell-output-display img { border-radius: 6px; }
+
 /* ---- Kártyarács (kontextustervezés, projekt pillérei) ---- */
 .kartyak {
   display: grid;

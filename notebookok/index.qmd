@@ -1,0 +1,58 @@
+---
+title: "Notebookok"
+listing:
+  id: notebook-lista
+  contents: "*.ipynb"
+  type: table
+  sort: "filename"
+  fields: [title, description]
+  field-display-names:
+    title: "Notebook"
+    description: "Miről szól"
+  filter-ui: false
+  sort-ui: false
+---
+
+A kurzus notebookjai alkalmanként ide kerülnek. A notebook olyan fájl (`.ipynb`), amelyben magyarázat és futtatható kód váltja egymást: cellánként futtatod, és rögtön alatta látod az eredményt.
+
+::: {#notebook-lista}
+:::
+
+[Az összes notebook egyben, adatokkal: **notebookok.zip**](notebookok.zip){.cta}
+
+## Így nyisd meg VS Code-ban
+
+Ehhez a [telepítési útmutató](../telepites/) lépései kellenek, a VS Code-ban a Python- és a Jupyter-bővítménnyel.
+
+1. Töltsd le a **notebookok.zip** fájlt (fent), és csomagold ki. Legjobb, ha az `ai-kurzus` mappádba teszed, amit a gépcsekknél hoztál létre.
+2. A VS Code-ban nyisd meg a kicsomagolt `notebookok` mappát: **File → Open Folder…**
+3. **Egyszer kell:** hozz létre a mappának saját Python-környezetet. Nyomd meg a <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd> billentyűket, írd be, hogy `Python: Create Environment`, és válaszd ezt:
+   - **Venv**,
+   - a **Python 3.14**-et,
+   - és pipáld be a `requirements.txt`-t, hogy a szükséges csomagokat is feltegye.
+
+   Pár perc, és megjelenik egy `.venv` mappa. Ez a notebookok saját környezete.
+4. Nyisd meg a notebookot (pl. `00-minta.ipynb`). Jobb felül kattints a **Select Kernel** gombra → **Python Environments** → **.venv**. Ha felajánlja az `ipykernel` telepítését, engedd.
+5. Futtasd: a cella melletti ▷ gombbal, a **Shift + Enter** billentyűkkel, vagy fent a **Run All** gombbal az egészet.
+
+::: {.megjegyzes}
+**Ha a terminált szereted,** a 3. lépés így is megy, a `notebookok` mappában:
+
+```bash
+# macOS
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+```powershell
+# Windows
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+:::
+
+## Colab: ha csak bele akarsz nézni
+
+Minden notebook oldalának tetején van egy **Megnyitás Colabban** link. A Google Colab böngészőben futtatja a notebookot, telepítés nélkül, egy Google-fiókkal. Jól jön, ha épp nincs nálad a géped.
+
+A kurzuson viszont VS Code-ban dolgozunk. Ott az AI-asszisztens látja a projekt összes fájlját és az `AGENTS.md`-t, és az adataid a saját gépeden maradnak.

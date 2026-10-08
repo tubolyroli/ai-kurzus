@@ -1,0 +1,6 @@
+# A notebookokat nem futtatjuk renderkor (API-kulcs, adat, idő): a tárolt kimenetük jelenik meg.
+# Új notebook előtt futtasd le helyben, és mentsd el a kimenetekkel együtt.
+execute:
+  enabled: false
+include-after-body:
+  - file: _notebook-linkek.html

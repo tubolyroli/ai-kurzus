@@ -1,0 +1,17 @@
+<script>
+  // Minden notebook-oldal címe alá letöltés- és Colab-link, a fájlnévből számolva.
+  (function () {
+    var nev = decodeURIComponent(location.pathname.split("/").pop()).replace(/\.html$/, "");
+    if (!nev || nev === "index") return;
+    var repo = "tubolyroli/ai-kurzus";
+    var sav = document.createElement("div");
+    sav.className = "notebook-linkek";
+    sav.innerHTML =
+      '<a class="nb-gomb" href="' + nev + '.ipynb" download>Letöltés (.ipynb)</a>' +
+      '<a class="nb-gomb" href="notebookok.zip">Az összes, adatokkal (.zip)</a>' +
+      '<a class="nb-colab" href="https://colab.research.google.com/github/' + repo +
+      "/blob/main/notebookok/" + nev + '.ipynb" target="_blank" rel="noopener">Megnyitás Colabban ↗</a>';
+    var fejlec = document.querySelector("#title-block-header");
+    if (fejlec) fejlec.appendChild(sav);
+  })();
+</script>

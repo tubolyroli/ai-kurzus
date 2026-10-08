@@ -5,6 +5,12 @@ project:
   resources:
     - "telepites/**"
     - "kepek/**"
+    # A notebook-oldalakról letölthető forrásfájlok
+    - "notebookok/*.ipynb"
+    - "notebookok/data/**"
+    - "notebookok/requirements.txt"
+  post-render:
+    - eszkozok/notebook_zip.py
 
 lang: hu
 
@@ -20,6 +26,8 @@ website:
         href: telepites/index.html
       - text: "Tematika"
         href: tematika.qmd
+      - text: "Notebookok"
+        href: notebookok/index.qmd
       - text: "Projekt"
         href: projekt.qmd
   page-footer:
@@ -33,5 +41,7 @@ format:
       dark: [styles/sotet.scss, styles/kozos.scss]
     respect-user-color-scheme: true
     smooth-scroll: true
+    # Sötét kódblokk mindkét témában, mint a telepítési oldalon.
+    highlight-style: a11y-dark
     toc: false
     anchor-sections: false

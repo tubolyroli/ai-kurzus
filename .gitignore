@@ -2,3 +2,6 @@
 /_site/
 .DS_Store
 **/*.quarto_ipynb
+.venv/
+.ipynb_checkpoints/
+__pycache__/
