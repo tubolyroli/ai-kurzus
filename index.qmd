@@ -70,7 +70,7 @@ Mit jegyez meg az ágens a munka során, és mit kell elfelejtenie.
 
 - 90 perces alkalmak, saját laptoppal. Minden alkalmon gépen dolgozunk.
 - Az első alkalmon közösen beállítjuk az eszközöket. Előtte otthon telepítsd a programokat a [telepítési útmutató](telepites/) alapján.
-- A félév egy párban készülő záró projekttel zárul. [Erről itt olvashatsz bővebben.](projekt.qmd)
+- A félév egy (párban készülő) záró projekttel zárul. [Erről itt olvashatsz bővebben.](projekt.qmd)
 
 ::: {.megjegyzes}
 Az időpontok, a terem és az alkalmak pontos beosztása hamarosan ide kerül.

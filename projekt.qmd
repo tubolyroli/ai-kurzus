@@ -2,7 +2,7 @@
 title: "Záró projekt"
 ---
 
-A félév végén párban építetek egy asszisztenst egy magyar gazdasági dokumentumgyűjteményre. A projekt alakja mindenkinél ugyanaz:
+A félév végén (párban) építetek egy asszisztenst egy magyar gazdasági dokumentumgyűjteményre. A projekt alakja mindenkinél ugyanaz:
 
 ::: {.megjegyzes}
 **Egy dokumentum állít valamit, az ágens a nyers adatból megnézi, mi lett belőle.**
@@ -39,8 +39,8 @@ A minta szándékosan tartalmaz egy csapdát, amelybe egy elsőre meggyőzőnek 
 
 ## Hogyan zajlik
 
-- **Párban** dolgoztok, egy közös GitHub-repóban.
+- (**Párban** dolgoztok, egy közös GitHub-repóban.)
 - **Előre elkészített projektcsomagokból** választotok (dokumentumgyűjtemény, adatforrás, ellenőrző script). A csomagok listája a félév elején kerül ide.
 - **Mérföldkövek** segítenek, hogy a projekt ne az utolsó héten készüljön el.
 - **Frissítési próba:** a bemutató előtt két nappal minden csomaghoz érkezik egy frissítés (új jelentés vagy új havi adat). A rendszereteknek ezzel utómunka nélkül kell lefutnia. Ha mégis kódot kellett módosítani, a dokumentációban leírjátok, mit és miért.
-- **Bemutató:** páronként kb. 8 perc, utána kérdések.
+- **Bemutató:** (páronként) kb. 8 perc, utána kérdések.
