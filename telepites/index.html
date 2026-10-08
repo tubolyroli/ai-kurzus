@@ -285,7 +285,7 @@ footer { max-width: 1120px; margin: 72px auto 0; padding-top: 20px; border-top: 
 
 <header class="hero">
   <div>
-    <p class="eyebrow">Otthoni feladat a 0. óra előtt</p>
+    <p class="eyebrow">Otthoni feladat az első óra előtt</p>
     <h1>5 program telepítése, <span>amik nélkül nem tudnál dolgozni a félév alatt.</span></h1>
     <p class="lead">Ezen az oldalon segítek telepíteni azokat a programokat, amelyekkel a félév során dolgozunk. Minden lépésnél leírtam, mire kattints, és hogyan ellenőrizd, hogy sikerült.</p>
   </div>
@@ -737,10 +737,10 @@ Minden RENDBEN. Készen állsz az első órára!</code></pre>
           <p><strong>Megoldás:</strong> Finder → Alkalmazások → <code>Python 3.14</code> mappa → dupla kattintás az <code>Install Certificates.command</code> fájlra.</p>
         </div></details>
         <details class="only-mac"><summary>„python: command not found” Macen <small>macOS</small></summary><div>
-          <p>Macen a parancs neve <code>python3</code>. A <code>python</code> a kurzus saját projektkörnyezeteiben fog működni, ezt a 0. órán állítjuk be.</p>
+          <p>Macen a parancs neve <code>python3</code>. A <code>python</code> a kurzus saját projektkörnyezeteiben fog működni, ezt az első órán állítjuk be.</p>
         </div></details>
         <details class="only-win"><summary>„running scripts is disabled on this system” <small>Windows</small></summary><div>
-          <p>A PowerShell alapból tiltja a scriptek futtatását. A Claude Code telepítőjénél vagy a 0. órán a saját környezet bekapcsolásánál jöhet elő.</p>
+          <p>A PowerShell alapból tiltja a scriptek futtatását. A Claude Code telepítőjénél vagy az első órán a saját környezet bekapcsolásánál jöhet elő.</p>
           <p><strong>Megoldás:</strong> futtasd ezt egyszer a terminálban, majd nyiss új terminált:</p>
           <pre class="cmd"><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><button class="copy" type="button">Másolás</button></pre>
         </div></details>
@@ -773,7 +773,7 @@ Minden RENDBEN. Készen állsz az első órára!</code></pre>
         <div><dt>commit</dt><dd>Egy pillanatkép a repóról, rövid leírással („Vonaldiagram hozzáadása az elemzéshez”).</dd></div>
         <div><dt>push</dt><dd>A commitok feltöltése a gépedről a GitHubra.</dd></div>
         <div><dt>AGENTS.md</dt><dd>A projekt szabályfájlja. Az AI-asszisztens minden munkamenet elején elolvassa.</dd></div>
-        <div><dt>virtuális környezet (venv)</dt><dd>A projekt saját, elkülönített Python-csomagjai. A 0. órán hozunk létre egyet.</dd></div>
+        <div><dt>virtuális környezet (venv)</dt><dd>A projekt saját, elkülönített Python-csomagjai. Az első órán hozunk létre egyet.</dd></div>
         <div><dt>API</dt><dd>Egyfajta kapcsolat, "ajtó", amelyen keresztül egy program egy másik szolgáltatást használ, pl. egy nyelvi modellt vagy az Eurostat adatait.</dd></div>
       </dl>
     </section>
@@ -841,7 +841,7 @@ Minden RENDBEN. Készen állsz az első órára!</code></pre>
       var btn = document.querySelector('[data-done="' + s + '"]');
       if (btn) { btn.setAttribute("aria-pressed", String(on)); btn.textContent = on ? "Kész ✓" : "Kész"; }
     });
-    document.getElementById("progress-text").textContent = n === STEPS.length ? "Minden kész. Találkozunk a 0. órán!" : n + " / " + STEPS.length + " lépés kész";
+    document.getElementById("progress-text").textContent = n === STEPS.length ? "Minden kész. Találkozunk az első órán!" : n + " / " + STEPS.length + " lépés kész";
     document.getElementById("progress-bar").style.width = (100 * n / STEPS.length) + "%";
   }
   document.querySelectorAll("[data-done]").forEach(function (b) {
