@@ -68,10 +68,10 @@ Mit jegyez meg az ágens a munka során, és mit kell elfelejtenie.
 
 ## Hogyan zajlik
 
-- 90 perces alkalmak, saját laptoppal. Minden alkalmon gépen dolgozunk.
+- 13 alkalom: egy bevezető óra és 12 tartalmi alkalom, mindegyik 90 perces. Saját laptoppal, minden alkalmon gépen dolgozunk.
 - Az első alkalmon közösen beállítjuk az eszközöket. Előtte otthon telepítsd a programokat a [telepítési útmutató](telepites/) alapján.
 - A félév egy (párban készülő) záró projekttel zárul. [Erről itt olvashatsz bővebben.](projekt.qmd)
 
 ::: {.megjegyzes}
-Az időpontok, a terem és az alkalmak pontos beosztása hamarosan ide kerül.
+Az időpontok és a terem hamarosan ide kerül.
 :::

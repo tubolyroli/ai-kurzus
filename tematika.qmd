@@ -2,7 +2,7 @@
 title: "Tematika"
 ---
 
-A témák sorrendje már megvan. Az alkalmankénti beosztás és a dátumok a félév előtt kerülnek ide, az alkalmak anyagaival (diák, kód, otthoni feladat) együtt.
+A kurzus 13 alkalmas: egy bevezető óra és 12 tartalmi alkalom, mindegyik 90 perces. A témák sorrendje már megvan; a dátumok a félév előtt kerülnek ide, az alkalmak anyagaival (diák, kód, otthoni feladat) együtt.
 
 ::: {.blokk}
 :::: {}

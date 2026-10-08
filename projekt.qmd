@@ -41,6 +41,7 @@ A minta szándékosan tartalmaz egy csapdát, amelybe egy elsőre meggyőzőnek 
 
 - (**Párban** dolgoztok, egy közös GitHub-repóban.)
 - **Előre elkészített projektcsomagokból** választotok (dokumentumgyűjtemény, adatforrás, ellenőrző script). A csomagok listája a félév elején kerül ide.
+- **Saját téma** is választható: ilyenkor a dokumentumgyűjteményt és az adatforrást ti készítitek elő, és a 3. alkalomig jóvá kell hagynom.
 - **Mérföldkövek** segítenek, hogy a projekt ne az utolsó héten készüljön el.
 - **Frissítési próba:** a bemutató előtt két nappal minden csomaghoz érkezik egy frissítés (új jelentés vagy új havi adat). A rendszereteknek ezzel utómunka nélkül kell lefutnia. Ha mégis kódot kellett módosítani, a dokumentációban leírjátok, mit és miért.
 - **Bemutató:** (páronként) kb. 8 perc, utána kérdések.
