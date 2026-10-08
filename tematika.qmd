@@ -10,9 +10,10 @@ A témák sorrendje már megvan. Az alkalmankénti beosztás és a dátumok a f�
 [Az utasítások szerepe]{.elem}
 ::::
 
-1. Az eszközök beállítása: VS Code, Python, Git, AI-asszisztens és a projekt szabályfájlja (`AGENTS.md`).
-2. Miért építünk saját AI-eszközt, amikor van ChatGPT?
-3. Nyelvi modellek használata Pythonból.
+1. Az eszközök beállítása: VS Code, Python, AI-asszisztens és a projekt szabályfájlja (`AGENTS.md`).
+2. Git és GitHub: a munkánk verziókövetése és megosztása.
+3. Miért építünk saját AI-eszközt, amikor van ChatGPT?
+4. Nyelvi modellek használata Pythonból.
 :::
 
 ::: {.blokk}
