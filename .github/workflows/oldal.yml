@@ -27,7 +27,10 @@ jobs:
         with:
           path: _site
 
+  # Amíg az oldal nem nyilvános, csak kézzel indítva telepít ki (Actions → Kurzusoldal → Run workflow).
+  # Élesítéskor ez a feltétel törölhető, és minden push kitelepít.
   deploy:
+    if: github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
     environment:
