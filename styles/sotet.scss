@@ -1,0 +1,31 @@
+/*-- scss:defaults --*/
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap");
+
+$ejc-navy: #C9CDF2;
+$ejc-gold: #D9B85A;
+$ejc-gold-soft: #3A3220;
+$ejc-muted: #A2A5C2;
+$ejc-line: #2D3157;
+$ejc-surface: #1A1D38;
+$ejc-sunk: #15182F;
+
+$body-bg: #111329;
+$body-color: #E8E9F3;
+$primary: #D9B85A;
+$link-color: #A9B3FF;
+$border-color: $ejc-line;
+
+$font-family-sans-serif: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+$font-family-monospace: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+$font-size-root: 17px;
+$line-height-base: 1.6;
+$headings-font-weight: 600;
+
+$navbar-bg: #0B0D1F;
+$navbar-fg: #C9CBE0;
+$navbar-hl: #D9B85A;
+$footer-bg: $body-bg;
+$footer-fg: $ejc-muted;
+
+$code-color: #E8E9F3;
+$code-bg: #22264A;

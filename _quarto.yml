@@ -1,0 +1,36 @@
+project:
+  type: website
+  output-dir: _site
+  # A telepítési útmutató kész, önálló HTML-oldal: nem rendereljük, csak bemásoljuk.
+  resources:
+    - "telepites/**"
+
+lang: hu
+
+website:
+  title: "Saját AI-eszközök"
+  description: "RAG és AI-ágensek gazdászoknak. Projektkurzus az Eötvös József Collegium Gazdaságtudományi műhelyében, 2027 tavasz."
+  site-url: "https://tubolyroli.github.io/ai-kurzus/"
+  navbar:
+    left:
+      - text: "Kezdőlap"
+        href: index.qmd
+      - text: "Telepítés"
+        href: telepites/index.html
+      - text: "Tematika"
+        href: tematika.qmd
+      - text: "Projekt"
+        href: projekt.qmd
+  page-footer:
+    left: "Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz"
+    right: "Tuboly Roland"
+
+format:
+  html:
+    theme:
+      light: [styles/vilagos.scss, styles/kozos.scss]
+      dark: [styles/sotet.scss, styles/kozos.scss]
+    respect-user-color-scheme: true
+    smooth-scroll: true
+    toc: false
+    anchor-sections: false

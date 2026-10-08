@@ -1,0 +1,54 @@
+---
+title: "Tematika"
+---
+
+A témák sorrendje már megvan. Az alkalmankénti beosztás és a dátumok a félév előtt kerülnek ide, az alkalmak anyagaival (diák, kód, otthoni feladat) együtt.
+
+::: {.blokk}
+:::: {}
+## Alapok
+[Az utasítások szerepe]{.elem}
+::::
+
+1. Az eszközök beállítása: VS Code, Python, Git, AI-asszisztens és a projekt szabályfájlja (`AGENTS.md`).
+2. Miért építünk saját AI-eszközt, amikor van ChatGPT?
+3. Nyelvi modellek használata Pythonból.
+:::
+
+::: {.blokk}
+:::: {}
+## Visszakeresés (RAG)
+[Mi kerül a modell elé a dokumentumokból]{.elem}
+::::
+
+1. Dokumentumok előkészítése: PDF-ből kereshető szöveg.
+2. Embeddingek és vektoros keresés.
+3. A RAG-lánc összerakása: kérdés → releváns részletek → válasz forrással.
+4. Kiértékelés és javítás: honnan tudjuk, hogy jók-e a válaszok?
+:::
+
+::: {.blokk}
+:::: {}
+## Ágensek
+[Eszközök és memória]{.elem}
+::::
+
+1. A chattől az ágensig: mi a különbség?
+2. Eszközhasználat: a modell adatot kér le és számol.
+3. Az ágensciklus, kézzel megírva egy `while` ciklusban.
+4. Adatelemző ágens építése.
+:::
+
+::: {.blokk}
+:::: {}
+## Megbízhatóság és projekt
+[Ellenőrzés és emberi jóváhagyás]{.elem}
+::::
+
+1. Megbízhatóság és biztonság: hibamódok, prompt injection, emberi jóváhagyás.
+2. Projektbemutatók, és kitekintés az ágens-keretrendszerek felé.
+:::
+
+::: {.megjegyzes}
+Minden alkalmon ugyanaz a szabály: az eredményt nem a modell ellenőrzi saját magáról, hanem egy script, amely a nyers adatból maga számolja ki a helyes értéket.
+:::

@@ -1,0 +1,74 @@
+---
+pagetitle: "Saját AI-eszközök"
+---
+
+```{=html}
+<header class="hero">
+  <span class="eyebrow">Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz</span>
+  <h1>Saját AI-eszközök</h1>
+  <p class="alcim">RAG és AI-ágensek gazdászoknak</p>
+  <p class="lead">Projektkurzus arról, hogyan építs saját AI-asszisztenst: olyat, amely egy dokumentumgyűjteményből forrásmegjelöléssel válaszol, és olyat, amely a nyers adatból maga nézi meg, mi igaz. Programozási előismeret nem kell.</p>
+  <a class="cta" href="telepites/">Első lépés: a programok telepítése →</a>
+</header>
+```
+
+## Kinek szól
+
+A Gazdaságtudományi műhely hallgatóinak. Python-tudás nem kell: a kódot egy AI-asszisztens írja, a kurzuson azt tanulod meg, hogyan irányítsd, és hogyan ellenőrizd, amit csinál. Pythonból annyit tanulunk, amennyi ehhez kell: hogy el tudd olvasni és meg tudd ítélni a kódot.
+
+## Mit tanulsz meg
+
+- Nyelvi modelleket használsz Pythonból, API-n keresztül.
+- Tudatosan eldöntöd, mi kerüljön a modell elé: utasítások, dokumentumrészletek, eszközeredmények, előzmények.
+- Építesz egy asszisztenst, amely egy dokumentumgyűjteményből forrásmegjelöléssel válaszol (RAG), és megméred, mennyire jók a válaszai.
+- Írsz egy ágenst, amely eszközöket használ, és többlépéses feladatot önállóan végez el.
+- Megismered, hol és hogyan hibáznak az ágensek, mi a prompt injection, és hol kell embernek jóváhagynia egy lépést.
+- AI kódolóasszisztenssel dolgozol, amelyet szabályfájllal (`AGENTS.md`) és saját skillekkel irányítasz.
+
+## A vezérfonal: kontextustervezés
+
+Egy nyelvi modell egy adott pillanatban csak azt „tudja”, ami a kontextusában van. Egy AI-eszköz minősége ezért nagyrészt azon múlik, mi kerül oda, és mi marad ki. A kurzus minden témája ennek a kérdésnek egy-egy része:
+
+::: {.kartyak}
+::: {.kartya}
+[Utasítások]{.cim}
+
+[rendszerprompt, `AGENTS.md`, skillek]{.mi}
+
+Hogyan mondod meg a modellnek egyszer, jól, hogy mit csináljon és mit ne.
+:::
+
+::: {.kartya}
+[Visszakeresés]{.cim}
+
+[dokumentumrészletek (RAG)]{.mi}
+
+Hogyan találja meg a modell a több száz oldalból azt a bekezdést, amelyik a kérdéshez kell.
+:::
+
+::: {.kartya}
+[Eszközök]{.cim}
+
+[eszközhívások eredménye]{.mi}
+
+Hogyan kér le a modell adatot, és hogyan számol, ahelyett hogy fejből mondana egy számot.
+:::
+
+::: {.kartya}
+[Memória]{.cim}
+
+[előzmények, az ágens lépései]{.mi}
+
+Mit jegyez meg az ágens a munka során, és mit kell elfelejtenie.
+:::
+:::
+
+## Hogyan zajlik
+
+- 90 perces alkalmak, saját laptoppal. Minden alkalmon gépen dolgozunk.
+- Az első alkalmon közösen beállítjuk az eszközöket. Előtte otthon telepítsd a programokat a [telepítési útmutató](telepites/) alapján.
+- A félév egy párban készülő záró projekttel zárul. [Erről itt olvashatsz bővebben.](projekt.qmd)
+
+::: {.megjegyzes}
+Az időpontok, a terem és az alkalmak pontos beosztása hamarosan ide kerül.
+:::

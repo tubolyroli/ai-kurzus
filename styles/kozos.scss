@@ -1,0 +1,88 @@
+/*-- scss:rules --*/
+// Mindkét témában ugyanazok a szabályok; a színek a téma saját $ejc-* változóiból jönnek.
+
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.01em; }
+h2 { margin-top: 3rem; color: $ejc-navy; }
+.navbar-brand { font-weight: 600; letter-spacing: 0.01em; }
+
+.eyebrow {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $ejc-gold;
+}
+
+/* ---- Kezdőlap: hős ---- */
+.hero {
+  padding-block: 2.5rem 1rem;
+  h1 {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    color: $ejc-navy;
+    margin: 0.4rem 0 0;
+  }
+  .alcim { font-size: clamp(1.3rem, 2.6vw, 1.7rem); font-weight: 300; color: $ejc-gold; margin-top: 0.4rem; }
+  .lead { font-size: 1.15rem; color: $ejc-muted; max-width: 36em; margin-top: 1.2rem; }
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  background: $ejc-navy;
+  color: $body-bg !important;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { filter: brightness(1.15); }
+}
+
+/* ---- Kártyarács (kontextustervezés, projekt pillérei) ---- */
+.kartyak {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.2rem;
+  @media (max-width: 640px) { grid-template-columns: minmax(0, 1fr); }
+}
+.kartya {
+  background: $ejc-surface;
+  border: 1px solid $ejc-line;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  min-width: 0;
+  p { margin: 0.3rem 0 0; color: $ejc-muted; font-size: 0.97rem; }
+  .cim { font-weight: 600; font-size: 1.1rem; color: $ejc-navy; }
+  .mi { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: $ejc-gold; }
+}
+
+/* ---- Megjegyzés ---- */
+.megjegyzes {
+  background: $ejc-gold-soft;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-block: 1.2rem;
+  p:last-child { margin-bottom: 0; }
+}
+
+/* ---- Tematika: blokkok és témák sorban ---- */
+.blokk {
+  border-top: 1px solid $ejc-line;
+  padding-top: 1.2rem;
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0.4rem 2rem;
+  @media (max-width: 760px) { grid-template-columns: minmax(0, 1fr); }
+  h2 { margin: 0; font-size: 1.35rem; }
+  .elem { color: $ejc-muted; font-size: 0.9rem; }
+  ol { margin: 0; padding-left: 1.3rem; }
+  li { margin-bottom: 0.35rem; }
+  li::marker { color: $ejc-gold; font-weight: 600; }
+}

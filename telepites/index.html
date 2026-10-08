@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Telepítési útmutató a Saját AI-eszközök kurzushoz: VS Code, Python, Git, GitHub és Copilot, Windowsra és macOS-re.">
+<title>Telepítés · Saját AI-eszközök</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Elrendezés: bal oldalt ragadós útvonal-sín a lépésekkel (pipálható), jobbra egy olvasóoszlop.
+   Rendszer-váltó (Windows/macOS) a fejlécben; a nem releváns blokkok elrejtve. EJC-színek: navy + arany. */
+:root {
+  --bg: #F6F6F9;
+  --surface: #FFFFFF;
+  --sunk: #ECEDF3;
+  --ink: #1B1E38;
+  --muted: #5A5E7A;
+  --line: #D9DBE6;
+  --navy: #252A51;
+  --gold: #9C7A22;
+  --gold-soft: #F3EBD4;
+  --link: #2E3A8C;
+  --ok: #2D7A4E;
+  --ok-soft: #E2F1E8;
+  --warn: #A8442B;
+  --warn-soft: #F8E6DF;
+  --code-bg: #1E2240;
+  --code-ink: #E6E7F2;
+  --code-dim: #9195B8;
+  --code-gold: #E3C36A;
+  --code-green: #8FD3A6;
+  --display: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111329; --surface: #1A1D38; --sunk: #15182F; --ink: #E8E9F3; --muted: #A2A5C2;
+    --line: #2D3157; --navy: #C9CDF2; --gold: #D9B85A; --gold-soft: #3A3220; --link: #A9B3FF;
+    --ok: #7FD1A0; --ok-soft: #1C3328; --warn: #F0A08A; --warn-soft: #3B2420;
+    --code-bg: #0B0D1F; --code-ink: #E6E7F2; --code-dim: #8A8EB2; --code-gold: #E3C36A; --code-green: #8FD3A6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111329; --surface: #1A1D38; --sunk: #15182F; --ink: #E8E9F3; --muted: #A2A5C2;
+  --line: #2D3157; --navy: #C9CDF2; --gold: #D9B85A; --gold-soft: #3A3220; --link: #A9B3FF;
+  --ok: #7FD1A0; --ok-soft: #1C3328; --warn: #F0A08A; --warn-soft: #3B2420;
+  --code-bg: #0B0D1F; --code-ink: #E6E7F2; --code-dim: #8A8EB2; --code-gold: #E3C36A; --code-green: #8FD3A6;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+.brand { text-decoration: none; }
+.brand:hover .brand-back { color: var(--gold); }
+.brand-back { color: var(--muted); font-weight: 500; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.6; font-weight: 400;
+  padding-inline: 16px; padding-block: 0 64px;
+}
+a { color: var(--link); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h2 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+code, kbd { font-family: var(--mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 0.05em 0.35em; }
+kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0.05em 0.4em; white-space: nowrap; }
+.eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+
+/* ---------- Fejléc ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  margin-inline: -16px; padding: 10px 16px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
+.brand { font-weight: 600; font-size: 0.95rem; color: var(--navy); display: flex; gap: 10px; align-items: center; }
+.brand-mark { width: 26px; height: 26px; border-radius: 6px; background: #252A51; color: #D9B85A; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+.os-switch { display: inline-flex; background: var(--sunk); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.os-switch button {
+  font: inherit; font-size: 0.9rem; font-weight: 500; color: var(--muted); background: none; border: 0;
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 36px;
+}
+.os-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.os-switch-label { font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- Hős ---------- */
+.hero { max-width: 1120px; margin: 0 auto; padding-block: 48px 36px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; }
+.hero h1 { font-size: clamp(2.2rem, 5.2vw, 3.6rem); font-weight: 600; letter-spacing: -0.025em; color: var(--navy); }
+.hero h1 span { color: var(--gold); }
+.hero .lead { font-size: 1.15rem; color: var(--muted); max-width: 34em; margin-top: 14px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.facts div { padding: 14px 16px; border-left: 1px solid var(--line); }
+.facts div:first-child { border-left: 0; }
+.facts b { display: block; font-family: var(--display); font-size: 1.5rem; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+.facts span { font-size: 0.85rem; color: var(--muted); line-height: 1.35; display: block; }
+
+/* ---------- Fő rács: sín + tartalom ---------- */
+.layout { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; align-items: start; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); }
+.rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.rail a { display: flex; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); font-size: 0.93rem; line-height: 1.3; }
+.rail a:hover { background: var(--sunk); color: var(--ink); }
+.rail .dot { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 0.72rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; background: var(--surface); }
+.rail li.done .dot { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.rail li.done a { color: var(--ink); }
+.rail .progress { margin-top: 16px; padding: 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+.rail .bar { height: 6px; border-radius: 3px; background: var(--sunk); margin-top: 8px; overflow: hidden; }
+.rail .bar i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+.rail .sep { height: 1px; background: var(--line); margin: 8px 10px; }
+
+main { min-width: 0; display: grid; gap: 72px; }
+section { min-width: 0; }
+.section-head { display: grid; gap: 8px; margin-bottom: 22px; max-width: 42em; }
+.section-head p { color: var(--muted); }
+.prose { max-width: 42em; display: grid; gap: 14px; }
+
+/* ---------- Mi mire való ---------- */
+.tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.tool { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 18px 16px; display: grid; gap: 6px; align-content: start; }
+.tool header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.tool h3 { color: var(--navy); }
+.tool .role { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+.tool p { color: var(--muted); font-size: 0.97rem; }
+.tool .like { font-size: 0.92rem; color: var(--ink); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 4px; }
+.tool.wide { grid-column: 1 / -1; }
+
+/* VS Code vázlat */
+.figure { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; }
+.figure figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 14px; }
+.vsc-scroll { overflow-x: auto; }
+.vsc { min-width: 640px; border-radius: 8px; overflow: hidden; border: 1px solid #2B2F4A; background: #1E1F2B; color: #CDD0E0; font-family: var(--mono); font-size: 12px; line-height: 1.55; display: grid; grid-template-columns: 34px 150px minmax(0, 1fr) 200px; grid-template-rows: 26px minmax(0, 1fr) 96px 20px; }
+.vsc .t { grid-column: 1 / -1; background: #181922; display: flex; align-items: center; gap: 6px; padding: 0 10px; color: #8A8DA6; font-family: var(--body); font-size: 12px; }
+.vsc .t i { width: 10px; height: 10px; border-radius: 50%; background: #3A3D55; display: inline-block; }
+.vsc .t span { margin: 0 auto; }
+.vsc .act { grid-row: 2 / 4; background: #181922; display: grid; align-content: start; justify-items: center; gap: 12px; padding-top: 10px; }
+.vsc .act b { width: 16px; height: 16px; border: 1.5px solid #6C7090; border-radius: 3px; display: block; }
+.vsc .act b.on { border-color: #E3C36A; }
+.vsc .exp { grid-row: 2 / 4; background: #1A1B26; border-right: 1px solid #2B2F4A; padding: 8px 10px; position: relative; }
+.vsc .exp div { white-space: nowrap; }
+.vsc .exp .h { color: #8A8DA6; font-size: 10px; letter-spacing: .1em; margin-bottom: 4px; font-family: var(--body); }
+.vsc .exp .sel { background: #2A2D44; margin-inline: -10px; padding-inline: 10px; }
+.vsc .ed { background: #1E1F2B; padding: 8px 12px; position: relative; overflow: hidden; }
+.vsc .ed > div, .vsc .term > div { white-space: pre; }
+.vsc .ed .tab { display: inline-block; background: #262838; border-top: 1.5px solid #E3C36A; padding: 1px 10px; margin: -8px 0 8px -12px; color: #E6E7F2; }
+.vsc .ed .ln { color: #555872; display: inline-block; width: 18px; }
+.vsc .k { color: #C792EA; } .vsc .s { color: #A5D6A7; } .vsc .c { color: #6C7090; } .vsc .f { color: #82AAFF; }
+.vsc .term { overflow: hidden; grid-column: 3 / 4; background: #171822; border-top: 1px solid #2B2F4A; padding: 6px 12px; position: relative; }
+.vsc .term .h { color: #8A8DA6; font-size: 10px; letter-spacing: .1em; font-family: var(--body); }
+.vsc .term .p { color: #8FD3A6; }
+.vsc .chat { grid-row: 2 / 4; grid-column: 4; background: #1A1B26; border-left: 1px solid #2B2F4A; padding: 8px 10px; font-family: var(--body); font-size: 11.5px; display: grid; align-content: start; gap: 8px; position: relative; }
+.vsc .chat .h { color: #8A8DA6; font-size: 10px; letter-spacing: .1em; }
+.vsc .chat .me { background: #2A2D44; border-radius: 8px; padding: 6px 8px; justify-self: end; max-width: 90%; }
+.vsc .chat .ai { color: #B9BCD2; }
+.vsc .chat .ai ol { margin: 4px 0 0; padding-left: 16px; }
+.vsc .status { grid-column: 1 / -1; background: #252A51; color: #DADCF0; display: flex; justify-content: space-between; padding: 0 10px; font-family: var(--body); font-size: 11px; align-items: center; }
+.pin { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #D9B85A; color: #1B1E38; font-family: var(--body); font-weight: 700; font-size: 12px; display: grid; place-items: center; box-shadow: 0 0 0 3px #1E1F2B; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 20px; margin-top: 16px; padding: 0; list-style: none; }
+.legend li { display: flex; gap: 10px; font-size: 0.93rem; color: var(--muted); }
+.legend li b { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--gold); color: var(--surface); font-size: 12px; display: grid; place-items: center; margin-top: 2px; }
+.legend li strong { color: var(--ink); font-weight: 600; }
+
+.flow { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.93rem; color: var(--muted); }
+.flow .n { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; color: var(--ink); }
+.flow .a { color: var(--gold); font-weight: 600; }
+
+.video { margin-top: 28px; }
+.video video { width: 100%; max-width: 100%; border-radius: var(--r); display: block; background: #252A51; aspect-ratio: 16 / 9; }
+
+/* ---------- Lépések ---------- */
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 28px clamp(18px, 3vw, 32px); display: grid; gap: 20px; }
+.step.is-done { border-color: color-mix(in srgb, var(--ok) 55%, var(--line)); }
+.step-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-items: center; }
+.step-num { grid-row: 1 / 3; width: 48px; height: 48px; border-radius: 12px; background: var(--navy); color: var(--bg); display: grid; place-items: center; font-family: var(--display); font-size: 1.4rem; font-weight: 600; }
+.step.is-done .step-num { background: var(--ok); }
+.step-meta { font-size: 0.88rem; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.step-meta span { white-space: nowrap; }
+.why { font-size: 1rem; color: var(--muted); max-width: 42em; }
+.why strong { color: var(--ink); font-weight: 600; }
+
+ol.do { margin: 0; padding: 0; list-style: none; counter-reset: do; display: grid; gap: 14px; max-width: 46em; }
+ol.do > li { counter-increment: do; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; }
+ol.do > li::before { content: counter(do); width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--gold); color: var(--gold); font-size: 0.8rem; font-weight: 600; display: grid; place-items: center; margin-top: 1px; font-variant-numeric: tabular-nums; }
+ol.do > li > div { min-width: 0; display: grid; gap: 8px; }
+.ui { font-weight: 600; color: var(--ink); background: var(--gold-soft); padding: 0 0.3em; border-radius: 4px; }
+
+.shot { margin: 4px 0 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--sunk); }
+.shot img { display: block; width: 100%; height: auto; }
+.shot figcaption { font-size: 0.85rem; color: var(--muted); padding: 8px 12px; border-top: 1px solid var(--line); background: var(--surface); }
+
+pre.cmd { margin: 0; position: relative; background: var(--code-bg); color: var(--code-ink); border-radius: 8px; padding: 12px 52px 12px 14px; font-family: var(--mono); font-size: 0.88rem; line-height: 1.6; overflow-x: auto; }
+pre.cmd .out { color: var(--code-dim); }
+pre.cmd .g { color: var(--code-green); }
+pre.cmd .y { color: var(--code-gold); }
+.copy { position: absolute; top: 8px; right: 8px; font: inherit; font-family: var(--body); font-size: 0.78rem; background: rgb(255 255 255 / 0.08); color: var(--code-ink); border: 1px solid rgb(255 255 255 / 0.16); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.copy:hover { background: rgb(255 255 255 / 0.16); }
+
+.note { border-radius: 8px; padding: 12px 14px; font-size: 0.95rem; max-width: 46em; }
+.note b { font-weight: 600; }
+.note.tip { background: var(--gold-soft); color: var(--ink); }
+.note.warn { background: var(--warn-soft); color: var(--ink); }
+.note.warn b { color: var(--warn); }
+.note.ok { background: var(--ok-soft); }
+.note.ok b { color: var(--ok); }
+
+.done-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 18px; }
+.done-row p { font-size: 0.93rem; color: var(--muted); }
+.done-btn { font: inherit; font-weight: 600; font-size: 0.95rem; border-radius: 999px; padding: 9px 18px; cursor: pointer; border: 1.5px solid var(--ok); background: transparent; color: var(--ok); min-height: 42px; }
+.done-btn[aria-pressed="true"] { background: var(--ok); color: var(--surface); }
+
+.optional-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 2px 9px; margin-left: 8px; vertical-align: middle; }
+
+/* OS-szűrés */
+html[data-os="win"] .only-mac, html[data-os="mac"] .only-win { display: none !important; }
+.os-chip { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+/* Hibák, szótár */
+.faq { display: grid; gap: 10px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+summary { cursor: pointer; padding: 14px 16px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--gold); font-size: 1.2rem; line-height: 1; }
+details[open] summary::after { content: "–"; }
+summary small { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+details > div { padding: 0 16px 16px; display: grid; gap: 10px; color: var(--muted); }
+details > div strong { color: var(--ink); }
+
+.glossary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; margin: 0; }
+.glossary div { padding: 12px 0; border-top: 1px solid var(--line); min-width: 0; }
+.glossary dt { font-family: var(--mono); font-size: 0.92rem; font-weight: 600; color: var(--navy); }
+.glossary dd { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+.bring { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.bring div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.bring b { display: block; color: var(--navy); font-weight: 600; margin-bottom: 4px; }
+.bring span { color: var(--muted); font-size: 0.95rem; }
+
+footer { max-width: 1120px; margin: 72px auto 0; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 920px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .rail { position: static; }
+  .rail ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rail .sep { display: none; }
+  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 32px 24px; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .tools, .glossary, .bring { grid-template-columns: minmax(0, 1fr); }
+  .facts b { font-size: 1.25rem; }
+  .rail ol { grid-template-columns: minmax(0, 1fr); }
+  .os-switch-label, .brand-back { display: none; }
+  main { gap: 56px; }
+}
+</style>
+
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="../"><div class="brand-mark" aria-hidden="true">←</div>Saját AI-eszközök <span class="brand-back">· vissza a kurzusoldalra</span></a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="os-switch-label" id="os-label">Milyen géped van?</span>
+      <div class="os-switch" role="group" aria-labelledby="os-label">
+        <button type="button" id="os-win" data-os="win" aria-pressed="true">Windows</button>
+        <button type="button" id="os-mac" data-os="mac" aria-pressed="false">macOS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div>
+    <p class="eyebrow">Otthoni feladat a 0. óra előtt</p>
+    <h1>5 program telepítése, <span>amik nélkül nem tudnál dolgozni a félév alatt.</span></h1>
+    <p class="lead">Ezen az oldalon segítek telepíteni azokat a programokat, amelyekkel a félév során dolgozunk. Minden lépésnél leírtam, mire kattints, és hogyan ellenőrizd, hogy sikerült.</p>
+  </div>
+  <div class="facts" aria-label="Röviden">
+    <div><b>60–90 perc</b><span>a letöltések sebességétől függ</span></div>
+    <div><b>0 Ft</b><span>minden program ingyenes</span></div>
+    <div><b>~3 GB</b><span>szabad hely kell a gépen</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="rail" aria-label="Lépések">
+    <ol id="rail-list">
+      <li><a href="#mi-mire"><span class="dot">?</span>Mi mire való?</a></li>
+      <li class="sep" aria-hidden="true"></li>
+      <li data-step="github"><a href="#github"><span class="dot">1</span>GitHub-fiók</a></li>
+      <li data-step="vscode"><a href="#vscode"><span class="dot">2</span>VS Code</a></li>
+      <li data-step="python"><a href="#python"><span class="dot">3</span>Python</a></li>
+      <li data-step="git"><a href="#git"><span class="dot">4</span>Git</a></li>
+      <li data-step="copilot"><a href="#copilot"><span class="dot">5</span>Copilot</a></li>
+      <li data-step="gepcsekk"><a href="#gepcsekk"><span class="dot">6</span>Gépcsekk</a></li>
+      <li class="sep" aria-hidden="true"></li>
+      <li><a href="#claude-code"><span class="dot">+</span>Claude Code (opcionális)</a></li>
+      <li><a href="#hibak"><span class="dot">!</span>Ha elakadsz</a></li>
+      <li><a href="#szotar"><span class="dot">A</span>Szótár</a></li>
+    </ol>
+    <div class="progress"><span id="progress-text">0 / 6 lépés kész</span><div class="bar"><i id="progress-bar"></i></div></div>
+  </nav>
+
+  <main>
+    <!-- ===================== MI MIRE VALÓ ===================== -->
+    <section id="mi-mire">
+      <div class="section-head">
+        <p class="eyebrow">Mielőtt bármit letöltesz</p>
+        <h2>Mi mire való?</h2>
+        <p>Öt dolgot telepítesz, de a félév során szinte mindig csak egy ablakot fogsz látni: a VS Code-ot. A többi program a háttérben dolgozik.</p>
+      </div>
+
+      <div class="tools">
+        <article class="tool">
+          <header><h3>VS Code</h3><span class="role">a munkaasztal</span></header>
+          <p>Kódszerkesztő program. Ebben nyitod meg a projekt mappáját, itt olvasod és írod a fájlokat, és itt fut a terminál és az AI-asszisztens is.</p>
+          <p class="like">Olyan, mint pl. a Word, csak programkódhoz és egész mappákhoz.</p>
+        </article>
+        <article class="tool">
+          <header><h3>Python</h3><span class="role">a motor</span></header>
+          <p>A programozási nyelv, és a program, amely lefuttatja a Pythonban írt kódot. Nélküle egy <code>.py</code> fájl csak szöveg, nem csinál semmit.</p>
+          <p class="like">Az Excelben a képlet csak akkor ad eredményt, ha az Excel kiszámolja. A Python a "kódot számolja ki".</p>
+        </article>
+        <article class="tool">
+          <header><h3>Git</h3><span class="role">a verziókövető</span></header>
+          <p>Pillanatképeket ment a projekt mappájáról. Minden pillanatképhez (commit) egy rövid leírás tartozik, és bármelyikhez vissza lehet ugrani.</p>
+          <p class="like">Olyan, mint a Wordben a változások követése/előző verziók, csak az egész mappára, és sosem veszik el.</p>
+        </article>
+        <article class="tool">
+          <header><h3>GitHub</h3><span class="role">a felhő</span></header>
+          <p>Weboldal, ahol a Git-pillanatképek a neten is megvannak. Innen fogod beadni a projektet, itt dolgozhatsz együtt másokkal, és ezzel a fiókkal lépsz be a Copilotba.</p>
+          <p class="like">Olyan, mint a Google Drive, csak Git-projektekhez.</p>
+        </article>
+        <article class="tool wide">
+          <header><h3>GitHub Copilot <span style="font-weight:400;color:var(--muted)">(és opcionálisan Claude Code)</span></h3><span class="role">az AI-asszisztens</span></header>
+          <p>A VS Code-ba épülő AI-asszisztens. Látja a projekt fájljait, akár magyarul is megkérheted, hogy írjon kódot vagy futtasson parancsot, és a félév során végig ezzel dolgozunk. A kódot ő írja, <strong style="color:var(--ink)">te pedig elolvasod és ellenőrzöd</strong>. Ehhez tanulunk csak annyi Pythont, amennyi kell.</p>
+          <p class="like">Olyan, mint egy gyors, szorgalmas gyakornok. Hihetetlen sokat dolgozik, de az eredményét mindig át kell nézni.</p>
+        </article>
+      </div>
+
+      <figure class="figure">
+        <div class="vsc-scroll">
+          <div class="vsc" role="img" aria-label="Egy VS Code-ablak vázlata: bal oldalt a fájlok, középen a kód, alatta a terminál, jobb oldalt az AI-asszisztens csevegőablaka.">
+            <div class="t"><i></i><i></i><i></i><span>inflacio-elemzes — Visual Studio Code</span></div>
+            <div class="act"><b class="on"></b><b></b><b></b><b></b></div>
+            <div class="exp">
+              <span class="pin" style="top:6px;right:8px">A</span>
+              <div class="h">INFLACIO-ELEMZES</div>
+              <div>▸ data</div>
+              <div>▸ output</div>
+              <div>AGENTS.md</div>
+              <div class="sel">elemzes.py</div>
+              <div>requirements.txt</div>
+            </div>
+            <div class="ed">
+              <span class="pin" style="top:30px;right:10px">B</span>
+              <span class="tab">elemzes.py</span>
+              <div><span class="ln">1</span><span class="k">import</span> pandas <span class="k">as</span> pd</div>
+              <div><span class="ln">2</span></div>
+              <div><span class="ln">3</span>adat = pd.<span class="f">read_csv</span>(<span class="s">"data/inflacio.csv"</span>, sep=<span class="s">";"</span>)</div>
+              <div><span class="ln">4</span><span class="c"># az utolsó 12 hónap átlaga</span></div>
+              <div><span class="ln">5</span>atlag = adat[<span class="s">"ertek"</span>].<span class="f">tail</span>(12).<span class="f">mean</span>()</div>
+              <div><span class="ln">6</span><span class="f">print</span>(<span class="s">f"Átlagos infláció: {atlag:.1f}%"</span>)</div>
+            </div>
+            <div class="term">
+              <span class="pin" style="top:6px;right:10px">C</span>
+              <div class="h">TERMINÁL</div>
+              <div><span class="p">inflacio-elemzes &gt;</span> python elemzes.py</div>
+              <div>Átlagos infláció: 4.3%</div>
+              <div><span class="p">inflacio-elemzes &gt;</span> <span style="background:#CDD0E0;color:#171822">&nbsp;</span></div>
+            </div>
+            <div class="chat">
+              <span class="pin" style="top:6px;right:8px">D</span>
+              <div class="h">CHAT · AGENT</div>
+              <div class="me">Készíts ábrát az inflációról az output mappába!</div>
+              <div class="ai">Terv, mielőtt bármit módosítok:
+                <ol><li>beolvasom a data/ fájlt</li><li>vonaldiagramot rajzolok</li><li>output/abra.png-be mentem</li></ol>
+                Mehet?</div>
+            </div>
+            <div class="status"><span>⎇ main</span><span>Python 3.14 &nbsp;·&nbsp; Copilot</span></div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><b>A</b><span><strong>Fájlok.</strong> A megnyitott projektmappa tartalma.</span></li>
+          <li><b>B</b><span><strong>Szerkesztő.</strong> Itt olvasod a kódot, amit az asszisztens írt.</span></li>
+          <li><b>C</b><span><strong>Terminál.</strong> Gépelt parancsok, például a Python-script futtatása.</span></li>
+          <li><b>D</b><span><strong>AI-asszisztens.</strong> Magyarul kérsz, ő (általában) tervet mutat, majd dolgozik.</span></li>
+        </ul>
+        <figcaption>Így néz majd ki a munkánk a félév során vázlatosan. A státuszsorban a <code>main</code> a Git-branchet, a <code>Python 3.14</code> a használt Python verziót jelzi.</figcaption>
+      </figure>
+
+      <div class="flow" aria-label="Hogyan kapcsolódnak">
+        <span class="n">Te</span><span class="a">→</span><span class="n">kérsz az asszisztenstől</span><span class="a">→</span><span class="n">ő kódot ír</span><span class="a">→</span><span class="n">a Python lefuttatja</span><span class="a">→</span><span class="n">te ellenőrzöd</span><span class="a">→</span><span class="n">a Git elmenti</span><span class="a">→</span><span class="n">a GitHubra feltöltöd</span>
+      </div>
+
+      <div class="video" id="video-wrap" hidden>
+        <video id="explainer" controls preload="metadata" playsinline poster="video/mi-mire-valo-poster.jpg">
+          <source src="video/mi-mire-valo.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <!-- ===================== 1. GITHUB ===================== -->
+    <section id="github" class="step" data-step="github">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <h2>GitHub-fiók és hallgatói igazolás</h2>
+        <div class="step-meta"><span>⏱ 15 perc + néhány nap várakozás</span><span>böngészőben</span></div>
+      </div>
+      <p class="why"><strong>Ezzel kezdd,</strong> mert a hallgatói igazolás elbírálása napokig is eltarthat.</p>
+      <ol class="do">
+        <li><div>
+          <p>Nyisd meg a <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a> oldalt, és add meg az e-mail-címed, egy jelszót és egy felhasználónevet.</p>
+          <div class="note tip"><b>Felhasználónév:</b> legyen komoly, mert később ez fog szerepelni a projektjeid webcímében is (pl. <code>github.com/tuboly-roland</code>). Az e-mail-cím lehet a magáncímed. Az egyetemit a következő lépésben adod hozzá.</div>
+        </div></li>
+        <li><div>
+          <p>Erősítsd meg az e-mail-címed (a GitHub kódot küld), majd kapcsold be a <span class="ui">kétlépcsős azonosítást</span>. A GitHub úgyis kérni fogja. Egy hitelesítő app kell hozzá a telefonodra (pl. Google Authenticator vagy Microsoft Authenticator).</p>
+          <div class="note warn"><b>Mentsd el a helyreállító kódokat</b> (recovery codes), amiket a GitHub a beállítás végén mutat. Ha elveszíted a telefonod, csak ezekkel tudsz visszalépni.</div>
+        </div></li>
+        <li><div>
+          <p>A profilodban (<a href="https://github.com/settings/profile" target="_blank" rel="noopener">Settings → Public profile</a>) írd be a teljes neved úgy, ahogy a diákigazolványodon szerepel. Az <a href="https://github.com/settings/emails" target="_blank" rel="noopener">Emails</a> oldalon add hozzá és erősítsd meg az egyetemi e-mail-címed is.</p>
+        </div></li>
+        <li><div>
+          <p>Nyisd meg a <a href="https://github.com/settings/education/benefits" target="_blank" rel="noopener">github.com/settings/education/benefits</a> oldalt, kattints a <span class="ui">Start an application</span> gombra, válaszd a <span class="ui">Student</span> lehetőséget, és keresd ki az egyetemedet (ELTE).</p>
+        </div></li>
+        <li><div>
+          <p>Igazolásként tölts fel egy fényképet az <strong>érvényes diákigazolványodról</strong>, vagy a Neptunból letöltött <strong>hallgatói jogviszony-igazolásról</strong>. Mindkettőn látszódjon a neved, az egyetem neve és az aktuális félév.</p>
+          <div class="note tip"><b>Ami miatt a legtöbb kérelmet elutasítják:</b> elmosódott fotó; bekapcsolt VPN vagy letiltott helymeghatározás (a GitHub ellenőrzi, honnan jelentkezel, ezért ha a böngésző kéri, engedélyezd); eltérő név a profilban és az igazoláson; felvételi határozat jogviszony-igazolás helyett.</div>
+        </div></li>
+      </ol>
+      <div class="note ok"><b>Mi történik ezután?</b> A GitHub általában néhány napon belül e-mailben válaszol. Ha elfogadják, ingyen megkapod a <strong>Copilot Student</strong> csomagot, de az aktiválás még pár napot vehet igénybe. Ha az első óráig nem érkezik meg, az sem baj: addig az ingyenes Copilot Free csomaggal dolgozunk.</div>
+      <div class="done-row"><p>Megvan a fiók, és beküldted a kérelmet?</p><button type="button" class="done-btn" id="done-github" data-done="github" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== 2. VS CODE ===================== -->
+    <section id="vscode" class="step" data-step="vscode">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <h2>VS Code telepítése</h2>
+        <div class="step-meta"><span>⏱ 10 perc</span><span>kb. 400 MB</span></div>
+      </div>
+      <p class="why"><strong>A munkaasztal.</strong> Ezt telepítjük másodikként, mert a Python és a Git ellenőrzéséhez már a VS Code beépített terminálját használjuk.</p>
+      <ol class="do">
+        <li><div>
+          <p>Nyisd meg a <a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download</a> oldalt, és töltsd le a gépednek megfelelő változatot.</p>
+          <figure class="shot"><img src="img/vscode-letoltes.jpg" alt="A VS Code letöltőoldala: Windows, macOS és Linux oszlop, a Windows és a Mac Apple Silicon gomb pirossal kiemelve." width="1400" height="750" loading="lazy"><figcaption>Windowson a bal oldali <span class="ui">Windows</span>, Macen a középső gomb. A régebbi, Intel-processzoros Macekhez a középső oszlop legördülő listájában van külön letöltés.</figcaption></figure>
+        </div></li>
+        <li class="only-win"><div>
+          <p>Futtasd a letöltött <code>VSCodeUserSetup-….exe</code> fájlt. Fogadd el a licencet, a következő képernyőkön maradhat minden alapértelmezett, kivéve az <span class="ui">Additional Tasks</span> oldalt. Ott pipáld be ezt a hármat:</p>
+          <ul style="margin:0;padding-left:20px;color:var(--muted)">
+            <li><span class="ui">Add "Open with Code" action to Windows Explorer file context menu</span></li>
+            <li><span class="ui">Add "Open with Code" action to Windows Explorer directory context menu</span></li>
+            <li><span class="ui">Add to PATH</span> (alapból be van pipálva, maradjon is így)</li>
+          </ul>
+          <p>Így egy mappára jobb gombbal kattintva közvetlenül megnyithatod a VS Code-ban.</p>
+        </div></li>
+        <li class="only-mac"><div>
+          <p>Nyisd meg a letöltött ZIP-fájlt (ha a Safari nem csomagolta ki magától), és a <span class="ui">Visual Studio Code</span> alkalmazást húzd át a Finderben az <span class="ui">Alkalmazások</span> (Applications) mappába. Ezután onnan indítsd el. Az első indításnál a macOS megkérdezi, biztosan megnyitod-e: <span class="ui">Megnyitás</span>.</p>
+        </div></li>
+        <li class="only-mac"><div>
+          <p>A VS Code-ban nyomd meg a <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>P</kbd> billentyűket. Ez a command palette, a VS Code „mindent-kereső” mezője. Írd be, hogy <code>shell command</code>, és válaszd az <span class="ui">Install 'code' command in PATH</span> sort.</p>
+        </div></li>
+        <li><div>
+          <p>Lehet hogy hozzáférést/jelszót fog kérni, ezeket add meg/írd be, majd telepítsd a Python-bővítményt. Bal oldalt a függőleges menüsorban kattints a négy kis négyzetből álló <span class="ui">Extensions</span> ikonra (vagy <kbd class="only-win">Ctrl</kbd><kbd class="only-mac">⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd>), keresd meg a <code>Python</code> bővítményt, és kattints az <span class="ui">Install</span> gombra annál, amelyiknek a kiadója a <strong>Microsoft</strong> (kék pipa jelzi).</p>
+          <div class="note tip"><b>Más bővítményt most ne telepíts.</b> A Copilot már benne van a VS Code-ban, azt az 5. lépésben kapcsoljuk be.</div>
+        </div></li>
+      </ol>
+      <div class="done-row"><p>Elindul a VS Code, és látod a bal oldalt a Python-bővítményt az Extensions listában?</p><button type="button" class="done-btn" id="done-vscode" data-done="vscode" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== 3. PYTHON ===================== -->
+    <section id="python" class="step" data-step="python">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <h2>Python telepítése</h2>
+        <div class="step-meta"><span>⏱ 10 perc</span><span>python.org, 3.14-es verzió</span></div>
+      </div>
+      <p class="why"><strong>A motor.</strong> A hivatalos <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> oldalról telepítjük. Ha valahol már van Pythonod (pl. Anaconda), az sem baj, de a kurzushoz telepítsd ezt is kérlek.</p>
+
+      <ol class="do only-win">
+        <li><div>
+          <p>A <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> oldalon kattints a sárga <span class="ui">Download Python install manager</span> gombra.</p>
+          <figure class="shot"><img src="img/python-letoltes-win.jpg" alt="A python.org letöltőoldala Windowson: kiemelve a Download Python install manager gomb." width="1400" height="750" loading="lazy"><figcaption>Windowson ez az ajánlott telepítő. Az alatta lévő „standalone installer” a régi módszer, ezt ne válaszd.</figcaption></figure>
+        </div></li>
+        <li><div>
+          <p>Nyisd meg a letöltött <code>python-manager-….msix</code> fájlt, és kattints az <span class="ui">Install</span> (Telepítés) gombra. Ez a Python-telepítő segédprogramját teszi fel, magát a Pythont a következő lépésben töltjük le.</p>
+        </div></li>
+        <li><div>
+          <p>Indítsd újra a VS Code-ot, és nyiss egy terminált: felső menü <span class="ui">Terminal → New Terminal</span> (vagy <kbd>Ctrl</kbd> <kbd>`</kbd>). Alul megjelenik egy sor, ami <code>PS C:\Users\…&gt;</code> kezdetű. Ide gépeld be, majd nyomj Entert:</p>
+          <pre class="cmd"><code>py install 3.14</code><button class="copy" type="button">Másolás</button></pre>
+          <p>Ha a terminál kérdez valamit (például hogy felvegye-e a parancsokat a PATH-ba), írj <code>y</code>-t, és nyomj Entert.</p>
+        </div></li>
+        <li><div>
+          <p>Zárd be a terminált (a kuka ikonnal a jobb oldalán), nyiss egy újat, és ellenőrizd:</p>
+          <pre class="cmd"><code>python --version
+<span class="out">Python 3.14.8</span></code><button class="copy" type="button" data-copy="python --version">Másolás</button></pre>
+          <div class="note warn"><b>Ha a Microsoft Store nyílik meg,</b> vagy azt írja, hogy a „python” nem található, nézd meg a <a href="#hibak">Ha elakadsz</a> rész első pontját.</div>
+        </div></li>
+      </ol>
+
+      <ol class="do only-mac">
+        <li><div>
+          <p>A <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> oldalon kattints a sárga <span class="ui">Download Python 3.14.x</span> gombra. Egy <code>.pkg</code> fájlt kapsz.</p>
+          <figure class="shot"><img src="img/python-letoltes-mac.jpg" alt="A python.org letöltőoldala macOS-en: kiemelve a Download Python 3.14.8 gomb." width="1400" height="750" loading="lazy"><figcaption>A verziószám utolsó tagja (itt 3.14.<b>8</b>) idővel nő, ez rendben van.</figcaption></figure>
+        </div></li>
+        <li><div>
+          <p>Nyisd meg a <code>.pkg</code> fájlt, és kattints végig: <span class="ui">Folytatás</span> → <span class="ui">Elfogadom</span> → <span class="ui">Telepítés</span>. A gép jelszavát kérni fogja.</p>
+        </div></li>
+        <li><div>
+          <p><strong>Ezt ne hagyd ki:</strong> a telepítés végén megnyílik egy Finder-ablak (<code>Alkalmazások/Python 3.14</code>). Kattints duplán az <span class="ui">Install Certificates.command</span> fájlra. Felugrik egy terminálablak, és ha a végén azt látod, hogy <code>update complete</code>, bezárhatod.</p>
+          <div class="note tip"><b>Miért kell?</b> E nélkül a Python nem tud biztonságosan letölteni adatot a netről (pl. az Eurostatról), és <code>CERTIFICATE_VERIFY_FAILED</code> hibát kapsz.</div>
+        </div></li>
+        <li><div>
+          <p>Indítsd újra a VS Code-ot, nyiss terminált (a fenti menüsorban <span class="ui">Terminal → New Terminal</span>, vagy <kbd>⌃</kbd> <kbd>`</kbd>), és ellenőrizd:</p>
+          <pre class="cmd"><code>python3 --version
+<span class="out">Python 3.14.8</span></code><button class="copy" type="button" data-copy="python3 --version">Másolás</button></pre>
+          <div class="note tip"><b>Macen <code>python3</code>, nem <code>python</code> a parancs alapból.</b> Ez így normális amúgy, de a kurzus projektjeiben később saját környezetet hozunk létre, ott már a <code>python</code> is működni fog.</div>
+        </div></li>
+      </ol>
+      <div class="done-row"><p>3.12-es vagy újabb verziót ír ki a parancs?</p><button type="button" class="done-btn" id="done-python" data-done="python" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== 4. GIT ===================== -->
+    <section id="git" class="step" data-step="git">
+      <div class="step-head">
+        <div class="step-num">4</div>
+        <h2>Git telepítése és beállítása</h2>
+        <div class="step-meta"><span>⏱ 10 perc</span></div>
+      </div>
+      <p class="why"><strong>A verziókövető.</strong> Ennek nincs saját ablaka vagy alkalmazása: a terminálból és a VS Code-ból használjuk csak.</p>
+
+      <ol class="do only-win">
+        <li><div>
+          <p>A <a href="https://git-scm.com/install/windows" target="_blank" rel="noopener">git-scm.com/install/windows</a> oldalon kattints a <span class="ui">Click here to download</span> linkre.</p>
+          <figure class="shot"><img src="img/git-letoltes-win.jpg" alt="A git-scm.com Windows-letöltőoldala, kiemelve a Click here to download link." width="1400" height="750" loading="lazy"><figcaption>A 64 bites (x64) változat a megfelelő szinte minden laptopra.</figcaption></figure>
+        </div></li>
+        <li><div>
+          <p>Futtasd a <code>Git-….exe</code> telepítőt. Sok kérdést tesz fel, majdnem mindenhol jó a <span class="ui">Next</span>. Két képernyőn változtass:</p>
+          <ul style="margin:0;padding-left:20px;color:var(--muted);display:grid;gap:6px">
+            <li><span class="ui">Choosing the default editor used by Git</span>: a legördülő listából válaszd a <span class="ui">Use Visual Studio Code as Git's default editor</span> lehetőséget.</li>
+            <li><span class="ui">Adjusting the name of the initial branch in new repositories</span>: válaszd az <span class="ui">Override the default branch name</span> lehetőséget, a mezőben maradjon <code>main</code>.</li>
+          </ul>
+          <p>A végén <span class="ui">Install</span>, majd <span class="ui">Finish</span>.</p>
+        </div></li>
+        <li><div>
+          <p>Indítsd újra a VS Code-ot, és add meg a Gitnek a neved és az e-mail-címed. Ezek kerülnek majd minden pillanatképre (commitra). Az idézőjelek közé a sajátodat írd, és használd ugyanazt az e-mail-címet, amivel a GitHubra regisztráltál (én a personalt ajánlom, nem a sulisat):</p>
+          <pre class="cmd"><code>git config --global user.name <span class="y">"Tuboly Roland"</span>
+git config --global user.email <span class="y">"tuboly.roland.levente@gmail.com"</span></code><button class="copy" type="button" data-copy='git config --global user.name "Tuboly Roland"&#10;git config --global user.email "tuboly.roland.levente@gmail.com"'>Másolás</button></pre>
+          <p>Ellenőrzés:</p>
+          <pre class="cmd"><code>git --version
+<span class="out">git version 2.56.0</span></code><button class="copy" type="button" data-copy="git --version">Másolás</button></pre>
+        </div></li>
+      </ol>
+
+      <ol class="do only-mac">
+        <li><div>
+          <p>A Macen a Git az Apple fejlesztői eszközeivel együtt jön. A VS Code termináljába írd be:</p>
+          <pre class="cmd"><code>git --version</code><button class="copy" type="button">Másolás</button></pre>
+          <p>Ha még nincs telepítve, felugrik egy ablak, ami a <span class="ui">command line developer tools</span> telepítését ajánlja. Kattints a <span class="ui">Telepítés</span> gombra (nem a „Beszerzés Xcode”-ra). Ez 5–15 perc. Ha viszont egy verziószámot ír ki, a Git már megvan.</p>
+        </div></li>
+        <li><div>
+          <p>Indítsd újra a VS Code-ot, és add meg a Gitnek a neved és az e-mail-címed. Ezek kerülnek majd minden pillanatképre (commitra). Az idézőjelek közé a sajátodat írd, és használd ugyanazt az e-mail-címet, amivel a GitHubra regisztráltál (én a personalt ajánlom, nem a sulisat):</p>
+          <pre class="cmd"><code>git config --global user.name <span class="y">"Tuboly Roland"</span>
+git config --global user.email <span class="y">"tuboly.roland.levente@gmail.com"</span></code><button class="copy" type="button" data-copy='git config --global user.name "Tuboly Roland"&#10;git config --global user.email "tuboly.roland.levente@gmail.com"'>Másolás</button></pre>
+          <p>Ellenőrzés:</p>
+          <pre class="cmd"><code>git --version
+<span class="out">git version 2.56.0</span></code><button class="copy" type="button" data-copy="git --version">Másolás</button></pre>
+        </div></li>
+      </ol>
+
+      <div class="done-row"><p>Kiírja a <code>git --version</code> a verziót?</p><button type="button" class="done-btn" id="done-git" data-done="git" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== 5. COPILOT ===================== -->
+    <section id="copilot" class="step" data-step="copilot">
+      <div class="step-head">
+        <div class="step-num">5</div>
+        <h2>GitHub Copilot bekapcsolása</h2>
+        <div class="step-meta"><span>⏱ 5 perc</span><span>a VS Code-ban, a GitHub-fiókkal</span></div>
+      </div>
+      <p class="why"><strong>Az AI-asszisztens.</strong> A Copilot már benne van a VS Code-ban, csak be kell jelentkezni a GitHub-fiókoddal.</p>
+      <ol class="do">
+        <li><div>
+          <p>A VS Code alsó, színes státuszsorának jobb szélén keresd meg a Copilot kis ikonját (pilóta-szemüveget viselő robotarc). Vidd fölé az egeret, és kattints a <span class="ui">Use AI Features</span> gombra. Ha nem találod, nyisd meg a csevegőablakot: <kbd class="only-win">Ctrl</kbd><kbd class="only-win">Alt</kbd><kbd class="only-win">I</kbd><kbd class="only-mac">⌃</kbd><kbd class="only-mac">⌘</kbd><kbd class="only-mac">I</kbd>.</p>
+        </div></li>
+        <li><div>
+          <p>Válaszd a <span class="ui">Sign in with GitHub</span> lehetőséget. Megnyílik a böngésző, ott lépj be, és engedélyezd a VS Code-nak a hozzáférést (<span class="ui">Authorize</span>). Ha a böngésző megkérdezi, hogy megnyithatja-e a VS Code-ot, engedd.</p>
+        </div></li>
+        <li><div>
+          <p>Próbáld ki! A csevegőablak alján lévő mezőbe írd be ezt:</p>
+          <pre class="cmd"><code>Szia! Egy mondatban: mi a különbség a Python és a VS Code között?</code><button class="copy" type="button">Másolás</button></pre>
+          <p>Ha magyarul válaszol, működik.</p>
+        </div></li>
+      </ol>
+      <div class="note tip"><b>Melyik csomagod van?</b> Amíg a hallgatói igazolásod nem aktív, a <strong>Copilot Free</strong> csomagot használod: havonta korlátozott számú kérés fér bele, ezért otthon most csak próbáld ki, ne használd el. A hallgatói igazolás után a <strong>Copilot Student</strong> csomag jár, ez ingyenes és bővebb. A modellt mindkét csomagban a Copilot választja ki automatikusan (Auto).</div>
+      <div class="done-row"><p>Válaszolt a Copilot?</p><button type="button" class="done-btn" id="done-copilot" data-done="copilot" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== 6. GÉPCSEKK ===================== -->
+    <section id="gepcsekk" class="step" data-step="gepcsekk">
+      <div class="step-head">
+        <div class="step-num">6</div>
+        <h2>Gépcsekk: az első Python-scripted</h2>
+        <div class="step-meta"><span>⏱ 5 perc</span></div>
+      </div>
+      <p class="why"><strong>Ne higgy nekem, ellenőrizd te magad hogy minden működik-e.</strong> Ez a rövid script megnézi, hogy minden a helyén van-e. A kurzuson is így dolgozunk majd: nem az számít, hogy valami működőnek tűnik, hanem hogy egy ellenőrző program szerint is jó-e.</p>
+      <ol class="do">
+        <li><div><p>Hozz létre egy új mappát, például a Dokumentumok között, <code>ai-kurzus</code> néven. A VS Code-ban a felső menüsorban <span class="ui">File → Open Folder…</span>, és válaszd ki ezt a mappát. Ha megkérdezi, megbízol-e a mappa szerzőiben: <span class="ui">Yes, I trust the authors</span>.</p></div></li>
+        <li><div><p>Bal oldalt, a mappa neve mellett kattints a <span class="ui">New File…</span> ikonra (lehajtott csücskű A4-es lap egy + jellel), és nevezd el így: <code>gepcsekk.py</code>. Másold bele ezt a kódot alább, és mentsd el (<kbd class="only-win">Ctrl</kbd><kbd class="only-mac">⌘</kbd> <kbd>S</kbd>):</p>
+<pre class="cmd" id="gepcsekk-kod"><code><span class="out">"""Gépcsekk az első órára: megnézi, hogy a Python, a Git és a netkapcsolat rendben van-e."""</span>
+import platform
+import shutil
+import ssl
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+
+eredmenyek = []
+
+
+def ellenoriz(nev, sikerult, tipp=""):
+    <span class="out">"""Kiír egy RENDBEN/HIBA sort, és megjegyzi az eredményt."""</span>
+    eredmenyek.append(sikerult)
+    if sikerult:
+        print(f"RENDBEN  {nev}")
+    else:
+        print(f"HIBA     {nev}\n         -&gt; {tipp}")
+
+
+ellenoriz(
+    f"Python {platform.python_version()}",
+    sys.version_info &gt;= (3, 12),
+    "Régi a Python. Telepítsd a legújabbat a python.org-ról.",
+)
+
+git = shutil.which("git")
+ellenoriz("Git telepítve", git is not None,
+          "Nem találom a gitet. Telepítsd, aztán indítsd újra a VS Code-ot.")
+
+if git:
+    for kulcs, magyarul in [("user.name", "név"), ("user.email", "e-mail")]:
+        ertek = subprocess.run([git, "config", "--global", kulcs],
+                               capture_output=True, text=True).stdout.strip()
+        ellenoriz(f"Git-{magyarul}: {ertek or '(nincs beállítva)'}", bool(ertek),
+                  f'Futtasd a terminálban: git config --global {kulcs} "..."')
+
+<span class="out"># A python.org-os macOS-Python tanúsítványok nélkül érkezik; ez itt derül ki.</span>
+try:
+    urllib.request.urlopen("https://www.python.org", timeout=10)
+    ellenoriz("HTTPS-kapcsolat", True)
+except urllib.error.URLError as hiba:
+    if isinstance(hiba.reason, ssl.SSLCertVerificationError):
+        tipp = ("Macen: Finder &gt; Alkalmazások &gt; Python 3.14 mappa, "
+                "dupla katt az Install Certificates.command fájlra.")
+    else:
+        tipp = f"Nincs internet, vagy tűzfal blokkolja. ({hiba.reason})"
+    ellenoriz("HTTPS-kapcsolat", False, tipp)
+
+print()
+if all(eredmenyek):
+    print("Minden RENDBEN. Készen állsz az első órára!")
+else:
+    print("Van HIBA. Kövesd a tippet, vagy hozd el így az órára, megoldjuk ott.")</code><button class="copy" type="button">Másolás</button></pre>
+        </div></li>
+        <li><div>
+          <p>Futtasd: kattints a szerkesztő jobb felső sarkában lévő <span class="ui">▷</span> (Run Python File) gombra. Alul, a terminálban ezt kell látnod:</p>
+          <pre class="cmd"><code><span class="g">RENDBEN</span>  Python 3.14.8
+<span class="g">RENDBEN</span>  Git telepítve
+<span class="g">RENDBEN</span>  Git-név: Tuboly Roland
+<span class="g">RENDBEN</span>  Git-e-mail: tuboly.roland.levente@gmail.com
+<span class="g">RENDBEN</span>  HTTPS-kapcsolat
+
+Minden RENDBEN. Készen állsz az első órára!</code></pre>
+          <p>Ha valahol <code>HIBA</code> áll, a sor alatt ott a tipp, mit csinálj. Ha nem megy, semmi gond: hozd el a laptopod így, és az óra elején megoldjuk.</p>
+        </div></li>
+      </ol>
+      <div class="note tip"><b>Kíváncsi vagy, mit csinál a kód?</b> Jelöld ki az egészet, és kérdezd meg a Copilotot: „Magyarázd el soronként, egyszerűen, mit csinál ez a kód.” Pontosan ezt fogjuk gyakorolni a kurzus elején.</div>
+      <div class="done-row"><p>Mindenhol RENDBEN?</p><button type="button" class="done-btn" id="done-gepcsekk" data-done="gepcsekk" aria-pressed="false">Kész</button></div>
+    </section>
+
+    <!-- ===================== CLAUDE CODE ===================== -->
+    <section id="claude-code">
+      <div class="section-head">
+        <p class="eyebrow">Opcionális, csak ha már van előfizetésed</p>
+        <h2>Claude Code</h2>
+        <p>Az Anthropic AI-asszisztense, amely a Copilothoz hasonlóan a VS Code-ban is tud dolgozni. A kurzus elvégzéséhez <strong style="color:var(--ink)">nincs rá szükség</strong>, és nem kell miatta előfizetni. Ha viszont már van fizetős Claude-előfizetésed (Pro vagy Max), használhatod a Copilot mellett.</p>
+      </div>
+      <div class="step" style="gap:16px">
+        <div class="note warn"><b>Az ingyenes Claude-fiókkal nem működik.</b> A Claude Code-hoz Pro (havi 20 dollár) vagy nagyobb előfizetés, esetleg fizetős API-hozzáférés kell.</div>
+        <ol class="do">
+          <li><div><p>A VS Code-ban nyisd meg az <span class="ui">Extensions</span> nézetet (<kbd class="only-win">Ctrl</kbd><kbd class="only-mac">⌘</kbd> <kbd>⇧</kbd> <kbd>X</kbd>), keresd meg a <code>Claude Code</code> bővítményt (kiadó: <strong>Anthropic</strong>), és telepítsd.</p></div></li>
+          <li><div><p>A szerkesztő jobb felső sarkában megjelenik egy kis csillag-szikra ikon. Kattints rá, majd a böngészőben lépj be a Claude-fiókoddal.</p></div></li>
+          <li><div>
+            <p>Ha a terminálban is használni szeretnéd (ez meg aztán egyáltalán nem kötelező), telepítsd a parancssori változatot is:</p>
+            <pre class="cmd only-win"><code>irm https://claude.ai/install.ps1 | iex</code><button class="copy" type="button">Másolás</button></pre>
+            <pre class="cmd only-mac"><code>curl -fsSL https://claude.ai/install.sh | bash</code><button class="copy" type="button">Másolás</button></pre>
+            <p class="only-win" style="font-size:0.93rem;color:var(--muted)">Ez a PowerShell-parancs, a VS Code terminálja alapból PowerShell.</p>
+          </div></li>
+        </ol>
+        <div class="note tip"><b>Szabályfájl:</b> a Copilot a projekt <code>AGENTS.md</code> fájlját olvassa, a Claude Code a <code>CLAUDE.md</code>-t. A kurzus sablonjaiban mindkettő benne van, és ugyanazt mondják, így mindegy, melyik asszisztenst használod.</div>
+      </div>
+    </section>
+
+    <!-- ===================== HIBÁK ===================== -->
+    <section id="hibak">
+      <div class="section-head">
+        <p class="eyebrow">Ha elakadsz</p>
+        <h2>Gyakori hibák</h2>
+        <p>A legtöbb probléma a lenti hibák egyike. Ha egyik sem az, készíts képernyőképet a hibaüzenetről, és küldd el nekem, vagy mutasd meg az első óra előtt/elején.</p>
+      </div>
+      <div class="faq">
+        <details class="only-win"><summary>Windowson a „python” parancs a Microsoft Store-t nyitja meg, vagy nem található <small>Windows</small></summary><div>
+          <p>A Windowsnak van egy beépített „python” parancsa, ami a Store-ba irányít, és ez elfedheti az igazit.</p>
+          <p><strong>Megoldás:</strong> Start menü → írd be: <em>alkalmazás-végrehajtási aliasok</em> (angolul: <em>Manage app execution aliases</em>). A listában keresd meg a Python-sorokat: a <strong>Python install manager</strong> és a <strong>Python (default)</strong> legyen bekapcsolva, a sima „App Installer · python.exe” ki. Utána zárd be és nyisd meg újra a VS Code-ot.</p>
+        </div></details>
+        <details><summary>„… is not recognized” / „command not found”, pedig telepítettem <small>mindkettő</small></summary><div>
+          <p>A terminál csak indításkor nézi meg, milyen programok vannak a gépen. Ha telepítés előtt nyitottad meg, nem tud az újról.</p>
+          <p><strong>Megoldás:</strong> zárd be teljesen a VS Code-ot, és nyisd meg újra. Ha még mindig nem megy, indítsd újra a gépet.</p>
+        </div></details>
+        <details class="only-mac"><summary>CERTIFICATE_VERIFY_FAILED hiba <small>macOS</small></summary><div>
+          <p>A python.org-os Python Macen tanúsítványok nélkül érkezik, ezért nem tud biztonságos (https) kapcsolatot nyitni.</p>
+          <p><strong>Megoldás:</strong> Finder → Alkalmazások → <code>Python 3.14</code> mappa → dupla kattintás az <code>Install Certificates.command</code> fájlra.</p>
+        </div></details>
+        <details class="only-mac"><summary>„python: command not found” Macen <small>macOS</small></summary><div>
+          <p>Macen a parancs neve <code>python3</code>. A <code>python</code> a kurzus saját projektkörnyezeteiben fog működni, ezt a 0. órán állítjuk be.</p>
+        </div></details>
+        <details class="only-win"><summary>„running scripts is disabled on this system” <small>Windows</small></summary><div>
+          <p>A PowerShell alapból tiltja a scriptek futtatását. A Claude Code telepítőjénél vagy a 0. órán a saját környezet bekapcsolásánál jöhet elő.</p>
+          <p><strong>Megoldás:</strong> futtasd ezt egyszer a terminálban, majd nyiss új terminált:</p>
+          <pre class="cmd"><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><button class="copy" type="button">Másolás</button></pre>
+        </div></details>
+        <details><summary>Nem látom a Copilot ikonját, vagy a bejelentkezés nem fejeződik be <small>mindkettő</small></summary><div>
+          <p>Frissítsd a VS Code-ot (bal alul fogaskerék → <em>Check for Updates…</em>), és indítsd újra. Ha a böngészőben sikeres volt a belépés, de a VS Code nem tud róla, a felugró ablakban válaszd a <em>Megnyitás a Visual Studio Code-ban</em> lehetőséget.</p>
+        </div></details>
+        <details><summary>Elutasították a hallgatói kérelmemet <small>GitHub</small></summary><div>
+          <p>Nem gond, újra lehet próbálni. A leggyakoribb okok: elmosódott vagy levágott fotó, VPN, kikapcsolt helymeghatározás, vagy eltérő név a GitHub-profilban és az igazoláson. Javítsd ki, és küldd be újra. A kurzus a Copilot Free csomaggal is elindul.</p>
+        </div></details>
+        <details><summary>Régi vagy gyenge a laptopom. Gond lesz? <small>mindkettő</small></summary><div>
+          <p>Valószínűleg nem. Az AI-modellek nem a te gépeden futnak, hanem a szolgáltató szerverein. A kurzushoz Windows 10/11 vagy macOS 12+ kell, és nagyjából 3 GB szabad hely.</p>
+        </div></details>
+      </div>
+    </section>
+
+    <!-- ===================== SZÓTÁR ===================== -->
+    <section id="szotar">
+      <div class="section-head">
+        <p class="eyebrow">Szótár</p>
+        <h2>Szavak, amiket hallani fogsz</h2>
+      </div>
+      <dl class="glossary">
+        <div><dt>terminál</dt><dd>Szöveges ablak, ahová parancsokat gépelsz ahelyett, hogy ezeket az egereddel adnád a gépednek. A VS Code alján is van egy.</dd></div>
+        <div><dt>parancs</dt><dd>Egy sor a terminálban, pl. <code>python --version</code>. Enterrel futtatod.</dd></div>
+        <div><dt>mappa / könyvtár / directory</dt><dd>Ugyanaz. A programozók inkább könyvtárnak (directory) mondják.</dd></div>
+        <div><dt>PATH</dt><dd>Azoknak a helyeknek a listája, ahol a terminál a programokat keresi. A „not found” hiba általában azt jelenti, hogy valami nincs rajta.</dd></div>
+        <div><dt>bővítmény (extension)</dt><dd>Kiegészítő a VS Code-hoz, pl. a Python-bővítmény.</dd></div>
+        <div><dt>script</dt><dd>Egy <code>.py</code> fájl, amit a Python elejétől a végéig lefuttat (lehet más kiterjesztés is, a <code>.py</code> egy Python-script).</dd></div>
+        <div><dt>repó (repository)</dt><dd>Egy Git által követett projektmappa, a teljes előzményeivel együtt.</dd></div>
+        <div><dt>commit</dt><dd>Egy pillanatkép a repóról, rövid leírással („Vonaldiagram hozzáadása az elemzéshez”).</dd></div>
+        <div><dt>push</dt><dd>A commitok feltöltése a gépedről a GitHubra.</dd></div>
+        <div><dt>AGENTS.md</dt><dd>A projekt szabályfájlja. Az AI-asszisztens minden munkamenet elején elolvassa.</dd></div>
+        <div><dt>virtuális környezet (venv)</dt><dd>A projekt saját, elkülönített Python-csomagjai. A 0. órán hozunk létre egyet.</dd></div>
+        <div><dt>API</dt><dd>Egyfajta kapcsolat, "ajtó", amelyen keresztül egy program egy másik szolgáltatást használ, pl. egy nyelvi modellt vagy az Eurostat adatait.</dd></div>
+      </dl>
+    </section>
+
+    <!-- ===================== HOZD MAGADDAL ===================== -->
+    <section id="hozd">
+      <div class="section-head">
+        <p class="eyebrow">Az első alkalomra</p>
+        <h2>Hozd magaddal</h2>
+      </div>
+      <div class="bring">
+        <div><b>Feltöltött laptopod</b><span>, hiszen 90 percig végig a gépen dolgozunk.</span></div>
+        <div><b>Telefonod</b><span>is kellhet a GitHub kétlépcsős azonosításához.</span></div>
+        <div><b>A gépcsekk eredménye</b><span>Ha valahol HIBA maradt, az óra elején megoldjuk.</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span>Eötvös József Collegium · Gazdaságtudományi műhely · AI-kurzus, 2027 tavasz</span>
+  <span>Utolsó ellenőrzés: 2026. október 8. (Python 3.14.8, Git 2.56.0)</span>
+</footer>
+
+<script>
+(function () {
+  var STEPS = ["github", "vscode", "python", "git", "copilot", "gepcsekk"];
+  var root = document.documentElement;
+
+  function load(key, fallback) {
+    try { var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; }
+  }
+  function save(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  // Rendszer: mentett választás, különben a böngésző alapján tippelünk.
+  var guess = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "mac" : "win";
+  function setOs(os) {
+    root.setAttribute("data-os", os);
+    document.querySelectorAll(".os-switch button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.os === os));
+    });
+    save("ejc0-os", os);
+  }
+  setOs(load("ejc0-os", guess));
+  document.querySelectorAll(".os-switch button").forEach(function (b) {
+    b.addEventListener("click", function () { setOs(b.dataset.os); });
+  });
+
+  // Lépések pipálása
+  var done = load("ejc0-done", {});
+  function render() {
+    var n = 0;
+    STEPS.forEach(function (s) {
+      var on = !!done[s];
+      if (on) n++;
+      var sec = document.querySelector('section[data-step="' + s + '"]');
+      if (sec) sec.classList.toggle("is-done", on);
+      var li = document.querySelector('#rail-list li[data-step="' + s + '"]');
+      if (li) {
+        li.classList.toggle("done", on);
+        li.querySelector(".dot").textContent = on ? "✓" : String(STEPS.indexOf(s) + 1);
+      }
+      var btn = document.querySelector('[data-done="' + s + '"]');
+      if (btn) { btn.setAttribute("aria-pressed", String(on)); btn.textContent = on ? "Kész ✓" : "Kész"; }
+    });
+    document.getElementById("progress-text").textContent = n === STEPS.length ? "Minden kész. Találkozunk a 0. órán!" : n + " / " + STEPS.length + " lépés kész";
+    document.getElementById("progress-bar").style.width = (100 * n / STEPS.length) + "%";
+  }
+  document.querySelectorAll("[data-done]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      done[b.dataset.done] = !done[b.dataset.done];
+      save("ejc0-done", done);
+      render();
+    });
+  });
+  render();
+
+  // Másolás gombok
+  document.querySelectorAll(".copy").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var pre = b.closest("pre");
+      var text = b.dataset.copy || pre.querySelector("code").innerText;
+      var ok = function () { b.textContent = "Másolva"; setTimeout(function () { b.textContent = "Másolás"; }, 1600); };
+      var fallback = function () {
+        var r = document.createRange(); r.selectNodeContents(pre.querySelector("code"));
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        b.textContent = "Kijelölve, Ctrl+C";
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else { fallback(); }
+    });
+  });
+
+  // A magyarázó videó csak akkor jelenik meg, ha a fájl tényleg ott van.
+  var v = document.getElementById("explainer");
+  fetch("video/mi-mire-valo.mp4", { method: "HEAD" }).then(function (r) {
+    if (r.ok) document.getElementById("video-wrap").hidden = false;
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

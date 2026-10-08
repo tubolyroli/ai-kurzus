@@ -1,0 +1,46 @@
+---
+title: "Záró projekt"
+---
+
+A félév végén párban építetek egy asszisztenst egy magyar gazdasági dokumentumgyűjteményre. A projekt alakja mindenkinél ugyanaz:
+
+::: {.megjegyzes}
+**Egy dokumentum állít valamit, az ágens a nyers adatból megnézi, mi lett belőle.**
+:::
+
+Ehhez a kurzus mindkét fő témája kell, egyik sem elég egyedül:
+
+::: {.kartyak}
+::: {.kartya}
+[RAG]{.cim}
+
+[megtalálja az állítást]{.mi}
+
+Kikeresi az állítást a dokumentumokból, és megadja a forrását: melyik dokumentum, hányadik oldal.
+:::
+
+::: {.kartya}
+[Ágens]{.cim}
+
+[utánanéz az adatnak]{.mi}
+
+Lekéri a tényadatot egy nyilvános adatforrásból (pl. KSH, Eurostat), számol, és összeveti a kettőt.
+:::
+:::
+
+## Egy minta: „Mit ígért az MNB, és mi lett?”
+
+- **Gyűjtemény:** az MNB Inflációs jelentései 2023 és 2025 között, negyedévente, kb. 10 PDF.
+- **Kérdés:** „A 2024. márciusi jelentés mekkora éves inflációt várt 2024-re, és mennyi lett?”
+- **A RAG** megtalálja az előrejelzést a jelentésben. **Az ágens** lekéri a tényadatot, kiszámolja az eltérést, és forrásmegjelöléssel válaszol.
+- **Az ellenőrző script** a nyers adatból maga is kiszámolja a tényértéket és az eltérést. Ha a válaszban más szám áll, az eredmény `HIBA`.
+
+A minta szándékosan tartalmaz egy csapdát, amelybe egy elsőre meggyőzőnek tűnő válasz könnyen beleesik. Az ellenőrző script kiszúrja.
+
+## Hogyan zajlik
+
+- **Párban** dolgoztok, egy közös GitHub-repóban.
+- **Előre elkészített projektcsomagokból** választotok (dokumentumgyűjtemény, adatforrás, ellenőrző script). A csomagok listája a félév elején kerül ide.
+- **Mérföldkövek** segítenek, hogy a projekt ne az utolsó héten készüljön el.
+- **Frissítési próba:** a bemutató előtt két nappal minden csomaghoz érkezik egy frissítés (új jelentés vagy új havi adat). A rendszereteknek ezzel utómunka nélkül kell lefutnia. Ha mégis kódot kellett módosítani, a dokumentációban leírjátok, mit és miért.
+- **Bemutató:** páronként kb. 8 perc, utána kérdések.

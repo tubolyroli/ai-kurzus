@@ -1,0 +1,32 @@
+/*-- scss:defaults --*/
+// Ugyanazok a tokenek, mint a telepítési oldalon (telepites/index.html): EJC-navy és -arany.
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap");
+
+$ejc-navy: #252A51;
+$ejc-gold: #9C7A22;
+$ejc-gold-soft: #F3EBD4;
+$ejc-muted: #5A5E7A;
+$ejc-line: #D9DBE6;
+$ejc-surface: #FFFFFF;
+$ejc-sunk: #ECEDF3;
+
+$body-bg: #F6F6F9;
+$body-color: #1B1E38;
+$primary: $ejc-navy;
+$link-color: #2E3A8C;
+$border-color: $ejc-line;
+
+$font-family-sans-serif: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+$font-family-monospace: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+$font-size-root: 17px;
+$line-height-base: 1.6;
+$headings-font-weight: 600;
+
+$navbar-bg: #252A51;
+$navbar-fg: #DADCF0;
+$navbar-hl: #D9B85A;
+$footer-bg: $body-bg;
+$footer-fg: $ejc-muted;
+
+$code-color: #1B1E38;
+$code-bg: #ECEDF3;
