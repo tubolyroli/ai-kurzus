@@ -1,0 +1,330 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "Első óra · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[Első óra: eszközök, és annyi Python, hogy el tudd olvasni]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Bemutatkozás röviden. A címdia alatt megkérdezni: kinél futott le otthon a gépcsekk? Kézfeltartás. Ebből látszik, mennyi idő megy el a 2. blokkra.
+:::
+
+## Ebben a félévben két eszközt építünk
+
+::: {.kartyak}
+::: {.kartya}
+**Asszisztens, amely forrással válaszol**
+
+Egy dokumentumgyűjteményből (pl. MNB-jelentések) megkeresi a választ, és megmondja, honnan vette. *RAG*
+:::
+::: {.kartya}
+**Ágens, amely utánanéz**
+
+Lekéri a nyers adatot (KSH, Eurostat), számol, és összeveti azzal, amit a dokumentum állított.
+:::
+:::
+
+<br>
+
+**A záró projekt egy mondatban:** egy dokumentum állít valamit, az ágens a nyers adatból megnézi, mi lett belőle.
+
+::: notes
+A teaser példája: „Mit ígért az MNB, és mi lett?” Itt még nem kell részletezni, csak legyen meg a cél.
+:::
+
+## Hogyan dolgozunk
+
+::: {.folyamat}
+[Te kérsz]{.lep} [→]{.nyil} [a Copilot kódot ír]{.lep} [→]{.nyil} [**te elolvasod**]{.lep .kiemelt} [→]{.nyil} [**egy script ellenőrzi**]{.lep .kiemelt} [→]{.nyil} [a Git elmenti]{.lep}
+:::
+
+<br>
+
+### A kódot nem neked kell megírnod. Neked azt kell tudnod, hogy jó‑e.
+
+[Ezért tanulunk ma annyi Pythont, amennyi az olvasáshoz kell, és nem többet.]{.halvany}
+
+::: notes
+Ez a kurzus legfontosabb mondata. Hangsúlyozni: az ellenőrzést nem a modell végzi saját magáról, hanem egy script, amely a nyers adatból számol.
+:::
+
+## A vezérfonal: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van. Egy AI-eszköz minősége azon múlik, mi kerül oda.
+
+::: {.kartyak}
+::: {.kartya .ma}
+**Utasítások** · *ma*
+
+rendszerprompt, `AGENTS.md`, skillek
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a kérdéshez illő dokumentumrészletek (RAG)
+:::
+::: {.kartya}
+**Eszközök**
+
+adatlekérés, számolás, eszközhívások eredménye
+:::
+::: {.kartya}
+**Memória**
+
+az előzmények és az ágens eddigi lépései
+:::
+:::
+
+::: notes
+Minden alkalom elején visszajövünk erre a diára: ma melyik elemről van szó. Ma az utasítások (AGENTS.md), és a végén egy kis ízelítő abból, mi történik, ha a modell nem tud valamit az adatról.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–10 | Nyitás: mit csinálunk, hogyan dolgozunk |
+| 10–20 | Gépcsekk közösen |
+| 20–30 | Terminál: öt parancs |
+| 30–40 | Notebookok letöltése, saját környezet, `AGENTS.md` |
+| 40–70 | **Ti dolgoztok:** notebook, 0–5. rész |
+| 70–82 | Élő demó: amikor a Copilot találgat |
+| 82–90 | Zárás, otthoni feladat |
+:::
+
+::: notes
+Ha a gépcsekk sokáig tart, a terminál-blokkból lehet lefaragni (a notebook-környezetet úgyis a VS Code menüjéből hozzuk létre).
+:::
+
+## Gépcsekk
+
+A VS Code-ban: **Terminal → New Terminal**, a `gepcsekk.py` mappájában:
+
+``` bash
+python3 gepcsekk.py      # Windowson: python gepcsekk.py
+```
+
+``` text
+RENDBEN  Python 3.14.8
+RENDBEN  Git telepítve
+RENDBEN  Git-név: Kiss Anna
+RENDBEN  Git-e-mail: kiss.anna@example.com
+RENDBEN  HTTPS-kapcsolat
+```
+
+**Valahol HIBA?** A sor alatt ott a tipp. Ha nem megy, tedd fel a kezed, vagy kérdezd meg a szomszédod.
+
+::: notes
+A leggyakoribb hibák: Windowson a Microsoft Store-os „python” alias; Macen a tanúsítvány (Install Certificates.command); a telepítés óta újra nem indított VS Code. A telepítési oldal „Ha elakadsz” része mindhármat leírja.
+:::
+
+## A terminál: öt parancs
+
+| Parancs | Mit csinál |
+|---|---|
+| `pwd` | hol vagyok most? |
+| `ls` | mi van ebben a mappában? |
+| `cd ai-kurzus` | lépj be az `ai-kurzus` mappába |
+| `cd ..` | lépj vissza egy szintet |
+| `python3 gepcsekk.py` | futtasd le a scriptet (Windowson: `python`) |
+
+[<kbd>Tab</kbd> kiegészíti a fájlnevet, a <kbd>↑</kbd> előhozza az előző parancsot.]{.halvany}
+
+::: notes
+Élőben megmutatni: pwd → ls → cd ai-kurzus → ls → python3 gepcsekk.py → cd .. A PowerShellben is működik a pwd, az ls és a cd, ezért nem kell külön Windows-parancsokat tanítani.
+:::
+
+## Notebookok és saját környezet
+
+1. A kurzusoldalon: **Notebookok → notebookok.zip**, kicsomagolni az `ai-kurzus` mappába
+2. VS Code: **File → Open Folder…** → `notebookok`
+3. <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd> → `Python: Create Environment` → **Venv** → **Python 3.14** → pipáld be a `requirements.txt`-t
+
+<br>
+
+**Mi az a környezet?** Minden projektnek saját szerszámosládája: a csomagok (`pandas`, `matplotlib`) a projekt `.venv` mappájába kerülnek, nem a gép egészére. Így két projekt nem rontja el egymást.
+
+::: notes
+A környezet létrehozása a lassabb gépeken 2-3 perc. Közben lehet mutatni az AGENTS.md-t (következő dia). Akinél nem megy, terminálos B-terv a Notebookok oldalon.
+:::
+
+## `AGENTS.md`: a projekt szabályai
+
+::: {.columns}
+::: {.column width="55%"}
+``` markdown
+## Munkamód
+
+- Szerkesztés előtt mondd el a tervet 3 lépésben.
+- Csak azt változtasd, amit a feladat kér.
+- Ha nem vagy biztos valamiben, kérdezz, ne találgass.
+
+## Python
+
+- A mappa saját környezetéből (.venv) dolgozz.
+  Új csomag telepítése előtt kérdezz.
+```
+:::
+::: {.column width="45%"}
+A Copilot **minden munkamenet elején elolvassa**.
+
+Amit egyszer ide leírsz, azt nem kell minden beszélgetésben újra elmondanod.
+
+Rövid marad: csak a megszeghetetlen szabályok kerülnek bele.
+:::
+:::
+
+::: notes
+Megnyitni a notebookok mappában az AGENTS.md-t. Megkérdezni: szerintetek mi hiányzik belőle? (A végén, a demó után mi magunk írunk bele egy sort.)
+:::
+
+## Most ti: notebook, 0–5. rész
+
+Nyisd meg: `01-python-olvasas.ipynb` · jobb felül **Select Kernel → .venv**
+
+| Billentyű | Mit csinál |
+|---|---|
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | cella futtatása |
+| <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>I</kbd> | Copilot a cellában |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd> · <kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>I</kbd> | Copilot chat |
+
+Az ellenőrző cellák: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+### Mielőtt elfogadod, amit a Copilot írt: olvasd el.
+
+::: notes
+30 perc. Körbejárni. Aki gyorsan végez, mehet tovább a 6. részre. 5 perccel a vége előtt szólni. Tipikus elakadás: nem futtatták le a 0. cellát (NameError: ellenoriz), vagy nem sorban futtattak.
+:::
+
+## Amikor a Copilot találgat
+
+Egy adatelemzős workshopon az asszisztens csak az oszlopneveket ismerte.
+
+::: {.kartyak .harom}
+::: {.kartya}
+**A kérdés**
+
+„Hány felhasználó fizet Apple Pay-jel?”
+:::
+::: {.kartya}
+**A Copilot szűrője**
+
+`"apple pay"`
+:::
+::: {.kartya .rossz}
+**Az adatban**
+
+`"apple_pay"`
+:::
+:::
+
+::: {.szamok}
+::: {}
+[0]{.szam .rossz}
+
+[a lekérdezés eredménye]{.szam-cimke}
+:::
+::: {}
+[7116]{.szam .jo}
+
+[a valóság]{.szam-cimke}
+:::
+:::
+
+A kód hibátlanul lefutott, csak a valóságot nem ismerte.
+
+::: notes
+Elmesélni a történetet, aztán: „Nézzük meg, nálunk is megtörténik-e.” Átváltani VS Code-ra, notebook 7. rész, élőben.
+:::
+
+## Nálunk is: az élelmiszer-infláció 2024-ben
+
+::: {.szamok}
+::: {}
+[2,65%]{.szam .rossz}
+
+[a Copilot első válasza, kontextus nélkül]{.szam-cimke}
+:::
+::: {}
+[0,825%]{.szam .jo}
+
+[helyesen, az adatszótár szerint]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Az adatban az élelmiszer két néven szerepel: `Élelmiszer` és `Elelmiszer`. A szűrő csak az elsőt találta meg, így kimaradt 2024 első fele, amikor az élelmiszerárak csökkentek. A március ráadásul kétszer van benne.
+
+::: notes
+Élőben: 7.1 kontextus nélkül (ha a Copilot elsőre jól oldja meg, megkérdezni: hogyan? megnézte az adatot?), utána a sorted(nyers["kategoria"].unique()) cella. A számok az adatból jönnek, de a Copilot válasza órán eltérhet; a lényeg az ellenőrző cella ítélete.
+:::
+
+## A javítás: kontextus
+
+::: {.columns}
+::: {.column width="50%"}
+**Egyszer:** a chathez hozzáadod az adatszótárat
+
+`#adatszotar.md` → [RENDBEN]{.cimke .ok}
+
+**Tartósan:** egy sor az `AGENTS.md`-be
+
+``` markdown
+- Elemzés előtt olvasd el a data/adatszotar.md-t.
+```
+:::
+::: {.column width="50%"}
+**A Copilot nem rossz programozó, csak nem tudja, amit te tudsz az adatról.**
+
+[És a hozzáférés még nem megértés: ha látja az adatot, de nem tudja, mit jelent (a KSH-CPI nem ugyanaz, mint az Eurostat-HICP), hibátlan kód is rossz választ adhat.]{.halvany}
+:::
+:::
+
+::: notes
+Visszautalni a kontextustervezés diára: ez volt az „utasítások” elem a gyakorlatban. Közösen beírni a sort az AGENTS.md-be.
+:::
+
+## Otthonra
+
+- A notebook **6. és 7. része**, ha órán nem jutottál el odáig: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- Görgess vissza a 0. cellához: most már el tudod olvasni az `ellenoriz` függvényt?
+- Ha elakadtál: képernyőkép a hibáról, és küldd el nekem
+
+<br>
+
+**Jövő alkalommal:** Git és GitHub, aztán az első nyelvimodell-hívás Pythonból.
+
+::: notes
+Kilépőkérdés (kézfeltartással vagy cetlin): mi volt ma a legfurcsább, amit a Copilot csinált?
+:::

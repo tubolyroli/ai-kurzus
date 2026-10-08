@@ -1,0 +1,11 @@
+---
+title: "Alkalmak"
+---
+
+Alkalmanként itt találod a diákat és a hozzájuk tartozó notebookot. A pontos dátumok a félév előtt kerülnek ide.
+
+| Alkalom | Diák | Notebook |
+|---|---|---|
+| **Első óra:** eszközök, és annyi Python, hogy el tudd olvasni | [diák](01-elso-ora/diak.qmd) | [01-python-olvasas](../notebookok/01-python-olvasas.ipynb) |
+
+A diák böngészőben vetíthetők: az <kbd>F</kbd> billentyű teljes képernyőre vált, az <kbd>S</kbd> az előadói nézetet nyitja meg a jegyzetekkel.
