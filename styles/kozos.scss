@@ -18,7 +18,17 @@ code, pre { font-variant-ligatures: none; }
 
 /* ---- Kezdőlap: hős ---- */
 .hero {
-  padding-block: 2.5rem 1rem;
+  padding-block: 2.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: start;
+  .hero-szoveg { min-width: 0; }
+  @media (max-width: 760px) {
+    grid-template-columns: minmax(0, 1fr);
+    .cimer { display: none; }
+  }
   h1 {
     font-family: $headings-font-family;
     font-size: clamp(2.8rem, 6.4vw, 4.6rem);
@@ -45,6 +55,16 @@ code, pre { font-variant-ligatures: none; }
   text-decoration: none;
   &:hover { filter: brightness(1.15); }
 }
+
+/* A címer navy pereme sötét háttéren beleolvadna, ezért vékony arany gyűrűt kap. */
+.cimer {
+  width: clamp(130px, 16vw, 200px);
+  height: auto;
+  margin-top: 1.6rem;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba($ejc-gold, 0.55), 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+.navbar-brand .navbar-logo { max-height: 38px; border-radius: 50%; box-shadow: 0 0 0 1.5px rgba(#D9B85A, 0.6); }
 
 /* ---- Kártyarács (kontextustervezés, projekt pillérei) ---- */
 .kartyak {

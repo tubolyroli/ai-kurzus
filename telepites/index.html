@@ -103,6 +103,10 @@ kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-w
 .hero h1 span { font-style: italic; }
 .hero h1 span { color: var(--gold); }
 .hero .lead { font-size: 1.15rem; color: var(--muted); max-width: 34em; margin-top: 14px; }
+.hero-side { display: grid; gap: 24px; justify-items: end; align-self: stretch; align-content: space-between; }
+.hero-side .facts { width: 100%; }
+/* A címer navy pereme sötét háttéren beleolvadna, ezért vékony arany gyűrűt kap. */
+.cimer { width: clamp(132px, 15vw, 188px); height: auto; border-radius: 50%; box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 55%, transparent), 0 12px 32px rgb(0 0 0 / 0.22); }
 .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
 .facts div { padding: 14px 16px; border-left: 1px solid var(--line); }
 .facts div:first-child { border-left: 0; }
@@ -252,6 +256,7 @@ details > div strong { color: var(--ink); }
 footer { max-width: 1120px; margin: 72px auto 0; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 @media (max-width: 920px) {
+  .cimer { display: none; }
   .layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .rail { position: static; }
   .rail ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -289,10 +294,13 @@ footer { max-width: 1120px; margin: 72px auto 0; padding-top: 20px; border-top: 
     <h1>5 program telepítése, <span>amik nélkül nem tudnál dolgozni a félév alatt.</span></h1>
     <p class="lead">Ezen az oldalon segítek telepíteni azokat a programokat, amelyekkel a félév során dolgozunk. Minden lépésnél leírtam, mire kattints, és hogyan ellenőrizd, hogy sikerült.</p>
   </div>
-  <div class="facts" aria-label="Röviden">
-    <div><b>60–90 perc</b><span>a letöltések sebességétől függ</span></div>
-    <div><b>0 Ft</b><span>minden program ingyenes</span></div>
-    <div><b>~3 GB</b><span>szabad hely kell a gépen</span></div>
+  <div class="hero-side">
+    <img class="cimer" src="../kepek/cimer.png" alt="Az Eötvös József Collegium címere" width="440" height="440">
+    <div class="facts" aria-label="Röviden">
+      <div><b>60–90 perc</b><span>a letöltések sebességétől függ</span></div>
+      <div><b>0 Ft</b><span>minden program ingyenes</span></div>
+      <div><b>~3 GB</b><span>szabad hely kell a gépen</span></div>
+    </div>
   </div>
 </header>
 

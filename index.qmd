@@ -3,12 +3,15 @@ pagetitle: "Saját AI-eszközök"
 ---
 
 ```{=html}
-<header class="hero">
-  <span class="eyebrow">Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz</span>
-  <h1>Saját AI-eszközök</h1>
-  <p class="alcim">RAG és AI-ágensek gazdászoknak</p>
-  <p class="lead">Projektkurzus arról, hogyan építs saját AI-asszisztenst: olyat, amely egy dokumentumgyűjteményből forrásmegjelöléssel válaszol, és olyat, amely a nyers adatból maga nézi meg, mi igaz. Programozási előismeret nem kell.</p>
-  <a class="cta" href="telepites/">Első lépés: a programok telepítése →</a>
+<header class="hero column-page-right">
+  <div class="hero-szoveg">
+    <span class="eyebrow">Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz</span>
+    <h1>Saját AI-eszközök</h1>
+    <p class="alcim">RAG és AI-ágensek gazdászoknak</p>
+    <p class="lead">Projektkurzus arról, hogyan építs saját AI-asszisztenst: olyat, amely egy dokumentumgyűjteményből forrásmegjelöléssel válaszol, és olyat, amely a nyers adatból maga nézi meg, mi igaz. Programozási előismeret nem kell.</p>
+    <a class="cta" href="telepites/">Első lépés: a programok telepítése →</a>
+  </div>
+  <img class="cimer" src="kepek/cimer.png" alt="Az Eötvös József Collegium címere" width="440" height="440">
 </header>
 ```
 

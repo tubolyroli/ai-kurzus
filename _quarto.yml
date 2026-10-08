@@ -4,6 +4,7 @@ project:
   # A telepítési útmutató kész, önálló HTML-oldal: nem rendereljük, csak bemásoljuk.
   resources:
     - "telepites/**"
+    - "kepek/**"
 
 lang: hu
 
@@ -12,6 +13,10 @@ website:
   description: "RAG és AI-ágensek gazdászoknak. Projektkurzus az Eötvös József Collegium Gazdaságtudományi műhelyében, 2027 tavasz."
   site-url: "https://tubolyroli.github.io/ai-kurzus/"
   navbar:
+    # Quarto 1.10-ben a navbar `logo-alt` kulcsa eltünteti a logót; az alt-szöveg így adható meg.
+    logo:
+      path: kepek/cimer.png
+      alt: "Az Eötvös József Collegium címere"
     left:
       - text: "Kezdőlap"
         href: index.qmd
