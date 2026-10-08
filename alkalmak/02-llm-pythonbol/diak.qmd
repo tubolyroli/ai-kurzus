@@ -1,0 +1,420 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "2. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[2. alkalom: nyelvi modell Pythonból]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitókérdés, kézfeltartással: kinél fut az Ollama, és kinek van letöltve a gemma4:e4b? Akinél nincs, az most indítsa el a letöltést (ollama pull gemma4:e4b, 6,6 GB), és addig a szomszédjával dolgozik. Közben: az előző alkalom kilépőkérdéseiből egy-kettőt felolvasni.
+:::
+
+## Ma: az első LLM-hívás a saját kódodból
+
+::: {.kartyak}
+::: {.kartya}
+**Megismételhető**
+
+ugyanaz a kérdés ugyanúgy megy el holnap is, a jövő havi adattal is
+:::
+::: {.kartya}
+**Saját adat**
+
+a táblázatot a kód teszi a kérdésbe, nem te másolgatod
+:::
+::: {.kartya}
+**Automatizálható**
+
+12 hónap, 40 dokumentum, 3 rendszerprompt: egy ciklus végigmegy rajtuk
+:::
+::: {.kartya}
+**Ellenőrizhető**
+
+a válasz egy változóba kerül, és egy script megnézi, igaz-e
+:::
+:::
+
+::: notes
+Visszautalni az előző alkalomra: a chat jó egy beszélgetésre, de elemzésre nem elég. Ma ugyanazt a modellt a saját kódunkból hívjuk. A negyedik kártya a legfontosabb: ami változóban van, azt ellenőrizni lehet.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya .ma}
+**Utasítások** · *ma*
+
+a rendszerprompt: az `AGENTS.md` elve a saját kódodban
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a kérdéshez illő dokumentumrészletek (RAG), 3–6. alkalom
+:::
+::: {.kartya}
+**Eszközök**
+
+a modell Python-függvényt hív, ha számolni kell, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+ma kiderül: a modellnek nincs; a beszélgetést mi tároljuk
+:::
+:::
+
+::: notes
+Ma az utasítások elemnél vagyunk, a rendszerprompttal. A memóriáról ma csak annyit, hogy nincs: a beszélgetést a mi kódunk küldi el újra és újra. A 9. alkalom ágense erre épül.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–8 | Nyitás: miért kódból? |
+| 8–25 | Közösen: az első hívás kézzel, aztán a `kurzus.py` (notebook 1–3. rész) |
+| 25–32 | Szolgáltató, API-kulcs, `.env` (4. rész) |
+| 32–40 | Szerepek, a motor belseje, memória |
+| 40–65 | **Ti dolgoztok:** notebook 5–8. rész |
+| 65–80 | Élő demó: a modell magabiztosan téved (9. rész) |
+| 80–90 | Gyakorlat indítása, zárás |
+:::
+
+::: notes
+A helyi modell egy gondolkodó válasza kb. 20 másodperc. A közös részben ezt kivárjuk, és közben elmondom, mi történik. Ha csúszunk, a 6. rész gondolkodásos mérése és a 10. rész mehet otthonra.
+:::
+
+## Mi az az API?
+
+Egy program így kér szolgáltatást egy másiktól.
+
+::: {.folyamat}
+[a kódod]{.lep} [→]{.nyil} [kérés (JSON)]{.lep .kiemelt} [→]{.nyil} [szerver]{.lep} [→]{.nyil} [válasz (JSON)]{.lep .kiemelt} [→]{.nyil} [a kódod]{.lep}
+:::
+
+<br>
+
+**A szerver** a gépeden futó Ollama vagy egy felhőszolgáltató (OpenAI, Google, Anthropic). A kérést HTTP POST-tal küldjük.
+
+**A JSON** olyan szöveg, amely úgy néz ki, mint egy Python-szótár.
+
+[A böngésződ is HTTP-kéréseket küld. A különbség: POST-tal adatot is küldünk, a kérdésünket.]{.halvany}
+
+::: notes
+Nem kell a HTTP részleteit tudni. Annyi elég: a kérés és a válasz is szöveg, szótár formájú. Ez a szabvány az OpenAI-tól jön, ma mindenki ezt követi (Ollama, Google, Anthropic), ezért cserélhető a szolgáltató.
+:::
+
+## A kérés: egy szótár
+
+::: {.columns}
+::: {.column width="52%"}
+``` python
+keres_adat = {
+  "model": "gemma4:e4b",
+  "messages": [
+    {"role": "user", "content":
+     "Mit mér a fogyasztóiár-index?"},
+  ],
+  "temperature": 0,   # ismételhető
+}
+```
+:::
+::: {.column width="48%"}
+``` python
+keres = urllib.request.Request(
+    cim,   # .../v1/chat/completions
+    data=json.dumps(keres_adat)
+             .encode("utf-8"),
+    headers={...},  # JSON, kulcs
+)
+valasz = json.loads(
+    urllib.request.urlopen(keres).read())
+```
+:::
+:::
+
+Két dolog kell bele: **melyik modell**, és **az üzenetek listája**.
+
+::: notes
+Közösen, notebook 2. rész. Kivetítve futtatni az első két cellát. A második kb. 20 másodperc: közben elmondani, hogy a modell most gondolkodik, és ezt a válaszban látni is fogjuk (reasoning). Ha Connection refused: nem fut az Ollama.
+:::
+
+## A válasz: szintén szótár
+
+::: {.columns}
+::: {.column width="62%"}
+``` json
+{
+  "choices": [{
+    "message": {
+      "role": "assistant",
+      "content": "A fogyasztóiár-index …",
+      "reasoning": "Thinking Process: …"
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {"prompt_tokens": 31,
+            "completion_tokens": 459}
+}
+```
+:::
+::: {.column width="38%"}
+A szöveg:
+
+`valasz["choices"][0]`<br>`["message"]["content"]`
+
+<br>
+
+A gondolkodás is token: **459** kimeneti token egy egymondatos válaszhoz.
+
+[Az én futásom, a 2. rész cellája.]{.halvany}
+:::
+:::
+
+::: notes
+Megmutatni a kiírásban a négy fontos helyet: content, reasoning, finish_reason, usage. Feladat 2.1 (kiolvasni a prompt_tokens értékét) és 2.2 (Copilottal kivenni a szöveget) közösen. Kérdés a teremnek: miért 31 token egy hatszavas kérdés? (Szódarabok, és a szerver jelzőtokenjei.)
+:::
+
+## Nincs benne varázslat
+
+``` python
+from kurzus import kerdez
+kerdez("Mit mér a fogyasztóiár-index?", rendszer="Válaszolj röviden.")
+```
+
+| | helyi Ollama (alap) | felhőszolgáltató |
+|---|---|---|
+| cím | `localhost:11434/v1` | a szolgáltató címe |
+| kulcs | nem kell | személyes, titkos |
+| modell | `gemma4:e4b` | pl. `gemini-2.5-flash` |
+
+**A kulcs a `.env`-be kerül. Soha nem a kódba, soha nem a GitHubra.**
+
+::: notes
+Notebook 3. rész: kivetítve megmutatni a _keres és a chat forrását. Ugyanaz, amit kézzel írtunk. A 4. részben a .env.pelda, a hibakeresős feladat, és közösen beírjuk az AGENTS.md-be a kulcs-szabályt. Mindenki nézze meg, hogy a repója .gitignore-jában benne van-e a .env. Ha egy kulcs mégis kikerül: azonnal törölni a szolgáltatónál.
+:::
+
+## Szerepek az üzenetlistában
+
+::: {.kartyak .harom}
+::: {.kartya}
+**system**
+
+a rendszerprompt: minden válasznál jelen lévő utasítás
+:::
+::: {.kartya}
+**user**
+
+amit kérdezünk
+:::
+::: {.kartya}
+**assistant**
+
+amit a modell korábban válaszolt
+:::
+:::
+
+<br>
+
+### A rendszerprompt az `AGENTS.md` elve a saját kódodban.
+
+Ami minden kérdésnél igaz, oda kerül. Ami csak egy feladathoz kell, az nem.
+
+[Ma kipróbáljuk: ugyanaz a kérdés, három rendszerprompt, előre megírt feltételekkel.]{.halvany}
+
+::: notes
+Visszautalni az első órára: az AGENTS.md-t a Copilot minden munkamenet elején elolvassa. A rendszerprompt ugyanez egy saját programban. Figyelmeztetés előre: a rendszerprompt a formát irányítja, a tudást nem pótolja (az 5. részben kiderül, miért).
+:::
+
+## A motor belseje
+
+::: {.folyamat}
+[üzenetek]{.lep} [→]{.nyil} [tokenek]{.lep} [→]{.nyil} [**+1 token**, újra és újra]{.lep .kiemelt} [→]{.nyil} [stop-token]{.lep}
+:::
+
+<br>
+
+``` python
+# vázlat: ezt a szerver csinálja helyettünk
+while True:
+    token = modell_kovetkezo_tokenje(tokenek)
+    if token == STOP:
+        break
+    tokenek.append(token)
+```
+
+[`finish_reason`: `stop`, ha befejezte; `length`, ha elérte a `max_tokens` korlátot.]{.halvany}
+
+::: notes
+A masterclass (Chris McCormick, RAGPack) ábrája alapján. A modell nem kitalálja a választ és leírja, hanem tokenenként jósolja; ezért jobb bíráló, mint alkotó (előző alkalom). A 9. alkalommal ugyanez a while ciklus tér vissza, az ágens körül. A notebook 6.1 feladata egy játék-változat ebből.
+:::
+
+## Gondolkodás: ára van
+
+Ugyanaz a kérdés: „1000 Ft, két év alatt kétszer 10%-kal drágul. Mennyi lesz?”
+
+::: {.szamok}
+::: {}
+[~20 mp]{.szam}
+
+[gondolkodással · 377 kimeneti token]{.szam-cimke}
+:::
+::: {}
+[~2 mp]{.szam}
+
+[gondolkodás nélkül · 20 kimeneti token]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Mindkettő 1210 Ft-ot mondott, ami helyes. Egyszerű kérdésnél a gondolkodás csak lassít és drágít.
+
+[Mérés: a notebook 6. része, gemma4:e4b, saját gépen (18–21 mp és 1,6–1,9 mp több futásból). Nálatok más lesz az idő.]{.halvany}
+
+::: notes
+A gondolkodás is token, és a válasz előtt készül: ha max_tokens=8 és nem kapcsoljuk ki, a 8 token mind elmegy gondolkodásra, a válasz üres. Ezt a 6. rész mutatja. Bonyolultabb feladatnál (ágensek) segíthet, ezért nem kapcsoljuk ki mindig. A notebookokban gondolkodas="none" ott, ahol a minőség nem számít.
+:::
+
+## A modellnek nincs memóriája
+
+::: {.columns}
+::: {.column width="52%"}
+``` python
+uzenetek = [
+    {"role": "user",
+     "content": "Szia! Bálint vagyok."},
+    elso_valasz,   # role: assistant
+    {"role": "user",
+     "content": "Mi az én nevem?"},
+]
+chat(uzenetek)
+```
+:::
+::: {.column width="48%"}
+**Csak a kérdés:**<br>„Nincs megadva, hogy mi a neved.”
+
+**Az egész lista:**<br>„A te neved Bálint.”
+
+<br>
+
+[Minden hívásnál az egész beszélgetés újra elmegy, ezért nő a bemeneti token, és vele a költség.]{.halvany}
+:::
+:::
+
+::: notes
+A válaszok a notebook 7. részéből valók (az én futásom). A chatfelület is ezt csinálja, csak nem látjuk. A 9. alkalommal az ágens minden lépésben kiírja a tokenszámot: ott látszik majd, hogyan nő.
+:::
+
+## Most ti: notebook 5–8. rész
+
+| Rész | Mi történik |
+|---|---|
+| 5 | ugyanaz a kérdés, három rendszerprompt; feltételek |
+| 6 | tokenek egy ciklusban; a gondolkodás ára |
+| 7 | memória: az üzenetlista |
+| 8 | tokenek és költség: a `koltseg` függvény |
+
+Egy gondolkodó válasz kb. 20 mp: amíg fut, olvasd a következő cellát.
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+::: notes
+25 perc. Körbejárni. Aki gyorsan végez, mehet a 10. részre (gyakorlat). 5 perccel a vége előtt szólni. Tipikus elakadás: a kernel újraindult, és a 2. rész valasz változója hiányzik (NameError) → Run All. Ha valakinél lassú a modell, a 6. rész időmérését kihagyhatja.
+:::
+
+## Tokenek és költség
+
+**költség** = (bemeneti token × ár~be~ + kimeneti token × ár~ki~) / 1 000 000
+
+::: {.szamok}
+::: {}
+[21 → 29]{.szam}
+
+[token: ugyanaz a mondat angolul, majd magyarul]{.szam-cimke}
+:::
+::: {}
+[1,40 USD]{.szam}
+
+[30 hallgató × 50 hívás, kitalált példaáron]{.szam-cimke}
+:::
+:::
+
+<br>
+
+[Példaár: 0,50 USD / 1 millió bemeneti, 2,00 USD / 1 millió kimeneti token. Kitalált, kerek szám: döntés előtt nézd meg a szolgáltató árlistáját.]{.halvany}
+
+::: notes
+A számok a notebook 8. részéből: a 21 és 29 a mért bemeneti token (a szerver 9 tokenes rezsijével együtt), az 1,40 USD a 2. rész első hívásának tokenszámaiból (31 be, 459 ki) számolva. A költséget három dolog viszi fel: gondolkodás, hosszú kontextus (RAG), ismétlés (ágens). A helyi Ollamánál nincs tokenár, ott a saját gépünk ideje fogy.
+:::
+
+## A modell magabiztosan téved
+
+24 havi HICP-érték (Eurostat) a kérdésben: mennyi az átlaguk 2023–2024-ben?
+
+::: {.szamok}
+::: {}
+[9,67%]{.szam .rossz}
+
+[a modell, gondolkodás után, két tizedesre]{.szam-cimke}
+:::
+::: {}
+[10,63%]{.szam .jo}
+
+[Python, ugyanabból a táblázatból]{.szam-cimke}
+:::
+:::
+
+<br>
+
+### A számot a Python adja. A modell legfeljebb megfogalmazza.
+
+::: notes
+Élő demó, notebook 9. rész. Előbb a modell válasza (kb. 30 mp), aztán a 9.1 Copilottal, aztán az összevető cella. A kurzus elve: a várt értéket script számolja a nyers adatból, nem a modell ellenőrzi magát. Ugyanez a tény-kérdésnél: az MNB inflációs céljára „2”-t írt; a 2024. szeptemberi Inflációs jelentés szerint 3%, a 2026. szeptemberi szerint 2028 januárjától 2,5% (mindkettő a PDF 5. oldalán). B-terv: ha órán eltalálja, lásd a forgatókönyvet.
+:::
+
+## Otthonra
+
+- A notebook **9. és 10. része**, ha órán nem jutottál el odáig: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- A 10. részben **írd át a rendszerpromptot** legalább kétszer, és figyeld, mi változik
+- Nézd meg, benne van-e a `.env` a repód `.gitignore`-jában, és commitold a mai munkát
+
+<br>
+
+**Jövő alkalommal:** dokumentumok előkészítése. Az MNB-jelentésekből szöveg lesz, a szövegből darabok: így tudjuk majd odaadni a modellnek azt, amit ma nem tudott.
+
+::: notes
+Kilépőkérdés: melyik volt ma a legmeglepőbb válasz a modelltől? A „2%” és a 9,67 jó átvezetés a RAG-hoz: a tudást a kontextusba kell tenni, a számolást a Pythonra kell hagyni.
+:::
