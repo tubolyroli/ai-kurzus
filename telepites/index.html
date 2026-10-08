@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Telepítési útmutató a Saját AI-eszközök kurzushoz: VS Code, Python, Git, GitHub és Copilot, Windowsra és macOS-re.">
 <title>Telepítés · Saját AI-eszközök</title>
+<script>
+  // Ugyanazt a kulcsot használjuk, mint a Quarto-kurzusoldal világos/sötét kapcsolója
+  // ("alternate" = sötét, "default" = világos), így a két oldal együtt vált.
+  try {
+    var t = localStorage.getItem("quarto-color-scheme");
+    if (t === "alternate") document.documentElement.setAttribute("data-theme", "dark");
+    if (t === "default") document.documentElement.setAttribute("data-theme", "light");
+  } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Atkinson+Hyperlegible+Next:ital,wght@0,300..800;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
@@ -89,6 +98,14 @@ kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-w
 .topbar-in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
 .brand { font-weight: 600; font-size: 0.95rem; color: var(--navy); display: flex; gap: 10px; align-items: center; }
 .brand-mark { width: 26px; height: 26px; border-radius: 6px; background: #252A51; color: #D9B85A; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+.tema-gomb { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--sunk); color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.tema-gomb:hover { color: var(--ink); }
+.tema-gomb svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tema-gomb .ikon-hold { fill: currentColor; stroke: none; }
+.tema-gomb .ikon-nap { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tema-gomb .ikon-nap { display: block; } :root:not([data-theme="light"]) .tema-gomb .ikon-hold { display: none; } }
+:root[data-theme="dark"] .tema-gomb .ikon-nap { display: block; }
+:root[data-theme="dark"] .tema-gomb .ikon-hold { display: none; }
 .os-switch { display: inline-flex; background: var(--sunk); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
 .os-switch button {
   font: inherit; font-size: 0.9rem; font-weight: 500; color: var(--muted); background: none; border: 0;
@@ -279,6 +296,10 @@ footer { max-width: 1120px; margin: 72px auto 0; padding-top: 20px; border-top: 
   <div class="topbar-in">
     <a class="brand" href="../"><div class="brand-mark" aria-hidden="true">←</div>Saját AI-eszközök <span class="brand-back">· vissza a kurzusoldalra</span></a>
     <div style="display:flex;align-items:center;gap:10px">
+      <button type="button" class="tema-gomb" id="tema-gomb" aria-label="Világos vagy sötét mód váltása" title="Világos / sötét mód">
+        <svg class="ikon-nap" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+        <svg class="ikon-hold" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+      </button>
       <span class="os-switch-label" id="os-label">Milyen géped van?</span>
       <div class="os-switch" role="group" aria-labelledby="os-label">
         <button type="button" id="os-win" data-os="win" aria-pressed="true">Windows</button>
@@ -833,6 +854,15 @@ Minden RENDBEN. Készen állsz az első órára!</code></pre>
   setOs(load("ejc0-os", guess));
   document.querySelectorAll(".os-switch button").forEach(function (b) {
     b.addEventListener("click", function () { setOs(b.dataset.os); });
+  });
+
+  // Világos/sötét váltás, a Quarto-oldallal közös kulccsal
+  document.getElementById("tema-gomb").addEventListener("click", function () {
+    var most = root.getAttribute("data-theme") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var uj = most === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", uj);
+    try { localStorage.setItem("quarto-color-scheme", uj === "dark" ? "alternate" : "default"); } catch (e) {}
   });
 
   // Lépések pipálása
