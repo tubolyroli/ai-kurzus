@@ -1,21 +1,44 @@
 ---
 title: "Notebookok"
 listing:
-  id: notebook-lista
-  contents: "*.ipynb"
-  type: table
-  sort: "filename"
-  fields: [title, description]
-  field-display-names:
-    title: "Notebook"
-    description: "Miről szól"
-  filter-ui: false
-  sort-ui: false
+  - id: notebook-lista
+    # Órai notebookok: 00-…, 01-…, …, 12-…
+    contents: ["0*.ipynb", "1*.ipynb"]
+    type: table
+    sort: "filename"
+    fields: [title, description]
+    field-display-names:
+      title: "Notebook"
+      description: "Miről szól"
+    filter-ui: false
+    sort-ui: false
+  - id: jegyzet-lista
+    # A tanári mappából az óra után kiadott jegyzetek (tanari/kiad.py)
+    contents: "jegyzet-*.ipynb"
+    type: table
+    sort: "filename"
+    fields: [title, description]
+    field-display-names:
+      title: "Jegyzet"
+      description: "Miről szól"
+    filter-ui: false
+    sort-ui: false
 ---
 
-A kurzus notebookjai alkalmanként ide kerülnek. A notebook olyan fájl (`.ipynb`), amelyben magyarázat és futtatható kód váltja egymást: cellánként futtatod, és rögtön alatta látod az eredményt.
+A kurzus notebookjai alkalmanként ide kerülnek. A notebook olyan fájl (`.ipynb`), amelyben szöveg és futtatható kód váltja egymást: cellánként futtatod, és rögtön alatta látod az eredményt.
+
+## Órai notebookok
+
+Ezekkel dolgozunk órán. Csak a feladatok vannak bennük, a magyarázatot órán mondom el.
 
 ::: {#notebook-lista}
+:::
+
+## Jegyzetek
+
+Az óra után ide teszem ugyanazt a notebookot teljes magyarázattal és lefuttatott kimenetekkel, hogy otthon is vissza tudd nézni. A feladatok megoldása ezekben sincs benne.
+
+::: {#jegyzet-lista}
 :::
 
 [Az összes notebook egyben, adatokkal: **notebookok.zip**](notebookok.zip){.cta}
