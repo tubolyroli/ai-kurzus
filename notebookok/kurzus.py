@@ -64,7 +64,7 @@ def _keres(utvonal, adat):
         raise
 
 
-def chat(uzenetek, eszkozok=None, modell=None, homerseklet=0.0, gondolkodas=None):
+def chat(uzenetek, eszkozok=None, modell=None, homerseklet=0.0, gondolkodas=None, max_tokens=None):
     """Elküldi az üzenetlistát a modellnek, és visszaadja a válaszüzenetet (szótár).
 
     Az `eszkozok` az OpenAI-formátumú eszközleírások listája. A válaszban vagy szöveg
@@ -78,17 +78,19 @@ def chat(uzenetek, eszkozok=None, modell=None, homerseklet=0.0, gondolkodas=None
         adat["tools"] = eszkozok
     if gondolkodas:
         adat["reasoning_effort"] = gondolkodas
+    if max_tokens:
+        adat["max_tokens"] = max_tokens  # a válasz hosszának felső korlátja (tokenben)
     valasz = _keres("/chat/completions", adat)
     utolso_hasznalat.clear()
     utolso_hasznalat.update(valasz.get("usage", {}))
     return valasz["choices"][0]["message"]
 
 
-def kerdez(kerdes, rendszer=None, modell=None, gondolkodas=None):
+def kerdez(kerdes, rendszer=None, modell=None, gondolkodas=None, max_tokens=None):
     """Egyetlen kérdés, egyetlen szöveges válasz. A `rendszer` a rendszerprompt."""
     uzenetek = [{"role": "system", "content": rendszer}] if rendszer else []
     uzenetek.append({"role": "user", "content": kerdes})
-    return chat(uzenetek, modell=modell, gondolkodas=gondolkodas)["content"]
+    return chat(uzenetek, modell=modell, gondolkodas=gondolkodas, max_tokens=max_tokens)["content"]
 
 
 def embed(szovegek, modell=None):
