@@ -46,12 +46,12 @@ Nyitókérdés: kinek futott le otthon az 5. notebook? Akinél igen, annál az i
 
 <br>
 
-Múltkor négy kérdésen működött a lánc. **Négy kérdés nem bizonyít semmit.** Ma 8 tesztkérdés, elvárt válasszal, és egy script mondja meg, hány jó.
+Múltkor négy kérdésen működött a lánc. **Négy kérdés nem bizonyít semmit.** Ma 8 tesztkérdés, elvárt válasszal, és egy script mondja meg, hány jó. Aztán egy hibát a gyökeréig követünk, kijavítjuk, és újramérünk.
 
 [A várt számot és oldalt a script olvassa ki a nyers PDF-ből. A modellt nem kérdezzük meg, jól válaszolt-e.]{.halvany}
 
 ::: notes
-A kurzus elve most rendszerré válik: nem egy-egy kérdést nézünk, hanem egy tesztkészletet, és minden változtatás után az egészet újramérjük. Ma minden modellhívás gondolkodás nélkül megy, mert sok lesz (8 kérdés kétszer).
+A kurzus elve most rendszerré válik: nem egy-egy kérdést nézünk, hanem egy tesztkészletet, és minden változtatás után az egészet újramérjük. Ma minden modellhívás gondolkodás nélkül megy, mert sok lesz (8 kérdés kétszer: javítás előtt és után).
 :::
 
 ## Hol tartunk: kontextustervezés
@@ -91,16 +91,16 @@ A RAG-blokk utolsó alkalma. Jövő héten félidő: checkpoint a projektekkel, 
 | Perc | Mi történik |
 |---|---|
 | 0–5 | Nyitás; előkészítés (notebook 1. rész) |
-| 5–20 | Közösen: a tesztkészlet; **ti:** két saját tesztkérdés (2.1) |
-| 20–30 | A keresés mérése: jó oldal az első k-ban (3.1) |
-| 30–50 | Három szempont; **ti:** a számellenőrző (4.1); a kiértékelés |
-| 50–68 | Közösen: a hibalánc egy valódi hibán (5. rész, 5.1) |
-| 68–82 | Javítási kísérlet és újramérés (6. rész, 6.1) |
+| 5–15 | Közösen: a tesztkészlet; **ti:** egy saját tesztkérdés (2.1) |
+| 15–22 | A keresés mérése: jó oldal az első k-ban (3.1) |
+| 22–40 | Három szempont; **ti:** a számellenőrző (4.1); a kiértékelés |
+| 40–52 | Közösen: a hibalánc egy valódi hibán (5. rész) |
+| 52–82 | A javítás: táblázatsorból mondat (6.1); újramérés (6.2) |
 | 82–90 | A projekt 10 kérdése; zárás |
 :::
 
 ::: notes
-Két hosszabb futás van: a kiértékelés (kb. 1 perc) és az új index (kb. 2 perc). Az indexet a 6. rész elején indítsák el, amíg az 5. részt beszéljük meg, ha csúszunk.
+Két hosszabb futás van: a kiértékelés (kb. 1-2 perc, kétszer) és a takarított index (kb. 1,5-2 perc). A mai óra súlypontja a javítás (30 perc): ezért rövidebb a tesztkészlet (egy saját kérdés, a többi otthon), a keresés mérése és a hibalánc, és kimaradt az ismétlődő darabkezdetek feladata.
 :::
 
 ## Egy tesztkérdés
@@ -120,7 +120,7 @@ A várt számot (3,7) és az oldalt (62.) **a script olvassa ki**, a futtatás e
 [Négy mintapélda: tényadat; előrejelzés egy megnevezett jelentésből; ugyanez másik jelentésből; „nincs benne”. Notebook 2. rész.]{.halvany}
 
 ::: notes
-Ha elírom a mintát, a script nem talál semmit, és ez kiderül, mielőtt a modellt bármire megkérdeznénk. A 2.1: két saját kérdés. A mondatok_ahol segédfüggvény kiírja a mondatokat egy kifejezésre; a számot (\d,\d)-re cserélik. Tipikus hiba: a gondolatjel (–) helyett kötőjel (-) a mintában, vagy szóköz a gondolatjel körül.
+Ha elírom a mintát, a script nem talál semmit, és ez kiderül, mielőtt a modellt bármire megkérdeznénk. A 2.1: egy saját kérdés (a többi otthon, 10-ig). A mondatok_ahol segédfüggvény kiírja a mondatokat egy kifejezésre; a számot (\d,\d)-re cserélik. Tipikus hiba: a gondolatjel (–) helyett kötőjel (-) a mintában, vagy szóköz a gondolatjel körül.
 :::
 
 ## A keresés mérése: jó oldal az első k-ban
@@ -138,7 +138,7 @@ Modellhívás nélkül, csak a keresés. Ez a *hit@k*.
 [A 7 válaszolható tesztkérdésen, az 5 jelentés indexén. Notebook 3. rész (3.1).]{.halvany}
 
 ::: notes
-A 3.1 Copilottal: a találati arány k = 1, 3, 5, 10-re. Tipikus hiba: a Copilot az összes (8) kérdéssel oszt, a nincs-benne kérdéssel együtt; vagy nem vágja le az első k-ra ([:k]). Ha k = 5-nél a kérdések harmadánál nincs meg a jó oldal, a modell ott nem is válaszolhat jól.
+A 3.1 Copilottal: a találati arány k = 1, 3, 5, 10-re. Tipikus hiba: a Copilot az összes (8) kérdéssel oszt, a nincs-benne kérdéssel együtt; vagy nem vágja le az első k-ra ([:k]). Ahol k = 5-nél nincs meg a jó oldal (itt 7-ből 2 kérdésnél), ott a modell csak szerencsével válaszolhat jól.
 :::
 
 ## A válaszok: három szempont
@@ -195,22 +195,22 @@ A válasz minden száma megvan a forrásban? Ha nem, a modell **nem onnan vette*
 A két csapda, amit a Copilot gyakran elront: a [2] hivatkozást is számnak veszi (és nem találja a forrásban), és szövegrészt keres (in), így a „3,7” benne van a „13,7”-ben. A hat ellenőrzési eset közül az 1. és az 5. fogja meg ezeket. Fontos: a szűrő a kitalált számot fogja meg, a rosszul kiválasztottat nem. Erre jön a következő példa.
 :::
 
-## Most ti: notebook 2–5. rész
+## Most ti: notebook 2–6. rész
 
 | Rész | Mi történik |
 |---|---|
-| 2.1 | két saját tesztkérdés a PDF mondataiból |
+| 2.1 | egy saját tesztkérdés a PDF mondataiból |
 | 3.1 | Copilottal: találati arány, k = 1, 3, 5, 10 |
 | 4.1 | Copilottal: a számellenőrző |
-| 5.1 | Copilottal: ismétlődő darabkezdetek |
-| 6.1 | olvasós: jó oldal a javítás után? |
+| 6.1 | Copilottal: táblázatsorból mondat |
+| 6.2 | olvasós: jó oldal a javítás után? |
 
 Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
 
 ### Mielőtt **Keep**-et nyomsz, olvasd el, amit a Copilot írt.
 
 ::: notes
-Ez nem egy blokk: a 2.1 és a 3.1 az első szakaszban, a 4.1 a kiértékelés előtt, az 5.1 a hibalánc közben, a 6.1 a javítás előtt. Ezt a diát akkor mutasd, amikor először elengeded őket, és hagyd kint a táblán.
+Ez nem egy blokk: a 2.1 és a 3.1 az első szakaszban, a 4.1 a kiértékelés előtt, a 6.1 és a 6.2 a javításnál. Ezt a diát akkor mutasd, amikor először elengeded őket, és hagyd kint a táblán.
 :::
 
 ## Az első mérés
@@ -237,10 +237,10 @@ Ez nem egy blokk: a 2.1 és a 3.1 az első szakaszban, a 4.1 a kiértékelés el
 
 **Hű, de rossz:** mind a nyolc válasz száma ott van a darabokban, mégis egy rossz, és egy csak azért „helyes”, mert a mérés engedékeny. A modell nem talált ki számot, csak **rosszat választott**.
 
-[8 kérdés, 16 modellhívás (a fele egytokenes tokenszámlálás), kb. fél perc, gondolkodás nélkül. Saját gép (Apple M4). Notebook 4. rész.]{.halvany}
+[8 kérdés, 16 modellhívás (a fele egytokenes tokenszámlálás), kb. 1-2 perc, gondolkodás nélkül. Saját gép (Apple M4). Notebook 4. rész.]{.halvany}
 
 ::: notes
-Kérdésenként is nézzétek meg. Helyes, pedig nincs jó oldal: a márciusi infláció-előrejelzési kérdésnél a modell a 13. oldali táblázatból vette a sávot, nem a 12. oldal mondatából (az a 10. helyen jön): a mérőszám is tévedhet. „Helyes”, de olvasd el: az általános GDP-kérdésnél a modell a 2024. szeptemberi előrejelzéssel (1,0–1,8) kezd, a 0,5-ös tényadatot csak harmadikként, előrejelzésnek nevezve említi; a „helyes” oszlop átengedi, mert csak azt nézi, benne van-e a 0,5. A rossz válasz: a márciusi GDP-kérdésnél „nincs benne”, és helyette a 2024-es tényadat, 0,5 (egy korábbi futásban −3,8 és −2,8). A modell válaszai futásonként változnak, a „jó oldal” oszlop nem.
+Kérdésenként is nézzétek meg. Helyes, pedig nincs jó oldal: a márciusi infláció-előrejelzési kérdésnél a modell a 13. oldali táblázatból vette a sávot, nem a 12. oldal mondatából (az a 10. helyen jön): a mérőszám is tévedhet. „Helyes”, de olvasd el: az általános GDP-kérdésnél a modell a 2024. szeptemberi előrejelzéssel (1,0–1,8) kezd, a 0,5-ös tényadatot csak harmadikként, előrejelzésnek nevezve említi; a „helyes” oszlop átengedi, mert csak azt nézi, benne van-e a 0,5. A rossz válasz: a márciusi GDP-kérdésnél „nincs benne”, és helyette a 2024-es tényadat, 0,5 (egy korábbi futásban −3,8 és −2,8). A modell válaszai gépenként, verziónként eltérhetnek, a „jó oldal” oszlop nem.
 :::
 
 ## Egy valódi hiba
@@ -295,27 +295,45 @@ A jó szám **ott volt** a kontextusban: egy táblázatdarabban, „MNB (2024. m
 :::
 
 ::: notes
-A takarítási szabály a grafikonok tengelyfelirataira készült a 3. alkalommal, és ott jó volt. Itt a táblázat sor- és oszlopcímeit is kidobta. Minden szabály elront valamit (3. alkalom tanulsága). A notebookban a nyers oldal blokkjai mellett >> jelzi, mit dobott ki. Az 5.1: 1219 darabból 210 kezdődik szó szerint ugyanígy egy másik jelentésben is (táblázatfejek, Monetáris Tanács, belső borító, nyomda, a hátsó borító Mátyás király-szövege): a darab szövegéből nem derül ki, melyik jelentésé.
+A takarítási szabály a grafikonok tengelyfelirataira készült a 3. alkalommal, és ott jó volt. Itt a táblázat sor- és oszlopcímeit is kidobta. Minden szabály elront valamit (3. alkalom tanulsága). A notebookban a nyers oldal blokkjai mellett >> jelzi, mit dobott ki. Kérdezd meg: a táblázatban minden benne volt, ami a válaszhoz kell (GDP-sorcím, MNB-sor, 2024-es oszlop). Mi kellene ahhoz, hogy a darabban is benne maradjon?
 :::
 
-## Javítási kísérlet: fejléc a darab elé
+## A javítás: táblázatsorból mondat
+
+A nyers PDF-ben a táblázat minden sora egy blokk, a cellák új sorban:
 
 ``` text
-MNB Inflációs jelentés, 2024. március. A tavaly utolsó negyedévi stagnálást követően…
+'GDP (éves növekedés, %) \n  \n  \n  \n'                    ← csoportcím
+'MNB (2024. március) \n2,0 - 3,0 \n3,5 - 4,5 \n3,0 - 4,0 \n'   ← sorcím + számok
 ```
 
-Minden darab elejére a jelentés neve, és újra beágyazzuk (kb. 2 perc). **Segít?**
+Minden táblázatsorból egy **címkézett mondat**, külön darabként:
 
-| | előtte | fejléccel |
+``` text
+1-5. táblázat: …, GDP (éves növekedés, %), MNB (2024. március):
+2024: 2,0 - 3,0; 2025: 3,5 - 4,5; 2026: 3,0 - 4,0
+```
+
+[A fejléc évei (2024, 2025, 2026) is külön blokk. A bekezdésekből a táblázatsorok kikerülnek. Notebook 6.1: a `sor_mondat`, Copilottal; a többi az én kódom.]{.halvany}
+
+::: notes
+A gyökérokot javítjuk, nem a tünetet. A táblázat szerkezete megvolt a PDF-ben, csak a tisztit (sortörés → szóköz) és az 5 szavas szabály elvette. A 6.1-ben a Copilot csak egy sort alakít mondattá; a blokkokat az én kódom válogatja szét (táblázatcím, fejléc, csoportcím, táblázatsor). Olvassák el a megjegyzéseit. A tipikus 6.1-hiba: ha kevesebb az érték, mint az év, a Copilot az első évektől párosít (a Consensus-sorban 2 érték van 3 évre: nem tudjuk, melyik évé). Az új index kb. 1,5–2 perc (90–99 mp mérve, 1591 darab, ebből 401 táblázatsor): indítsák el, és amíg fut, jöhet a 6.2-es tipp.
+:::
+
+## Újramérés
+
+| | előtte | takarítva |
 |---|---|---|
 | jó oldal az első 5-ben | 5/7 | 5/7 |
 | hű a forráshoz | 8/8 | 8/8 |
-| helyes | 7/8 | [4/8]{.cimke .hiba} |
+| helyes | 7/8 | [8/8]{.cimke .ok} |
 
-[A jelentést megnevező kérdéseknél a jó oldal előrébb jött (márciusi infláció: 10. → 2.; márciusi GDP: 10-en kívül → 6.), a többinél hátrébb (2024-es infláció: 1. → 6.). **Összességében rontott: nem tartjuk meg.** Notebook 6. rész.]{.halvany}
+A márciusi GDP-kérdésnél a címkézett GDP-sor a **2. találat**, és a válasz nálam: „2,0 - 3,0 százalék [2]”.
+
+[**Nem minden javítás javít.** A táblázatsorok egyszerű kidobása: jó oldal 6/7, de helyes 6/8. A jelentés neve a darab elé: helyes 4/8. Ezért mérünk, a teljes tesztkészleten. Notebook 6. rész.]{.halvany}
 
 ::: notes
-Előtte kérdezd meg: szerintetek javít? (Ésszerűen hangzik, a nagy rendszerek is csinálják.) Aztán a mérés. Ahol segített: a jelentést megnevező kérdések. Ahol ártott: a 2024-es inflációs kérdésnél a kérdés évszáma most a fejlécek dátumaira is hasonlít, a jó oldal az 1. helyről a 6.-ra esik, és a modell nálam a szeptemberi becslést (3,5–3,9) mondta. A márciusi inflációs kérdésnél a jó oldal bekerült, a modell mégis a szeptemberi sávot írta a márciusi jelentésnek tulajdonítva. Mondd el: a korábbi darabolással (fix vágás a hosszú bekezdésekben) ugyanez a javítás 4/7-ről 7/7-re és 6/8-ról 8/8-ra javított. A darabolás változott, a javítás hatása megfordult: ezért mérünk a teljes tesztkészleten minden változtatás után. Célzottabb javítások (otthon): szűrés a jelentésre, ha a kérdés megnevezi (nálam a márciusi GDP-kérdésen ez sem elég: a jelentésen belül is a táblázatdarabok vezetnek); a táblázatok takarítása (a gyökérok); a rendszerprompt 3. szabálya. A helyes oszlop újrafuttatva változhat, a jó oldal oszlop determinisztikus.
+Először a 6.2: hány kérdésnél lesz jó oldal az első 5-ben? 5, ugyanannyi. Miért? A mérőszám a 19. oldali mondatot keresi, a modell pedig a 26. oldali táblázatból veszi a jó számot (mint a márciusi inflációs kérdésnél a 4. részben): a mérőszám is tévedhet, olvassátok a kérdésenkénti táblázatot. Az ellenőrző cella a GDP-sort közvetlenül nézi: az első 5-ben van, a várt sávval (determinisztikus). A helyes 7/8 → 8/8, a többi kérdés „helyes” értéke nem változott. Nálam az újrafuttatások betűre egyeztek, de ez csak azt mutatja, hogy a gépem determinisztikus (0 hőmérséklet, rögzített seed): más gépen egy-egy válasz eltérhet, a GDP-sor helye nem. A két másik kísérlet: a táblázatsorok kidobása a keresést javította, de a márciusi infláció-előrejelzési kérdésnél a modell a maginfláció sávját mondta, mert eltűnt a táblázat, amelyből a jó számot vette; a fejléc a darab elé a jelentést megnevező kérdéseken segített, a többin ártott. Az általános GDP-kérdésnél a válasz most is az előrejelzéssel kezd: az nem táblázatprobléma (otthon: a rendszerprompt 3. szabálya).
 :::
 
 ## A projektben: 10 tesztkérdés
@@ -351,9 +369,9 @@ Ez a 10 kérdés a záró projekt tesztkészlete; a bemutatón ezen mérik a ren
 ## Otthonra
 
 - A notebook hátralévő részei: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
-- A `sajat_tesztek` kiegészítése **10 kérdésre** (köztük legalább egy „nincs benne”), és a kiértékelés: `kiertekel(sajat_tesztek, darabok, index)`, aztán a fejléces indexszel is
+- A `sajat_tesztek` kiegészítése **10 kérdésre** (köztük legalább egy „nincs benne”), és a kiértékelés: `kiertekel(sajat_tesztek, darabok, index)`, aztán a takarított indexszel is (`darabok_t`, `index_t`)
 - Hol hibázik a lánc? A hibalánc melyik pontján?
-- Ha van időd: szűrés a jelentésre, a táblázatok takarítása, vagy a rendszerprompt 3. szabálya, mindegyik méréssel (jegyzet, 6. rész)
+- Ha van időd: szűrés a jelentésre, vagy a rendszerprompt 3. szabálya, mindegyik méréssel (notebook 6. rész vége)
 
 <br>
 
