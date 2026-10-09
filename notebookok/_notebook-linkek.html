@@ -7,8 +7,11 @@
     var sav = document.createElement("div");
     sav.className = "notebook-linkek";
     sav.innerHTML =
-      '<a class="nb-gomb" href="' + nev + '.ipynb" download>Letöltés (.ipynb)</a>' +
-      '<a class="nb-gomb" href="notebookok.zip">Az összes, adatokkal (.zip)</a>' +
+      // Órai notebooknál a heti csomag (notebook + kurzus.py + data/), jegyzetnél csak a fájl.
+      (/^jegyzet-/.test(nev)
+        ? '<a class="nb-gomb" href="' + nev + '.ipynb" download>Letöltés (.ipynb)</a>'
+        : '<a class="nb-gomb" href="' + nev + '.zip">Heti csomag (.zip)</a>' +
+          '<a class="nb-colab" href="' + nev + '.ipynb" download>Csak a notebook (.ipynb)</a>') +
       '<a class="nb-colab" href="https://colab.research.google.com/github/' + repo +
       "/blob/main/notebookok/" + nev + '.ipynb" target="_blank" rel="noopener">Megnyitás Colabban ↗</a>';
     var fejlec = document.querySelector("#title-block-header");

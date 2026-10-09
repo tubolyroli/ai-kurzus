@@ -1,0 +1,356 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "5. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[5. alkalom: a RAG-lánc összerakása]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Első mondat: mindenki nyissa meg a notebookot, és futtassa le az 1. részt (három cella). Az index 5 jelentésből áll (1219 darab), nálam kb. 85 mp, a hallgatók gépén több. Amíg fut, megyünk a diákkal. Kérdés: kinél van meg a bge-m3 és a gemma4:e4b? (ollama list)
+:::
+
+## Ma: a teljes RAG-lánc
+
+::: {.folyamat}
+[kérdés]{.lep} [→]{.nyil} [keresés]{.lep} [→]{.nyil} [5 darab, **forrással**]{.lep .kiemelt} [→]{.nyil} [szabályok + modell]{.lep} [→]{.nyil} [válasz, `[1]`]{.lep}
+:::
+
+<br>
+
+A 2. alkalommal a modell rosszul mondta meg az MNB inflációs célját. Ma odaadjuk neki a jelentéseket, és **megmutatja, honnan vette a választ**.
+
+[A hivatkozást sem a modell ellenőrzi: egy script megnézi, hogy a szám tényleg ott áll-e a hivatkozott oldalon.]{.halvany}
+
+::: notes
+A RAG harmadik lépése. Múlt héten a keresés, ma a válasz. A lánc egyetlen függvény lesz (rag_valasz), ezt később az ágens is eszközként használja.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: ma négy szabály a forrásokról
+:::
+::: {.kartya .ma}
+**Visszakeresés** · *ma*
+
+a megtalált darabok a modell elé kerülnek, a forrásukkal együtt
+:::
+::: {.kartya}
+**Eszközök**
+
+a modell Python-függvényt hív, ha számolni kell, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+a beszélgetés és az ágens lépései, 9. és 11. alkalom
+:::
+:::
+
+::: notes
+Ma két elem találkozik: a visszakeresés (a darabok) és az utasítás (a rendszerprompt). A modell nem lesz okosabb. Csak más kerül elé.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–5 | Nyitás; az index elindítása (notebook 1. rész) |
+| 5–15 | A modell egyedül; a lánc lépései (2–3. rész eleje) |
+| 15–40 | **Ti dolgoztok:** forrásmegjelölés, kontextus, tokenek, hivatkozások (3.1–4.2) |
+| 40–55 | Közösen: a válasz ellenőrzése; régi előrejelzés vagy tény? (4. rész vége) |
+| 55–68 | A RAG mint kontextustervezés: ugyanaz az öt darab, kétféle kontextus (5. rész) |
+| 68–80 | „A forrásokban nincs benne.” (6. rész, 6.1) |
+| 80–90 | Gondolkodás és költségvetés; projekt; zárás |
+:::
+
+::: notes
+Ma kevés az új fogalom, sok a kód. A 3.1–4.2 feladatok egymásra épülnek, de mindegyik után van egy „az én változatom” cella: aki elakad, azzal megy tovább.
+:::
+
+## Kiindulás: a modell egyedül
+
+„Mekkora az MNB inflációs célja?” Ugyanaz a modell, mint a 2. alkalommal, forrás nélkül:
+
+::: {.szamok}
+::: {}
+[2%]{.szam .rossz}
+
+[a modell válasza, magabiztosan. Ez a Fed és az EKB célja.]{.szam-cimke}
+:::
+::: {}
+[3% → 2,5%]{.szam .jo}
+
+[a jelentések szerint: 3%, 2028. január 1-jétől 2,5%]{.szam-cimke}
+:::
+:::
+
+<br>
+
+A várt értéket **a script olvassa ki a nyers PDF-ből** (`szam_a_pdfbol`), nem én írom be.
+
+[3%: MNB Inflációs jelentés, 2024. március, PDF 5. oldal (belső borító). 2,5%: 2026. szeptember, 56. oldal. A Fed és az EKB 2%-os célja: 2026. szeptember, 51. oldal. Notebook 2. rész.]{.halvany}
+
+::: notes
+Visszautalás a 2. alkalomra. A szam_a_pdfbol egy reguláris kifejezést keres a jelentésben, és a zárójeles részt adja vissza. Ezzel ellenőrzünk egész nap.
+:::
+
+## A lánc hét lépése
+
+::: {.folyamat}
+[kérdés]{.lep} [→]{.nyil} [vektor]{.lep} [→]{.nyil} [keresés]{.lep} [→]{.nyil} [top 5]{.lep} [→]{.nyil} [kontextus]{.lep .kiemelt} [→]{.nyil} [LLM]{.lep} [→]{.nyil} [hivatkozás]{.lep}
+:::
+
+<br>
+
+| Lépés | Függvény | Honnan |
+|---|---|---|
+| 1–4 | `keres(kerdes, darabok, index, k=5)` | 4. alkalom |
+| 5 | `forras_cimke`, `kontextus`, `tokenszam` | ma, 3.1–4.1 |
+| 6 | `chat(uzenetek, gondolkodas="none")` | 2. alkalom |
+| 7 | `hivatkozasok`, `alatamasztva` | ma, 4.2 |
+
+::: notes
+Az egészet a rag_valasz függvény fogja össze (4. rész). Hangsúlyozd: a hivatkozás ellenőrzése is a lánc része, nem utólagos szépítés.
+:::
+
+## Amit a modell lát
+
+``` text
+Források:
+
+[1] MNB Inflációs jelentés, 2026. szeptember, 56. oldal
+Az MNB a középtávú inflációs célját 2028. január 1-jétől 2,5 százalékban…
+[2] MNB Inflációs jelentés, 2023. december, PDF 5. oldal
+…a 3 százalékos középtávú cél körüli infláció biztosításával…
+[3] …
+
+Kérdés: Mekkora az MNB inflációs célja?
+```
+
+A forrásmegjelölést **a mi kódunk** írja a darab elé, a darab adataiból. A modell csak a sorszámot írja vissza: `[1]`.
+
+::: notes
+Ez a felhasználói üzenet. Előtte a rendszerprompt. A 3.2 hibakeresés: a Copilot első változata minden darab elé az első találat forrását írja. Lefut, jónak látszik, és minden hivatkozás hamis lesz. Ezért nézzük meg a kiírt sorokat.
+:::
+
+## A rendszerprompt: négy szabály
+
+::: {.kartyak}
+::: {.kartya}
+**1. Csak a forrásokból**
+
+saját tudásból ne írjon számot: azt nem tudjuk ellenőrizni
+:::
+::: {.kartya}
+**2. Hivatkozás sorszámmal**
+
+`[2]`: a script vissza tudja keresni, a teljes forrást mi írjuk ki
+:::
+::: {.kartya}
+**3. Figyelj a dátumra**
+
+a régebbi jelentés előrejelzése nem tényadat (4. alkalom)
+:::
+::: {.kartya}
+**4. „A forrásokban nincs benne.”**
+
+előre megmondjuk, mit írjon; így egy script felismeri
+:::
+:::
+
+::: notes
+Mindegyik szabály ellenőrizhető scripttel: van-e szám forrás nélkül (6. alkalom), van-e hivatkozás (4.2), melyik számot választotta (4. rész), és a „nincs benne” (6.1). A rendszerprompt a formát irányítja, a tudást a források adják.
+:::
+
+## A költségvetés: 4096 token
+
+| | kérés | gondolkodás + válasz | összesen | idő |
+|---|---|---|---|---|
+| gondolkodás nélkül | 1884 | 26 | 1910 | 1–2 mp |
+| gondolkodással | 1884 | 740 | 2624 | 39–50 mp |
+
+<br>
+
+A `rag_valasz` **minden hívás előtt megméri** a kérést (`tokenszam`). Ha 3000 fölött van, a leggyengébb darabot elhagyja.
+
+[„Mekkora volt az infláció 2024-ben?”, rendszerprompt + 5 darab. A kérés 1580–2235 token volt a mai kérdéseknél. Saját gép (Apple M4), két futásból; notebook 4. és 7. rész.]{.halvany}
+
+::: notes
+A 4.1 olvasós: a négy lehetőség közül a 1500 a legközelebbi (1580 az inflációs célnál). Miért 3000 a határ: a gondolkodás is az ablakba kerül; ha a kérés 3800 volna, a gondolkodás nem férne el, és az Ollama a kérés elejét vágná le, a rendszerprompttal együtt.
+:::
+
+## Most ti: notebook 3–4. rész
+
+| Rész | Mi történik |
+|---|---|
+| 3.1 | Copilottal: `forras_cimke`, „MNB Inflációs jelentés, 2025. március, 62. oldal” |
+| 3.2 | hibakeresés: mind az öt darab ugyanazt a forrást kapja |
+| 4.1 | olvasós: hány token a kérés? |
+| 4.2 | Copilottal: `hivatkozasok`, a `[2, 3]` alakkal is |
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+### Mielőtt **Keep**-et nyomsz, olvasd el, amit a Copilot írt.
+
+::: notes
+25 perc. Minden feladat után van egy „az én változatom” cella, aki elakad, azzal megy tovább. Tipikus hibák a forgatókönyvben: a 3.1-nél a hónap neve kisbetű/nagybetű, a „PDF 5. oldal” alak; a 4.2-nél a Copilot csak az első számot veszi ki a [2, 3]-ból, vagy a 3,7-et is hivatkozásnak nézi.
+:::
+
+## A válasz és az ellenőrzése
+
+> Az MNB középtávú inflációs célját 2028. január 1-jétől 2,5 százalékban határozza meg [1]. Korábban a jegybank […] a 3 százalékos középtávú cél körüli infláció biztosításával törekszik az árstabilitás megvalósítására [2, 3].
+
+::: {.columns}
+::: {.column width="55%"}
+**Hivatkozott források** (a mi kódunk írja ki):
+
+- [1] 2026. szeptember, 56. oldal
+- [2] 2023. december, PDF 5. oldal
+- [3] 2024. március, PDF 5. oldal
+:::
+::: {.column width="45%"}
+**A script:** a 2,5 a válaszban van, és a hivatkozott oldal nyers szövegében is.
+
+[RENDBEN]{.cimke .ok}
+:::
+:::
+
+[Egy futás válasza; a szöveg futásonként változik (van, hogy csak a 2,5%-ot mondja). Notebook 4. rész.]{.halvany}
+
+::: notes
+Ez a 2. alkalom kérdése, most jó válasszal. Az alatamasztva nem szövegegyezést néz: a szám önálló számként legyen a válaszban (a 13,7-ben nincs benne a 3,7), és legalább egy hivatkozott oldal nyers PDF-szövegében. Utána a 2024-es kérdés: a tényadat az első találat, de a kontextusban mellette van két régebbi előrejelzés is (2023. december: 4,0–5,5, a 4. helyen; 2024. szeptember: 3,5–3,9, az 5. helyen). A modell a 3,7-et mondja, a 2025. márciusi jelentésre hivatkozva; hogy a 3. szabály miatt, vagy mert a tényadat volt elöl, ebből nem derül ki. Olvastasd fel a válasz minden mondatát. Egy korábbi futásban (amikor még a régi előrejelzés volt az első találat) a modell hozzátette: „megfelel az adott prognózis sávjának”. Nem igaz (3,7 < 4,0–5,5), és a script nem fogja meg. Ha nálad is ilyen mondat jön, ez a pillanat.
+:::
+
+## Ugyanaz az öt darab, kétféle kontextus
+
+„Mekkora inflációt várt az MNB 2024-re a 2024. márciusi Inflációs jelentésben?”
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Csak a darabok szövege**
+
+Három táblázat, mind „Az inflációs előrejelzésünk részletei”. Hogy melyik a márciusi, **nem derül ki** belőlük. Nálam a modell felsorolta mindhármat, aztán „a legutóbbit” választotta: 3,5–3,9, a szeptemberit.
+:::
+::: {.kartya .ma}
+**Forrással és rendszerprompttal**
+
+„A 2024. márciusi Inflációs jelentés szerint az infláció 2024-re **3,5 – 5,0** százalék között alakulhat [3].”
+
+[3] = 2024. március, 13. oldal
+:::
+:::
+
+<br>
+
+**A modell nem lett okosabb. Csak más került elé.**
+
+[A várt sáv: MNB Inflációs jelentés, 2024. március, 12. oldal: „Az infláció 2024-ben 3,5–5,0 százalék között alakulhat”. Notebook 5. rész.]{.halvany}
+
+::: notes
+Ez az óra tanulsága, ezt ne hagyd el. Élőben futtasd mindkét cellát. A mintaprojekt kérdésének első fele: mit várt a márciusi jelentés. A második fele (mennyi lett: a KSH fogyasztóiár-indexe, nem a HICP) az ágens dolga lesz. Ha a nyers változat véletlenül jól válaszol: kérdezd meg, honnan tudta, melyik táblázat a márciusi. A szövegben nincs benne.
+:::
+
+## „A forrásokban nincs benne.”
+
+„Mennyi volt az átlagos albérletár Debrecenben 2024-ben?”
+
+::: {.columns}
+::: {.column width="52%"}
+**Előbb a script:** van-e olyan oldal, ahol Debrecen és albérlet/lakbér együtt szerepel?
+
+Debrecen: 1 oldal (egy grafikon megjegyzése). Lakbér: 4 oldal, országosan. **Közös: nincs.**
+:::
+::: {.column width="48%"}
+**A feltétel a hívás előtt** (6.1, Copilottal):
+
+`nem_tudja(valasz)`: jelzi, hogy nincs benne, **és** nem ír számot (évszám lehet).
+
+**A modell:** „A forrásokban nincs benne.” [RENDBEN]{.cimke .ok}
+:::
+:::
+
+[A keresés ilyenkor is ad 5 találatot, 0,5 körüli hasonlósággal (a jó találatoké 0,7 körül). Notebook 6. rész.]{.halvany}
+
+::: notes
+A keresés mindig talál valamit. A döntés, hogy ez nem válasz, a modellé, a 4. szabály alapján. Küszöb a hasonlóságra: itt működne (0,6), de általában nehéz beállítani, mérni kell (6. alkalom). A 6.1-nél a tipikus hiba: a Copilot csak a „nincs benne”-t nézi, a számot nem; a harmadik ellenőrzési eset („nincs benne, de kb. 150 ezer forint”) ezt fogja meg.
+:::
+
+## A projektben
+
+**Mérföldkő: a RAG-lánc a saját gyűjteményeden fut** (párban: a közös gyűjteményeteken).
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Ami változik**
+
+`forras_cimke` (más kiadvány, más dátum), a `JELENTESEK`, a gyorsítótár neve
+:::
+::: {.kartya}
+**A rendszerprompt**
+
+első mondata; és a 3. szabály, ha nálad nem az előrejelzés–tény a csapda
+:::
+::: {.kartya .ma}
+**Ami marad**
+
+a várt szám a nyers dokumentumból; a hivatkozott oldalon is ott kell lennie
+:::
+:::
+
+<br>
+
+Mintaprojekt: a mai lánc megtalálja, mit várt a 2024. márciusi jelentés. Hogy mi lett belőle, azt az ágens kéri le (8–10. alkalom).
+
+::: notes
+A csomagokat a félév közepére készítem el; addig a saját témát választók a saját dokumentumaikon próbálják. Az MNB a KSH fogyasztóiár-indexét jelzi előre, az Eurostat HICP-t közöl: ez a projekt csapdája, a 10. alkalom adatszótárában kerül elő.
+:::
+
+## Otthonra
+
+- A notebook **5–7. része**, ha órán nem jutottál el odáig: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- A 4. alkalom **három saját kérdése** a `rag_valasz`-nak: hivatkozik? A hivatkozott oldalon ott a szám (`szam_a_pdfbol`, `alatamasztva`)? Ha nincs benne, megmondja?
+- Projekt (párban): a lánc a saját gyűjteményeden
+
+<br>
+
+**Jövő alkalommal:** kiértékelés. Tesztkérdések elvárt válasszal, mérés, és egy hiba, ahol a keresés rossz darabot hoz, és a modell magabiztosan rossz számot mond.
+
+::: notes
+Kilépőkérdés: mi változott a modellben az óra eleje és vége között? (Semmi. A kontextus változott.) A saját kérdések jövő héten tesztkérdések lesznek.
+:::

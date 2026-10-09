@@ -1,0 +1,410 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "1. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[1. alkalom: miért építünk saját AI-eszközt?]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitás: az első óra kilépőkérdéseiből („mi volt a legfurcsább, amit a Copilot csinált?”) felolvasni kettőt-hármat. Utána rögtön: mindenki nyissa meg a VS Code-ban a notebookok mappát, mert az első 25 percben Gitezünk.
+:::
+
+## Ma: miért nem elég a chat?
+
+::: {.kartyak}
+::: {.kartya}
+**Git és GitHub**
+
+a mappádból repó lesz, és felkerül a GitHubra, privátként
+:::
+::: {.kartya}
+**Mi az a nyelvi modell?**
+
+tokenről tokenre ír: ezért jobb bíráló, mint alkotó
+:::
+::: {.kartya}
+**Mire nem elég a chat?**
+
+ugyanaz a feladat chatben és repóban, amikor jövő hónapban frissül az adat
+:::
+::: {.kartya}
+**Táblázatok olvasása**
+
+`pandas`: beolvasás, szűrés, átlag, és egy szám, ami csak hihetőnek tűnik
+:::
+:::
+
+::: notes
+A mai óra a félév „miért”-je: mire nem elég egy chatablak, és mit építünk helyette. A végén megint Python-olvasás, most táblázatokkal, mert a félév végi adatelemző ágens is táblázatokkal dolgozik.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya .ma}
+**Utasítások** · *ma*
+
+`AGENTS.md` és skill: a repó megjegyzi a szabályokat helyetted
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a kérdéshez illő dokumentumrészletek (RAG), 3–6. alkalom
+:::
+::: {.kartya}
+**Eszközök**
+
+adatlekérés, számolás Pythonnal, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+az előzmények és az ágens eddigi lépései, 9. és 11. alkalom
+:::
+:::
+
+::: notes
+Ugyanaz a térkép, mint az első órán. Ma az utasításoknál maradunk: a demóban az AGENTS.md és egy skill lesz a főszereplő. A többi elemről ma csak annyi, hogy hova tart a félév (a 12. dia).
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–5 | Nyitás |
+| 5–30 | **Ti csináljátok:** Git-repó és GitHub, aztán: érted? |
+| 30–40 | Mi az a nyelvi modell? Élő demó: vers és vicc |
+| 40–47 | Mire nem elég a chat, a félév íve |
+| 47–56 | Élő demó: ugyanaz a feladat chatben és repóban |
+| 56–84 | **Ti dolgoztok:** notebook, 2–5. rész; a 6. közösen |
+| 84–90 | Zárás: commit és push, otthoni feladat |
+:::
+
+::: notes
+A Git-blokk kapja a legtöbb időt: mindenkinek érteni kell, mert innentől minden munka commitokban halad. A végén mindenki egy mondatban leírja a commit és a push különbségét (notebook 1.1), és megmutatja a repója GitHub-oldalát. A notebook 7. része otthoni feladat. Ha csúszunk, a vers–vicc demó és a chat–repó demó chat oldala rövidíthető (lásd a forgatókönyvet).
+:::
+
+## Git: pillanatképek a mappádról
+
+::: {.folyamat}
+[módosítasz]{.lep} [→]{.nyil} [**commit**: pillanatkép, rövid leírással]{.lep .kiemelt} [→]{.nyil} [**push**: fel a GitHubra]{.lep .kiemelt}
+:::
+
+<br>
+
+- **Visszaléphetsz:** minden commit megmarad, bármelyikhez vissza lehet menni.
+- **Látod, mit írt a Copilot:** a Git sorról sorra mutatja, mi változott.
+- **Mentés és beadás:** a GitHub a felhőbeli példány, és innen adod be a záró projektet.
+
+[A repó **privát** lesz: csak te látod (és akit meghívsz).]{.halvany}
+
+::: notes
+A telepítési oldal hasonlata: a Word „korábbi verziók” funkciója, csak az egész mappára. A második pont a kurzus szempontjából a legfontosabb: amikor a Copilot (vagy később az ágens) több fájlt módosít, a Git mutatja meg, mit csinált.
+:::
+
+## A `notebookok` mappából repó lesz
+
+0. Kurzusoldal: **Notebookok → 01-bevezetes → Heti csomag (.zip)**: kicsomagolod, a tartalmát a `notebookok` mappádba másolod (felülírhatja)
+1. **File → Open Folder…** → a `notebookok` mappa (ott van az `AGENTS.md`)
+2. Bal oldalt **Source Control** → **Initialize Repository**
+3. Új fájl a mappa gyökerébe: **`.gitignore`** (következő dia)
+4. Üzenet: `Első commit` → **Commit** (ha kérdezi, mindent: **Yes**)
+5. **Publish Branch** → név: `ai-kurzus` → **private**
+
+[A GitHub-belépés ugyanaz, mint a Copilotnál. Ha a böngésző engedélyt kér: **Authorize**.]{.halvany}
+
+::: notes
+Lépésenként, kivetítve, és megvárni, amíg mindenki odaér. A 0. lépés: a heti csomagban a notebook, a kurzus.py, a data/, a requirements.txt és a .env.pelda van, AGENTS.md és régi notebook nincs, ezért a felülírás semmit nem ront el. A 4. lépésnél a VS Code megkérdezheti, hogy nincs „staged” változás, mindent commitoljon-e: Yes. Az 5. lépésnél a VS Code a mappa nevét ajánlja (notebookok): írják át ai-kurzus-ra, és a private lehetőséget válasszák. Ha nem a mappát nyitották meg, hanem az ai-kurzust vagy egy fájlt, rossz helyen lesz a repó: ezért az 1. lépés.
+:::
+
+## `.gitignore`: ami nem kerül fel
+
+::: {.columns}
+::: {.column width="50%"}
+``` text
+# Ezek nem kerülnek fel a GitHubra
+.env
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+data/cache/
+data/mnb/*.pdf
+.DS_Store
+```
+:::
+::: {.column width="50%"}
+**`.env`:** a titkos API-kulcs helye (2. alkalomtól). Ami egyszer felkerült, azt törölni kell a szolgáltatónál.
+
+**`.venv/`:** több ezer csomagfájl, bármikor újratelepíthető.
+
+**A többi:** futás közben keletkezik, újraszámolható.
+:::
+:::
+
+[**A `.gitignore` a commit előtt kell.** A szöveg a notebook 1. részében is ott van, onnan másold.]{.halvany}
+
+::: notes
+A sorrend számít: ha a .venv már bekerült egy commitba, a .gitignore utólag nem veszi ki (lásd a forgatókönyv hibatáblázatát). Tünet: a Source Control több ezer változást mutat. Ilyenkor állj meg, és ne commitolj.
+:::
+
+## Ugyanez a terminálban, és: érted?
+
+::: {.columns}
+::: {.column width="56%"}
+``` bash
+git init -b main   # repó lesz a mappából
+git add .          # mindent a pillanatképbe
+git commit -m "Első commit"
+git push           # fel a GitHubra
+git status         # mi változott azóta?
+git log --oneline  # az eddigi commitok
+```
+:::
+::: {.column width="44%"}
+A VS Code gombjai ugyanezeket futtatják. A **Sync Changes** a push.
+
+**Notebook, 1. rész:** a Git-ellenőrzés legyen [RENDBEN]{.cimke .ok}
+
+**1.1:** egy mondatban: mi a különbség a **commit** és a **push** között?
+
+**Mutasd meg** a repód oldalát a github.com-on: lakat, *Private*.
+:::
+:::
+
+::: notes
+Nem kell megtanulni a parancsokat, csak lássák: nincs varázslat, a gombok mögött ez fut. A GitHubra küldés (push) a VS Code-ból megy, mert ott a bejelentkezés már megvan. Aztán mindenki: a 01-bevezetes notebook 0. és 1. része, az 1.1 mondata, és a GitHub-oldal megmutatása nekem vagy a segítőnek. Két-három mondatot felolvastatni: a jó válasz lényege, hogy a commit a gépen marad, a push teszi fel a GitHubra.
+:::
+
+## A nyelvi modell tokenről tokenre ír
+
+::: {.folyamat}
+[A jegybank]{.lep} [→]{.nyil} [megemelte]{.lep} [→]{.nyil} [az]{.lep} [→]{.nyil} [**?**]{.lep .kiemelt}
+:::
+
+::: {.kartyak .harom}
+::: {.kartya}
+**alapkamatot**
+
+nagyon valószínű
+:::
+::: {.kartya}
+**irányadó rátát**
+
+valószínű
+:::
+::: {.kartya}
+**árfolyamot**
+
+kevésbé valószínű
+:::
+:::
+
+<br>
+
+A modell mindig csak **a következő szódarabot** jósolja meg, az eddigi szöveg alapján. Aztán hozzáfűzi, és jósolja a következőt.
+
+[Illusztráció, kitalált valószínűségekkel. A pontos működés a 2. alkalommal jön.]{.halvany}
+
+::: notes
+Egy mondatban: a modell nem kitalálja a választ és leírja, hanem szódarabonként (tokenenként) jósolja. Hátrafelé, az eddig leírt szövegre jól lát; előre, arra, hogy mit fog írni tíz szóval később, nem tervez. A 2. alkalommal Pythonból megnézzük, hogy ez tényleg egy ciklus.
+:::
+
+## Jobb bíráló, mint alkotó
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Vers**
+
+minden sor az előzőre épül: jól megy
+:::
+::: {.kartya .rossz}
+**Vicc**
+
+a csattanót előre kellene megtervezni: gyengén megy
+:::
+::: {.kartya .ma}
+**Bírálat**
+
+a kész szöveget elolvassa, és jól ítél
+:::
+:::
+
+<br>
+
+### Ezért a kurzus két válasza:
+
+**ellenőrzés** (egy script a nyers adatból) és **eszközök** (ami tervezést vagy számolást kíván, azt kód végzi)
+
+[Ötlet: Luis Serrano, „Introduction to Agents” masterclass (RAGPack), átvétel engedéllyel.]{.halvany}
+
+::: notes
+Élő demó a Copilot chatben (Agent mód, mint a kurzuson mindig), három prompt (pontosan a forgatókönyvben): vers az inflációról, eredeti vicc a jegybankról, aztán „értékeld szigorúan az előző viccet”. Várható: a vers rendben, a vicc lapos vagy ismert, a bírálat pontos. B-terv, ha a vicc jól sikerül: kérdezd meg, eredeti-e, vagy egy ismert vicc átirata.
+:::
+
+## Mire nem elég a ChatGPT?
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Hallucináció**
+
+magabiztosan állít olyat, ami nem igaz, a kért formában
+:::
+::: {.kartya .rossz}
+**Elavult tudás**
+
+amit a tanítása után írtak, azt nem ismeri
+:::
+::: {.kartya .rossz}
+**Nem látja az adatodat**
+
+a tegnap frissült KSH-táblát, a belső jelentést, a saját fájljaidat
+:::
+::: {.kartya .rossz}
+**Nincs forrás**
+
+nem tudod meg, honnan vette, ezért ellenőrizni sem tudod
+:::
+:::
+
+[Példa: az MNB 2026 szeptemberében már 2,5%-os inflációs célról ír 2028 januárjától (Inflációs jelentés, 2026. szeptember, PDF 5. oldal). Egy korábban tanított modell erről nem tudhat.]{.halvany}
+
+::: notes
+Mind a négyhez van egy-egy alkalom a félévben: forrás és friss dokumentum = RAG (3–6.), saját adat és számolás = eszközök (8–10.), hallucináció = ellenőrzés, végig. A 2. alkalommal élőben is megnézzük: a helyi modell az MNB inflációs céljára rossz számot mond.
+:::
+
+## A félév íve
+
+::: {.folyamat}
+[chat]{.lep} [→]{.nyil} [**RAG:** dokumentumrészletek a kérdés mellé]{.lep .kiemelt} [→]{.nyil} [**ágens:** eszközöket is használ]{.lep .kiemelt}
+:::
+
+<br>
+
+| | Mit old meg | Alkalom |
+|---|---|---|
+| **RAG** | friss tudás, belső dokumentum, forrás | 3–6. |
+| **Ágens** | saját adat lekérése, számolás, több lépés | 7–11. |
+| **Záró projekt** | a dokumentum állítását az ágens a nyers adaton ellenőrzi | 12. |
+
+::: notes
+Mintaprojekt: mit ígért az MNB (Inflációs jelentés), és mi lett belőle (Eurostat/KSH). A kettő együtt kell: a RAG megtalálja az állítást és a forrását, az ágens lekéri és kiszámolja a tényadatot. Csapda: az MNB a KSH-CPI-t jelzi előre, az Eurostat HICP-t közöl.
+:::
+
+## Demó: ugyanaz a feladat chatben és repóban
+
+Havi inflációs összefoglaló az Eurostat HICP-adatából. **Aztán jövő hónap: frissül az adat.**
+
+::: {.columns}
+::: {.column width="50%"}
+**Chatben**
+
+- minden hónapban újra bemásolod az adatot és a szabályokat
+- a régi beszélgetés adata belekeveredhet az újba
+- a számokat senki nem ellenőrzi
+:::
+::: {.column width="50%"}
+**Repóban**
+
+- `AGENTS.md`: a mindig érvényes szabályok
+- `adatszotar.md`: mit jelent az adat
+- skill: a havi összefoglaló pontos lépései
+- `ellenorzes.py`: [RENDBEN]{.cimke .ok} vagy [HIBA]{.cimke .hiba}
+:::
+:::
+
+::: notes
+Élő demó a kurzussablonon (forgatókönyv: pontos promptok, B-terv). Chat: a chat/prompt.md és a CSV egy böngészős chatbe. Repó: Copilot chat Agent módban, /inflacios-osszefoglalo. Aztán az uj_adat/inflacio_2025-12.csv a data/-ba: az ágensnek meg kell állnia az ismeretlen kategórianévnél („Lakhatás és energia”). Felvesszük az adatszótárba, újrafuttatás, RENDBEN.
+:::
+
+## Most ti: notebook, 2–5. rész
+
+Nyisd meg: `01-bevezetes.ipynb` · jobb felül **Select Kernel → .venv**
+
+| Kód | Mit csinál |
+|---|---|
+| `pd.read_csv("data/...", sep=";")` | beolvas egy táblázatot |
+| `adat["hicp_ev_ev"].mean()` | egy oszlop átlaga |
+| `adat[adat["hicp_ev_ev"] > 20]` | csak a feltételnek megfelelő sorok |
+| `adat.groupby(ev)["hicp_ev_ev"].mean()` | csoportonként egy átlag |
+
+: {tbl-colwidths="[64,36]"}
+
+**Ma új:** a Copilot megírja (**Keep** csak elolvasás után) → **te elmagyarázod** → **te átírsz egy sort**.
+
+::: notes
+Kb. 22 perc egyedül a 2–5. részen, aztán 6 perc közösen a 6. rész (következő dia). Ollama nem kell hozzá. Körbejárni. A 7. rész (emlékszik-e az AGENTS.md) otthoni feladat; aki gyorsan végez, kezdheti. A Copilot javaslata mellett Keep/Undo: figyeld, ki nyom olvasás nélkül Keep-et. Tipikus elakadás: a kernel nem a .venv; NameError, mert nem sorban futtattak.
+:::
+
+## Amikor a sorszám nem hónap
+
+„Hány százalékponttal változott az infláció egy év alatt, 2025 novemberére?”
+
+::: {.szamok}
+::: {}
+[+0,3]{.szam .rossz}
+
+[`.shift(12)`: 12 sorral korábbi érték (2024. október)]{.szam-cimke}
+:::
+::: {}
+[−0,2]{.szam .jo}
+
+[a hónap neve alapján: 2024. november]{.szam-cimke}
+:::
+:::
+
+<br>
+
+A 2025. május hiányzik az adatból, ezért júniustól 12 sor = 13 hónap. **Az előjel is megfordul:** az infláció nem nőtt, hanem csökkent (3,9% → 3,7%).
+
+[Adat: Eurostat `prc_hicp_manr`, HU; a notebook 6. része számolja.]{.halvany}
+
+::: notes
+Közösen, a notebook 6. részéből. Kérdés a teremnek, mielőtt a második számot megmutatod: „Nőtt vagy csökkent? Nézzétek meg a táblázatban.” A tanulság ugyanaz, mint a demóban: amikor jövő hónapban bekerül a hiányzó május, a sorszámos kód csendben más hónapokat hasonlít össze. Ami lefut, még nem biztos, hogy jó.
+:::
+
+## Otthonra
+
+- A notebook **2–6. része**, ha órán nem jutottál a végére, és a **7. rész** (Copilot Agent módban): mindenhol [RENDBEN]{.cimke .ok}
+- A végén **commit** és **Sync Changes** (push): a GitHubon látnod kell
+- **Az Ollama telepítése** a telepítési oldal szerint (*Ollama, a 2. alkalomig*). A `gemma4:e4b` 6,6 GB: otthoni wifin töltsd le
+- Ha elakadtál: képernyőkép a hibáról, és küldd el nekem
+
+<br>
+
+**Jövő alkalommal:** az első nyelvimodell-hívás a saját Python-kódodból.
+
+::: notes
+Kilépőkérdés: mire használnád szívesen a saját AI-eszközödet, amire a chat nem elég? A válaszok jól jönnek a projektcsomagok kiválasztásához. Az Ollamát e-mailben is küldd ki (forgatókönyv: Zárás).
+:::

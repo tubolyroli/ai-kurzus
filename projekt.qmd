@@ -30,7 +30,7 @@ Lekéri a tényadatot egy nyilvános adatforrásból (pl. KSH, Eurostat), számo
 
 ## Egy minta: „Mit ígért az MNB, és mi lett?”
 
-- **Gyűjtemény:** az MNB Inflációs jelentései 2023 és 2025 között, negyedévente, kb. 10 PDF.
+- **Gyűjtemény:** az MNB Inflációs jelentései 2023 közepétől 2026 őszéig, negyedévente, 14 PDF.
 - **Kérdés:** „A 2024. márciusi jelentés mekkora éves inflációt várt 2024-re, és mennyi lett?”
 - **A RAG** megtalálja az előrejelzést a jelentésben. **Az ágens** lekéri a tényadatot, kiszámolja az eltérést, és forrásmegjelöléssel válaszol.
 - **Az ellenőrző script** a nyers adatból maga is kiszámolja a tényértéket és az eltérést. Ha a válaszban más szám áll, az eredmény `HIBA`.

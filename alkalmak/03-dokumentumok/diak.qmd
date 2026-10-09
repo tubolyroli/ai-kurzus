@@ -1,0 +1,372 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "3. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[3. alkalom: dokumentumok előkészítése]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Visszakérdezni: mit mondott a modell múltkor az MNB inflációs céljára? (2-t.) És mi a helyes? (3%, a 2026. szeptemberi jelentés szerint 2028 januárjától 2,5%.) Ma azt készítjük elő, hogy a jelentés szövegét oda tudjuk adni neki. Közben: fusson mindenkinél az Ollama.
+:::
+
+## Ma: a jelentésből darabok
+
+::: {.folyamat}
+[PDF]{.lep} [→]{.nyil} [oldalak szövege]{.lep} [→]{.nyil} [takarítás]{.lep} [→]{.nyil} [bekezdések]{.lep} [→]{.nyil} [**darabok forrással**]{.lep .kiemelt}
+:::
+
+<br>
+
+A modell nem tudta az MNB inflációs célját. A válasz ott van a jelentésekben: **oda kell adni neki**.
+
+De nem az egészet. Ma kiderül, miért nem, és hogyan lesz a 14 jelentésből 3345 darab, mindegyik a jelentésével és az oldalszámával.
+
+[A darabokban a jövő héten keresünk, a rákövetkező héten a modell ezekből válaszol.]{.halvany}
+
+::: notes
+A teljes RAG-lánc három alkalom: ma az előkészítés (3.), jövő héten a keresés (4.), utána a válasz forrással (5.). A mai óra a legkevésbé látványos, de itt dől el a legtöbb: ami itt elromlik (rossz oldalszám, félbevágott mondat), az a válaszban jön elő.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: az első óra és az előző alkalom
+:::
+::: {.kartya .ma}
+**Visszakeresés** · *ma*
+
+a kérdéshez illő dokumentumrészletek (RAG): ma az alapanyag, a darabok
+:::
+::: {.kartya}
+**Eszközök**
+
+a modell Python-függvényt hív, ha számolni kell, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+a beszélgetés és az ágens lépései, 9. és 11. alkalom
+:::
+:::
+
+::: notes
+Ma lépünk át a visszakeresés elemre, és négy alkalmon át itt maradunk (3–6.). A kérdés végig ugyanaz: mi kerüljön a modell elé, és mi maradjon ki.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–8 | Nyitás: amit a modell nem tudott |
+| 8–25 | Közösen: miért nem fér bele egy jelentés (notebook 1. rész) |
+| 25–35 | PDF-ből szöveg: két oldalszám, takarítás (2. rész) |
+| 35–60 | **Ti dolgoztok:** notebook 3–4. rész |
+| 60–75 | Közösen: a három darabolás összevetése, mentés (4–5. rész) |
+| 75–85 | Hivatkozás kézzel (5.1), a projektben |
+| 85–90 | Zárás |
+:::
+
+::: notes
+Ma kevés a modellhívás (három), a notebook egésze kb. 1 perc alatt lefut. A lassú rész a 14 PDF első letöltése (kb. 2–3 MB darabonként): ha a wifi gyenge, az előző alkalom végén szóljunk, hogy otthon töltsék le (Run All a notebookon).
+:::
+
+## Egy jelentés nem fér bele
+
+::: {.szamok}
+::: {}
+[~92 000]{.szam .rossz}
+
+[token: a 2024. szeptemberi jelentés (88 oldal, 238 286 karakter)]{.szam-cimke}
+:::
+::: {}
+[4096]{.szam}
+
+[token: a helyi modell kontextusablaka, kérdéssel és válasszal együtt]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Egy jelentés kb. **22 ablaknyi**. A 14 jelentés együtt a felhős modellekbe is csak drágán férne bele.
+
+[Mérés: egy oldal 5108 karakter = 1977 token, vagyis 2,6 karakter/token; ebből becsülve. Notebook 1. rész.]{.halvany}
+
+::: notes
+A tokenszámot a modelltől kérdezzük meg: elküldünk egy oldalt max_tokens=1-gyel, és kiolvassuk a prompt_tokens-t. Az egész jelentést így nem lehet megmérni, mert nem fér bele: ezért becsülünk egy oldalból. A magyar szöveg számokkal tele kb. 2,6 karakter/token, az angol ennél több. Feladat 1.1 közösen.
+:::
+
+## Ha mégis beküldjük: csendes levágás
+
+``` text
+FIGYELEM: a kérés nem fért a modell kontextusablakába (4096 token):
+8199 token volt, ebből a modell csak az utolsó 2051 tokent látta,
+az eleje levágódott.
+```
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Az első 12 oldal + kérdés**
+
+kb. 8200 token, a modell az utolsó 2051-et látta. A válasz: **0** (nem szerepel). Pedig a cél a PDF 5. oldalán ott volt.
+:::
+::: {.kartya}
+**Csak a PDF 5. oldala + kérdés**
+
+989 bemeneti token. A válasz: **3**. Ez áll a jelentésben.
+:::
+:::
+
+[Az Ollama nem ad hibát: csendben levágja a kérés elejét. A `kurzus.py` szól.]{.halvany}
+
+::: notes
+Élő kísérlet, notebook 1. rész (kb. 10 mp). Előtte kérdezni: szerintetek mit mond, ha az első 12 oldalt kapja? Nálam most „0” lett (nem szerepel), korábbi Ollama-változattal „Nem” és „2” is (a 2 ugyanaz a rossz szám, mint múltkor szöveg nélkül). Mindegyik azt mutatja, hogy a levágott részt nem látta, és mégsem jelezte. Az újabb Ollama (0.40) nem az ablak tetejéig tölt, hanem kb. a feléig vág vissza: ezért kérdezi meg a kurzus.py külön is, hogy a kérés belefért-e. A tanulság: kevesebb, de jó szöveg többet ér. Ez a RAG lényege.
+:::
+
+## Context rot: ha belefér, akkor is árthat
+
+::: {.kartyak}
+::: {.kartya}
+**Elveszik a közepén**
+
+A modellek a hosszú bemenet közepén lévő információt rosszabbul használják, mint az elején vagy a végén lévőt.
+
+[Liu és mtsai., 2023: *Lost in the Middle*]{.halvany}
+:::
+::: {.kartya}
+**Romlik a hosszal**
+
+A válasz minősége a bemenet hosszával akkor is romlik, ha a feladat ugyanaz marad.
+
+[Chroma, 2025: *Context Rot*]{.halvany}
+:::
+:::
+
+<br>
+
+### Nem az a cél, hogy minél több férjen bele, hanem hogy a jó rész kerüljön bele.
+
+::: notes
+A felhős modellek ablaka sokkal nagyobb, de ez nem oldja meg a problémát: a lényegtelen szöveg elvonja a figyelmet a fontosról, és minden token pénz. A kontextustervezés lényege a válogatás. Számokat a kutatásokból nem idézek, csak az irányt.
+:::
+
+## PDF-ből szöveg: mit ad vissza a `pymupdf`?
+
+``` text
+A MONETÁRIS TANÁCS FŐ MEGÁLLAPÍTÁSAI AZ INFLÁCIÓS JELENTÉSHEZ
+INFLÁCIÓS JELENTÉS • 2024. SZEPTEMBER
+9
+fogyasztása támogat. A magyar gazdaság 2024-ben várhatóan 1,0–1,8
+százalékkal, 2025-ben 2,7–3,7 százalékkal, majd
+...
+2024-ben főként a fokozatosan emelkedő háztartási fogyasztás
+támogatja a hazai GDP bővülését. Az erőteljes reálbér-
+növekedés és stabil foglalkoztatás fogyasztást növelő hatása
+```
+
+Élőfej, oldalszám, sortörés a mondat közepén, elválasztás a sor végén.
+
+[A 2024. szeptemberi jelentés PDF 11. oldala, a `get_text()` kimenete (rövidítve, a sorokat a dia kedvéért tördeltem).]{.halvany}
+
+::: notes
+Notebook 2. rész, kivetítve. Keressük meg együtt a négy dolgot. Feladat 2.1: milyen nyomtatott oldalszám áll a PDF 11. oldalán? (9.) Ebből jön a következő dia.
+:::
+
+## Két oldalszám
+
+::: {.szamok}
+::: {}
+[PDF 11.]{.szam}
+
+[ennyiedik oldal a fájlban]{.szam-cimke}
+:::
+::: {}
+[9. oldal]{.szam .jo}
+
+[ez áll az oldalon: erre hivatkozunk]{.szam-cimke}
+:::
+:::
+
+<br>
+
+- Mind a 14 jelentésben 2 a különbség (borító, belső borító). Mégsem égetjük be: minden oldalról kiolvassuk.
+- Ahol nincs nyomtatott szám (a belső borító, ahol az inflációs cél áll), ott a PDF-oldalra hivatkozunk.
+
+::: notes
+Az olvasó a nyomtatott oldalszámot látja a jelentésben, ezért a válaszban azt kell megadni. Előző alkalommal a forgatókönyvben PDF-oldalt írtam a célhoz: az 5. oldal a belső borító, ott nincs nyomtatott szám. A nyomtatott_oldalszam csak élőfejes oldalon keres számot, mert a borítón az évszám (pl. 2024) is külön sorban állhat.
+:::
+
+## Takarítás: minden szabály elront valamit
+
+| Szabály | Példa |
+|---|---|
+| sor végi elválasztás összevonása | *ren-* / *delkezésére* → *rendelkezésére* |
+| tartalomjegyzék pontsorai | `Tartalom ........ 12` → `Tartalom 12` |
+| sortörés, több szóköz → egy szóköz | a mondatok újra egyben |
+| élőfej, grafikon-tengely kidobása | `2019.06. 2019.09. …` |
+
+<br>
+
+**De:** *reálbér-* / *növekedés* → *reálbérnövekedés*. A gép nem tudja, hogy ez kötőjeles összetétel.
+
+[Ezért nézd meg a kimenetet néhány valódi oldalon, mielőtt továbblépsz. Notebook 2.2.]{.halvany}
+
+::: notes
+A 2.2 olvasós feladat éppen ez: tippeljék meg, mit ad a tisztit a reálbér-növekedésre. A kereséshez ez a hiba belefér. A tanulság általános: egy takarítási szabályt mindig valódi kimeneten kell megnézni, mert a gép a szabályt mindenhol alkalmazza, ott is, ahol nem kellene.
+:::
+
+## Darabolás: három stratégia
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Fix méret**
+
+1000 karakterenként vágunk, akárhol tartunk
+:::
+::: {.kartya}
+**Fix méret átfedéssel**
+
+minden darab 200 karakterrel az előző vége előtt kezdődik
+:::
+::: {.kartya .ma}
+**Bekezdésenként**
+
+egész bekezdések, legfeljebb 1000 karakterig; a túl hosszút mondathatáron vágjuk
+:::
+:::
+
+<br>
+
+**Túl kicsi darab:** a szám ott van, de nem derül ki, mire vonatkozik.<br>
+**Túl nagy darab:** pontatlan a keresés, és kevesebb fér a kontextusba.
+
+[1000 karakter kb. 385 token. Öt ilyen darab a kérdéssel együtt elfér 3000 tokenben.]{.halvany}
+
+::: notes
+Mindhárom oldalanként dolgozik, így minden darabnak egy oldalszáma van. A fejezetek szerinti darabolás is lehetséges (a címsorok mentén), de a fejezetek több oldalasak, ugyanúgy tovább kellene vágni. Feladat 4.1 (olvasós: hány darab lesz az "abcdefghij"-ből 4-es mérettel, 2-es átfedéssel) a 35–60. percben.
+:::
+
+## Most ti: notebook 3–4. rész
+
+| Rész | Mi történik |
+|---|---|
+| 3 | bekezdések és oldalszámok; hol áll a „középtávú cél”? (3.1) |
+| 4.1 | olvasós: hány darab lesz? |
+| 4.2 | Copilottal: hány token egy átlagos darab? |
+| 4.3 | hibakeresés: két darabnak ugyanaz az azonosítója |
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+### Mielőtt **Keep**-et nyomsz, olvasd el, amit a Copilot írt.
+
+::: notes
+25 perc. Körbejárni. Tipikus elakadás a 3.1-ben: a Copilot a lista indexét (0-tól) adja a PDF-oldalszám helyett, vagy a nyers pdf-ben keres a bekezdések helyett. Ebben a jelentésben a „középtávú cél” csak egy oldalon (PDF 5.) szerepel, ezért a hiányzó break itt nem okoz hibát; kérdezd meg, mi lenne, ha több oldalon is szerepelne. A cel_oldal None: ez helyes (belső borító). A 4.3-nál ha valaki elakad: "a sorszám az enumerate-ből jön". Aki végzett, mehet az 5. részre.
+:::
+
+## A három stratégia összevetve
+
+| | darab | átlagos hossz | mondat közepén kezdődik |
+|---|---|---|---|
+| fix 1000 | 240 | 822 karakter | 128 |
+| fix 1000, átfedés 200 | 269 | 871 karakter | 158 |
+| **bekezdésenként, max 1000** | **273** | **722 karakter** | **18** |
+
+<br>
+
+A bekezdéses darab egész mondatokból áll. A 18 kisbetűs kezdet: folytatás az előző oldalról (12), az ábrajegyzék szóhatáron vágva (6).
+
+[A 2024. szeptemberi jelentés, notebook 4. rész. „Mondat közepén”: kisbetűvel kezdődő darab.]{.halvany}
+
+::: notes
+Az átfedésnél több a kisbetűs kezdet, mert minden darab az előző közepéről indul: ez szándékos, a félbevágott mondat ott még egészben megvan. A bekezdéses darabolás az 1000 karakternél hosszabb bekezdéseket (2024-09: 38 db) mondathatáron vágja; szóhatárra csak az ábrajegyzékben esik vissza. A 18 kisbetűs kezdetből 12 ott van, ahol a bekezdés az előző oldalról folytatódik (5-nél a PDF előbb egy ábra forrássorát adja, ezért az oldal közepén látszik), 6 az ábrajegyzékből jön: ott nincs mondatvégi pont, a több ezer karakteres „mondatot” szóhatáron vágjuk. A bekezdéses darabok átlaga 722 karakter (kb. 280 token), öt belőlük kényelmesen elfér. Mi ezt választjuk.
+:::
+
+## Egy vágás közelről
+
+``` text
+FIX:          …a nettó export növekedési hozzájárulása | 1,0 százalékpont volt…
+MONDATHATÁR:  …csak részben ellensúlyozott. | Az export 1,8 százalékos és az
+              import 3,2 százalékos csökkenése mellett a nettó export növekedési
+              hozzájárulása 1,0 százalékpont volt a második negyedévben. …
+```
+
+A fix vágásnál az **1,0 százalékpont** gazdátlan. Mondathatáron vágva a mondat egyben marad.
+
+**Mondatvég:** pont, szóköz, nagybetű vagy számjegy. **Kivéve** szám („2025. I. negyedév”), római szám vagy egy betű („Kr. e.”), rövidítés („pl.”, „stb.”) után.
+
+[A 2024. szeptemberi jelentés 9. oldala (PDF 11.), notebook 4. rész.]{.halvany}
+
+::: notes
+Megmutatni a notebookban az átfedéses változatot is: ott a második darab 200 karakterrel korábban indul, így a mondat egészben benne van. A PDF 11. oldal második bekezdése hosszabb 1000 karakternél: a bekezdéses darabolás ezt mondathatáron vágja, a „…csak részben ellensúlyozott.” után. A mondathatár-szabályt a notebook egy kitalált példán mutatja meg (mondatokra): a „stb.” után nem vág, pedig ott mondat végződik. Kérdezd meg: miért jobb, ha inkább nem vág, mint ha rossz helyen vág?
+:::
+
+## Minden darab viszi a forrását
+
+``` python
+{"id": "2024-09_p011_0",
+ "jelentes": "2024-09",
+ "pdf_oldal": 11,
+ "oldal": 9,
+ "szoveg": "fogyasztása támogat. A magyar gazdaság 2024-ben ..."}
+```
+
+14 jelentés → **3345 darab** → `data/cache/darabok.json`
+
+**Próba (5.1):** „2024-ben az infláció 3,7 százalékon alakult” → 2025. márciusi jelentés, **62. oldal** (PDF 64.)
+
+[A várt forrást egy script a nyers PDF-ből keresi meg, a darabolástól függetlenül.]{.halvany}
+
+::: notes
+A 4.3 hibakeresés tanulsága: ha két darabnak ugyanaz az azonosítója, a keresés eredményét nem lehet visszakövetni. A data/cache mappa nem kerül a GitHubra: bármikor újraépíthető. Az 5.1-ben a pontos mondatra kerestünk. Jövő héten a valódi kérdésre ("Mekkora volt az infláció 2024-ben?") keresünk, és meglátjuk, mi kerül e mondat elé.
+:::
+
+## A projektben, és otthonra
+
+**A projektcsomagodon (párban) ugyanez lesz:** nyisd meg nyersen néhány oldalt, igazítsd az élőfejet és az oldalszámot, darabolj bekezdésenként, nézd meg a kimenetet.
+
+**Otthonra**
+
+- A notebook **4.3 és 5. része**, ha órán nem jutottál el odáig: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- Nyiss meg egy másik jelentést, és nézz meg nyersen két oldalt: talál a takarítás mindent?
+
+<br>
+
+**Jövő alkalommal:** embeddingek és vektoros keresés. A darabokból számvektorok lesznek, és jelentés szerint keresünk bennük.
+
+::: notes
+Ma választotok projektcsomagot (MNB vagy költségvetési, saját téma jóváhagyással); a darabolást ott is le kell futtatni, és más kiadványnál más az élőfej. Kilépőkérdés: melyik volt ma a legmeglepőbb dolog a PDF-ben?
+:::

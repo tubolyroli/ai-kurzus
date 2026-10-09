@@ -1,0 +1,397 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "4. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[4. alkalom: embeddingek és vektoros keresés]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitókérdés: kinél van meg a data/cache/darabok.json az előző alkalomról? Akinél nincs, annak a notebook újraépíti (kb. 10 mp). Kinél van letöltve a bge-m3 (ollama pull bge-m3, kb. 1,2 GB)? Akinél nincs, most indítsa el.
+:::
+
+## Ma: keresés jelentés szerint
+
+::: {.folyamat}
+[kérdés]{.lep} [→]{.nyil} [vektor]{.lep} [→]{.nyil} [hasonlóság **minden** darabhoz]{.lep .kiemelt} [→]{.nyil} [az 5 legjobb, forrással]{.lep}
+:::
+
+<br>
+
+Az előző alkalommal a 14 jelentésből 3345 darab lett. Ma megkeressük bennük, ami egy kérdéshez illik. **Nem a szavakat, hanem a jelentést hasonlítjuk.**
+
+[A találatokat nem a modell ítéli meg: egy script a nyers PDF-ből keresi ki, melyik oldalnak kellene előjönnie.]{.halvany}
+
+::: notes
+A RAG három lépése: előkészítés (múlt hét), keresés (ma), válasz forrással (jövő hét). Ma egyetlen nyelvimodell-hívás lesz, a többi az embedding-modellé.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: az első óra és a 2. alkalom
+:::
+::: {.kartya .ma}
+**Visszakeresés** · *ma*
+
+a kérdéshez illő darabok kikeresése: a keresés maga
+:::
+::: {.kartya}
+**Eszközök**
+
+a modell Python-függvényt hív, ha számolni kell, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+a beszélgetés és az ágens lépései, 9. és 11. alkalom
+:::
+:::
+
+::: notes
+A visszakeresés második lépése. Ami ma rosszul jön vissza, az jövő héten a modell elé kerül: a kereső dönti el, mit lát a modell.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–8 | Nyitás; az indexelés elindítása (3. rész, a háttérben fut) |
+| 8–25 | Közösen: vektorok kézzel, aztán a `bge-m3` (notebook 1–2. rész) |
+| 25–35 | A vektortár és a keresés (3–4. rész eleje) |
+| 35–58 | **Ti dolgoztok:** notebook 3.1 és 4. rész |
+| 58–72 | Közösen: a hihető, de rossz találat; kulcsszavas keresés |
+| 72–82 | Mennyi fér a kontextusba? (5. rész) |
+| 82–90 | Érdekesség: ChromaDB; zárás |
+:::
+
+::: notes
+Az indexelés nálam kb. 1 perc (4 jelentés, 985 darab), a hallgatók gépén több is lehet. Ezért a nyitás végén mindenki futtassa le a notebookot a 3. rész végéig (Run All is jó), és amíg fut, az 1–2. részt a kivetítőn nézzük.
+:::
+
+## Játék két dimenzióban
+
+::: {.columns}
+::: {.column width="55%"}
+<svg viewBox="0 0 520 340" width="100%" role="img" aria-label="Négy mondat nyílként egy síkon: vízszintesen mennyire szól az árakról, függőlegesen mennyire a munkaerőpiacról">
+<defs><marker id="nyil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#252A51"/></marker></defs>
+<line x1="40" y1="300" x2="500" y2="300" stroke="#8A8DA6" stroke-width="1.5"/>
+<line x1="40" y1="300" x2="40" y2="20" stroke="#8A8DA6" stroke-width="1.5"/>
+<text x="500" y="325" text-anchor="end" font-size="15" fill="#5A5E7A">árakról szól →</text>
+<text x="48" y="22" font-size="15" fill="#5A5E7A">munkaerőpiacról szól ↑</text>
+<line x1="40" y1="300" x2="310" y2="272" stroke="#252A51" stroke-width="2.5" marker-end="url(#nyil)"/>
+<line x1="40" y1="300" x2="280" y2="244" stroke="#252A51" stroke-width="2.5" marker-end="url(#nyil)"/>
+<line x1="40" y1="300" x2="70" y2="48" stroke="#B48E2C" stroke-width="2.5" marker-end="url(#nyil)"/>
+<line x1="40" y1="300" x2="220" y2="132" stroke="#252A51" stroke-width="2.5" marker-end="url(#nyil)" stroke-dasharray="6 4"/>
+<text x="318" y="280" font-size="15" fill="#252A51">Csökkent az infláció.</text>
+<text x="288" y="240" font-size="15" fill="#252A51">Lassult az áremelkedés.</text>
+<text x="80" y="52" font-size="15" fill="#8A6A1E">Nőtt a munkanélküliség.</text>
+<text x="228" y="128" font-size="15" fill="#252A51">A bérek gyorsabban nőttek…</text>
+</svg>
+:::
+::: {.column width="45%"}
+Minden mondat **két szám**: mennyire szól az árakról, és mennyire a munkaerőpiacról.
+
+Két mondat akkor hasonló, ha a nyilaik **egy irányba** mutatnak.
+
+[A számokat én találtam ki a példa kedvéért. Notebook 1. rész.]{.halvany}
+:::
+:::
+
+::: notes
+Ez a legfontosabb kép ma. Egy embedding-modell ugyanezt csinálja, csak 1024 számmal, és a számokat nem mi találjuk ki, hanem a modell tanulta meg. A tengelyeknek ott nincs nevük.
+:::
+
+## Koszinusz-hasonlóság
+
+``` python
+def koszinusz(a, b):
+    """1 = ugyanarra mutatnak, 0 = merőlegesek."""
+    return a @ b / (np.linalg.norm(a) * np.linalg.norm(b))
+```
+
+::: {.szamok}
+::: {}
+[0,991]{.szam .jo}
+
+[„Csökkent az infláció.” és „Lassult az áremelkedés.”]{.szam-cimke}
+:::
+::: {}
+[0,220]{.szam .rossz}
+
+[„Csökkent az infláció.” és „Nőtt a munkanélküliség.”]{.szam-cimke}
+:::
+:::
+
+<br>
+
+**A hossz nem számít, csak az irány:** `[3, 4]` és `[6, 8]` hasonlósága 1.
+
+[A játékvektorokból számolva, notebook 1. rész (1.1 olvasós feladat).]{.halvany}
+
+::: notes
+`a @ b`: az elemek páronkénti szorzatának összege. Osztjuk a két hosszal, így csak az irány marad. Az 1.1-nél ([3,4] és [6,8]) kérdezd meg a termet, mielőtt futtatják. Ha normalizálunk (minden vektort elosztunk a hosszával), a koszinusz egyszerűen a skaláris szorzat: ezt használjuk a keresésnél.
+:::
+
+## Igazi embedding: a `bge-m3`
+
+Hasonlóság a „Csökkent az infláció.” mondathoz (1024 szám mondatonként):
+
+| Mondat | Közös szó | Koszinusz |
+|---|---|---|
+| Inflation has fallen. | 0 | **0,936** |
+| Mérséklődött az áremelkedés üteme. | 1 („az”) | **0,839** |
+| Gyengült a forint az euróval szemben. | 1 („az”) | 0,670 |
+| Nőtt a munkanélküliség. | 0 | 0,614 |
+
+<br>
+
+A fordítás és a szinonima van a legközelebb, **közös szó nélkül**.
+
+[`bge-m3` a helyi Ollamában, notebook 2. rész.]{.halvany}
+
+::: notes
+A 2.1 Copilottal: melyik a leghasonlóbb másik mondat. Figyeljék, kihagyja-e a kód az önmagával vett hasonlóságot (1). Az abszolút értékek (0,6 körül a nem kapcsolódó mondatoknál) nem 0-hoz közeliek: csak a sorrendjük számít, a skálát nem érdemes értelmezni.
+:::
+
+## Miért kell többnyelvű modell?
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Ragozás**
+
+*infláció, inflációt, inflációs, inflációja*: a kulcsszavas keresésnek négy különböző szó
+:::
+::: {.kartya}
+**Szókincs**
+
+egy főleg angol modell a magyar szavakat értelmetlen darabokra vágja
+:::
+::: {.kartya .ma}
+**Nyelvek között**
+
+a `bge-m3` angol kérdéssel is megtalálja a magyar szöveget
+:::
+:::
+
+<br>
+
+Ha más modellt választanál: **a saját tesztkérdéseiden mérd meg**, hogy tud-e magyarul.
+
+[`bge-m3`: BAAI, 2024, több mint száz nyelven tanítva. A gépeden most csak ez az egy embedding-modell van.]{.halvany}
+
+::: notes
+Más modellt ma nem töltünk le. Az összehasonlítást a kulcsszavas kereséssel csináljuk meg (4. rész vége). Választási szempontok: tud-e magyarul (mérd), milyen hosszú szöveget fogad, hol fut és mennyibe kerül.
+:::
+
+## A vektortárunk: egy mátrix és egy lista
+
+``` python
+def keres(kerdes, darabok, index, k=5):
+    q = np.array(embed(kerdes)[0])
+    q = q / np.linalg.norm(q)
+    hasonlosagok = index @ q                  # minden darabhoz egyszerre
+    legjobbak = np.argsort(-hasonlosagok)[:k]
+    return [(float(hasonlosagok[i]), darabok[i]) for i in legjobbak]
+```
+
+::: {.szamok}
+::: {}
+[~65 mp]{.szam}
+
+[4 jelentés, 985 darab beágyazása, adagonként 64]{.szam-cimke}
+:::
+::: {}
+[~4 perc]{.szam}
+
+[becslés mind a 14-re (3345 darab): ezért órán 4]{.szam-cimke}
+:::
+:::
+
+[Saját gépen (Apple M4), 65–71 mp több futásból. Az eredmény a `data/cache/`-be kerül, legközelebb onnan töltődik.]{.halvany}
+
+::: notes
+Az index i. sora a darabok i. elemének vektora. Nincs benne más. A 3.1 Copilottal: a mért sebességből becsülni a 14 jelentés idejét. A négy jelentés: két 2025 előtti (2023-12, 2024-09), egy 2025-ös, amely közli a 2024-es tényadatot (2025-03), és a legújabb (2026-09) az új inflációs céllal. Otthon a JELENTESEK lista átírható mind a 14-re.
+:::
+
+## Most ti: notebook 3.1 és 4. rész
+
+| Rész | Mi történik |
+|---|---|
+| 3.1 | Copilottal: mennyi ideig tartana mind a 14 jelentés? |
+| 4.1 | hibakeresés: a kereső a legrosszabb találatokat adja |
+| 4.2 | olvasós: melyik jelentésből jön az első találat? |
+| 4.3 | Copilottal: hány találat jön 2025 előtti jelentésből? |
+| 4.4 | olvasós: melyik szó közös az angol és a magyar szövegben? |
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+### Mielőtt **Keep**-et nyomsz, olvasd el, amit a Copilot írt.
+
+::: notes
+23 perc. Körbejárni. Tipikus elakadás: az index még számol (a cella mellett forog a jel): addig a 4. rész függvényeit lehet olvasni. A 4.1-nél a hasonlóságok feltűnően kicsik (0,23 körül), és a nyomda címe meg a hátsó borító szövege jön ki: ez a nyom. A 4.3-nál a Copilot néha évszámmá alakítja a "2023-12"-t (int(...[:4])): ez is jó, ha 2025-nél kisebbet néz.
+:::
+
+## Első kérdés: mekkora az MNB inflációs célja?
+
+::: {.kartyak}
+::: {.kartya}
+**1. találat · 2026. szeptember, 56. oldal**
+
+„Az MNB a középtávú inflációs célját 2028. január 1-jétől **2,5 százalékban** határozza meg…”
+:::
+::: {.kartya}
+**2. találat · 2023. december, PDF 5. oldal**
+
+„…a **3 százalékos** középtávú cél körüli infláció biztosításával…”
+:::
+:::
+
+<br>
+
+A keresés jó oldalakat talált. **Két időpont, két cél:** a kereső nem dönti el, melyik kell.
+
+[A várt oldalakat egy script a nyers PDF-ből keresi: ahol „középtávú (inflációs) cél” áll. Notebook 4. rész.]{.halvany}
+
+::: notes
+Visszautalás a 2. alkalomra: ott a modell 2-t mondott. Most a kereső előhozza a valódi szöveget. A 3%-os mondat a belső borítón áll (PDF 5. oldal, nyomtatott szám nélkül). Jövő héten a modellnek meg kell mondani, hogy figyeljen a jelentés dátumára.
+:::
+
+## Második kérdés: a jó szám, és mellette a régiek
+
+„Mekkora volt az infláció 2024-ben?”
+
+::: {.szamok style="grid-template-columns: 1fr 1fr 1fr;"}
+::: {}
+[3,7%]{.szam .jo}
+
+[1. találat (0,688): MNB, 2025. március, 62. oldal. **Tényadat**.]{.szam-cimke}
+:::
+::: {}
+[4,0–5,5%]{.szam .rossz}
+
+[3. találat (0,675): MNB, 2023. december, 12. oldal. **Előrejelzés**.]{.szam-cimke}
+:::
+::: {}
+[3,5–3,9%]{.szam .rossz}
+
+[4–5. találat: MNB, 2024. szeptember, 12. oldal. **Előrejelzés**.]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Mindegyik forrás valódi, mindegyikben ott a kérdés két kulcsszava (*infláció*, *2024*). **Ha a modell ezt az ötöt kapja, három szám közül választ.**
+
+::: notes
+Élő demó: futtasd a 2024-es keresést, olvasd fel az 1., 3. és 4. találatot, kérdezd meg: melyik a válasz? A hasonlóságok nagyon közel vannak (0,688 az első, 0,668 az ötödik): amikor a hosszú bekezdéseket még fix méretben vágtuk, a 2023. decemberi előrejelzés volt az első, a tényadat a második. Egy apró változás a darabolásban megfordította a sorrendet: erre nem lehet építeni. Ha a modell a régi előrejelzést választja, hivatkozással együtt magabiztosan mondja. Utána a GDP-cella: ott az első találat a 2024. szeptemberi előrejelzés (1,0–1,8), a tényadat (0,5, 2025. március, 63. oldal) csak a 3. Három eszközünk lesz rá: dátum a darab mellett (5.), szűrés a jelentés dátumára, és script, amely a számot a nyers adatból ellenőrzi (6. és a projekt). Az ellenőrző cella a 3,7%-os mondat oldalát a nyers PDF-ből keresi ki.
+:::
+
+## Kulcsszavas vagy jelentés szerinti?
+
+| Kérdés | Kulcsszavas | Jelentés szerinti |
+|---|---|---|
+| Mekkora az MNB inflációs célja? | [nincs jó oldal]{.cimke .hiba} | [van]{.cimke .ok} |
+| Mekkora volt az infláció 2024-ben? | [nincs jó oldal]{.cimke .hiba} | [van]{.cimke .ok} |
+| What is the central bank's inflation target? | [nincs jó oldal]{.cimke .hiba} | [van]{.cimke .ok} |
+
+<br>
+
+Az angol kérdésnél a kulcsszavas keresés két „közös szót” talált: *bank* és ***is***. A magyar *is* („szintén”) véletlenül angol szó is.
+
+[„Van”: az első 5 találatban ott a script által a nyers PDF-ben talált oldal.]{.halvany}
+
+::: notes
+A kulcsszavas keresés az inflációs célnál a Monetáris Tanács megállapításainak első bekezdését hozza („az MNB elsődleges célja az árstabilitás”), ahol nincs szám. Előnye is van: pontos kifejezésre, azonosítóra megbízható. A nagy rendszerek kombinálják (hibrid keresés). Nálunk a jelentés szerinti marad.
+:::
+
+## Mennyi fér a kontextusba?
+
+| k | token, átlagos darabokkal | token, leghosszabbakkal | 3000 alatt? |
+|---|---|---|---|
+| 3 | 869 | 1201 | [igen]{.cimke .ok} |
+| **5** | **1448** | **2002** | [igen]{.cimke .ok} |
+| 8 | 2317 | 3203 | [nem]{.cimke .hiba} |
+| 20 | 5793 | 8007 | [nem]{.cimke .hiba} |
+
+<br>
+
+Mérve: a 2024-es kérdés 5 találata a kérdéssel **1505 token**. Jövő héten **k = 5**.
+
+[Becslés: 2,5 karakter/token (mérve), a darabok átlagosan 723, legfeljebb 1000 karakteresek. A 3000 alatt 200 token jut az utasításra. Notebook 5. rész.]{.halvany}
+
+::: notes
+A 4096-os ablakba a gondolkodásnak és a válasznak is bele kell férnie, ezért 3000 a kérés felső határa. Az 5.1-ben a Copilottal kiszámolják: a legrosszabb esetben legfeljebb 6 darab fér bele. A darabolás és a k együtt dől el: kisebb darabból többet adhatunk. És a context rot miatt a több nem jobb.
+:::
+
+## Érdekesség: ugyanez ChromaDB-vel
+
+::: {.columns}
+::: {.column width="50%"}
+- **Gyűjtemény:** `ids`, `documents`, `metadatas`, `embeddings`
+- a vektort kiszámolja maga, vagy elfogadja a mienket
+- lemezre ment: `PersistentClient`
+- **szűr** a forrásadatokra (`where=`)
+:::
+::: {.column width="50%"}
+**Nem nézi meg az összes vektort.** Egy több szintű gráfon (HNSW) lépked a kérdés felé: milliós gyűjteménynél is gyors, és csak nagyon ritkán téveszti el a legközelebbit.
+
+[A mi `index @ q` sorunk mind a 985 darabot megnézi: pontos, és ekkora gyűjteménynél gyors.]{.halvany}
+:::
+:::
+
+``` python
+gyujtemeny.query(query_embeddings=[q], n_results=5, where={"jelentes": "2026-09"})
+```
+
+::: notes
+Nem kötelező, ha csúszunk, kihagyható (lásd a forgatókönyvet). A lényeg: a ChromaDB és a FAISS ugyanazt csinálja, mint a mi numpy-kódunk, csak nagyban. A HNSW: a felső szinten kevés, távoli kapcsolat, lefelé egyre sűrűbb; a keresés mohón mindig a kérdéshez közelebbi szomszédra lép. A szűrés a 2024-es kérdésnél jól jönne: csak a 2025 utáni jelentésekben keresni (where={"jelentes": {"$in": ["2025-03", "2026-09"]}}). A HNSW-t a Chroma kis gyűjteménynél is használja, nem csak milliósnál. A jegyzetben ott a teljes Chroma-kód a mi soraink mellett. Forrás: docs.trychroma.com.
+:::
+
+## Otthonra
+
+- A notebook **4.3–4.4 és 5. része**, ha órán nem jutottál el odáig: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- Tegyél fel **három saját kérdést** a `keres` függvénynek (például a GDP-ről vagy a forintról): a találatok jó oldalról jönnek? Van köztük régi előrejelzés?
+- Ha van időd: a `JELENTESEK` listába írd mind a 14 jelentést, és futtasd újra (nálam kb. 4 perc)
+
+<br>
+
+**Jövő alkalommal:** a RAG-lánc. A megtalált darabokat a kérdés mellé tesszük, és a modell ezekből válaszol, forráshivatkozással. Kiderül, mit kezd a régi előrejelzéssel.
+
+::: notes
+Kilépőkérdés: melyik találat lepett meg ma a legjobban? A saját kérdéseket jövő héten használjuk: ezekre fogja a modell a választ megírni.
+:::

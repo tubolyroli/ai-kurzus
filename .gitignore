@@ -7,3 +7,5 @@
 __pycache__/
 .env
 notebookok/data/**/*.pdf
+# Futás közben számolt gyorsítótár (pl. embeddingek), bármikor újraszámolható
+notebookok/data/cache/

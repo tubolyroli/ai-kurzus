@@ -1,0 +1,364 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "6. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[6. alkalom: RAG-kiértékelés és javítás]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitókérdés: kinek futott le otthon az 5. notebook? Akinél igen, annál az index a gyorsítótárból jön, pár másodperc alatt; akinél nem, kb. 2 perc. Mindenki futtassa le most az 1. részt.
+:::
+
+## Ma: mérünk, aztán javítunk
+
+::: {.folyamat}
+[tesztkérdések]{.lep} [→]{.nyil} [keresés mérése]{.lep} [→]{.nyil} [válaszok mérése]{.lep} [→]{.nyil} [egy hiba]{.lep} [→]{.nyil} [javítás, **újramérés**]{.lep .kiemelt}
+:::
+
+<br>
+
+Múltkor négy kérdésen működött a lánc. **Négy kérdés nem bizonyít semmit.** Ma 8 tesztkérdés, elvárt válasszal, és egy script mondja meg, hány jó.
+
+[A várt számot és oldalt a script olvassa ki a nyers PDF-ből. A modellt nem kérdezzük meg, jól válaszolt-e.]{.halvany}
+
+::: notes
+A kurzus elve most rendszerré válik: nem egy-egy kérdést nézünk, hanem egy tesztkészletet, és minden változtatás után az egészet újramérjük. Ma minden modellhívás gondolkodás nélkül megy, mert sok lesz (8 kérdés kétszer).
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: az első óra, a 2. és 5. alkalom
+:::
+::: {.kartya .ma}
+**Visszakeresés** · *ma*
+
+mérjük, mi kerül a modell elé, és jó-e: a RAG-blokk zárása
+:::
+::: {.kartya}
+**Eszközök**
+
+a modell Python-függvényt hív, ha számolni kell, 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+a beszélgetés és az ágens lépései, 9. és 11. alkalom
+:::
+:::
+
+::: notes
+A RAG-blokk utolsó alkalma. Jövő héten félidő: checkpoint a projektekkel, aztán az ágensek.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–5 | Nyitás; előkészítés (notebook 1. rész) |
+| 5–20 | Közösen: a tesztkészlet; **ti:** két saját tesztkérdés (2.1) |
+| 20–30 | A keresés mérése: jó oldal az első k-ban (3.1) |
+| 30–50 | Három szempont; **ti:** a számellenőrző (4.1); a kiértékelés |
+| 50–68 | Közösen: a hibalánc egy valódi hibán (5. rész, 5.1) |
+| 68–82 | Javítási kísérlet és újramérés (6. rész, 6.1) |
+| 82–90 | A projekt 10 kérdése; zárás |
+:::
+
+::: notes
+Két hosszabb futás van: a kiértékelés (kb. 1 perc) és az új index (kb. 2 perc). Az indexet a 6. rész elején indítsák el, amíg az 5. részt beszéljük meg, ha csúszunk.
+:::
+
+## Egy tesztkérdés
+
+``` python
+{"kerdes": "Mekkora volt az infláció 2024-ben?",
+ "jelentes": "2025-03",
+ "minta": r"2024-ben az infláció (\d,\d) százalékon alakult"}
+```
+
+- **kérdés:** ahogy egy felhasználó feltenné
+- **jelentés:** hol áll a válasz (`None`, ha sehol)
+- **minta:** a PDF mondata; a zárójeles rész a **várt szám**
+
+A várt számot (3,7) és az oldalt (62.) **a script olvassa ki**, a futtatás előtt.
+
+[Négy mintapélda: tényadat; előrejelzés egy megnevezett jelentésből; ugyanez másik jelentésből; „nincs benne”. Notebook 2. rész.]{.halvany}
+
+::: notes
+Ha elírom a mintát, a script nem talál semmit, és ez kiderül, mielőtt a modellt bármire megkérdeznénk. A 2.1: két saját kérdés. A mondatok_ahol segédfüggvény kiírja a mondatokat egy kifejezésre; a számot (\d,\d)-re cserélik. Tipikus hiba: a gondolatjel (–) helyett kötőjel (-) a mintában, vagy szóköz a gondolatjel körül.
+:::
+
+## A keresés mérése: jó oldal az első k-ban
+
+| k | 1 | 3 | 5 | 10 |
+|---|---|---|---|---|
+| jó oldal az első k találatban | 4/7 | 5/7 | **5/7** | 6/7 |
+
+<br>
+
+Modellhívás nélkül, csak a keresés. Ez a *hit@k*.
+
+**Miért nem k = 10?** A legrosszabb esetben 6 darab fér a 3000 tokenbe (4. alkalom), és a több darab több zajt is visz.
+
+[A 7 válaszolható tesztkérdésen, az 5 jelentés indexén. Notebook 3. rész (3.1).]{.halvany}
+
+::: notes
+A 3.1 Copilottal: a találati arány k = 1, 3, 5, 10-re. Tipikus hiba: a Copilot az összes (8) kérdéssel oszt, a nincs-benne kérdéssel együtt; vagy nem vágja le az első k-ra ([:k]). Ha k = 5-nél a kérdések harmadánál nincs meg a jó oldal, a modell ott nem is válaszolhat jól.
+:::
+
+## A válaszok: három szempont
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Kontextus-relevancia**
+
+a keresés releváns részletet talált?
+
+*nálunk:* a várt oldal az első 5-ben
+:::
+::: {.kartya}
+**Hűség a forráshoz**
+
+a válasz a kapott forrásokból következik? *(faithfulness)*
+
+*nálunk:* minden szám megvan a modellnek adott szövegben
+:::
+::: {.kartya .ma}
+**Helyesség**
+
+a kérdésre felel, és jól?
+
+*nálunk:* a várt szám a válaszban, vagy `nem_tudja`
+:::
+:::
+
+<br>
+
+A **RAGAS** szempontjai, de **nem LLM-bíróval**: ahol objektív helyes válasz van, script dönt.
+
+::: notes
+A RAGAS könyvtár ezeket egy másik modellel pontoztatja. A masterclass kiértékelési sorrendje: automatikus ellenőrzés, ahol lehet; páros összehasonlítás vagy LLM-bíró csak ott, ahol nincs objektív válasz. „If it's correct, that's correct.” A harmadik szempont a RAGAS-ban „answer relevance”; nálunk szigorúbb, mert van várt szám.
+:::
+
+## A számellenőrző: egyszerű hallucinációszűrő
+
+``` python
+def szamok(szoveg):
+    szoveg = re.sub(r"\[[\d,\s]+\]", " ", szoveg)     # [2], [1, 3]: hivatkozás
+    szoveg = re.sub(r"(\d)\.(\d)", r"\1,\2", szoveg)   # 3.7 → 3,7
+    return re.findall(r"\d+(?:,\d+)?", szoveg)
+
+forrasban = set(szamok(forras_szoveg))   # halmaz: a 13,7 nem a 3,7
+hianyzo = [s for s in szamok(valasz) if s not in forrasban]
+```
+
+A válasz minden száma megvan a forrásban? Ha nem, a modell **nem onnan vette**.
+
+[Ezt a szűrőt nem a modell írja saját magának. Notebook 4.1, Copilottal; az ellenőrzés hat előre megírt esettel.]{.halvany}
+
+::: notes
+A két csapda, amit a Copilot gyakran elront: a [2] hivatkozást is számnak veszi (és nem találja a forrásban), és szövegrészt keres (in), így a „3,7” benne van a „13,7”-ben. A hat ellenőrzési eset közül az 1. és az 5. fogja meg ezeket. Fontos: a szűrő a kitalált számot fogja meg, a rosszul kiválasztottat nem. Erre jön a következő példa.
+:::
+
+## Most ti: notebook 2–5. rész
+
+| Rész | Mi történik |
+|---|---|
+| 2.1 | két saját tesztkérdés a PDF mondataiból |
+| 3.1 | Copilottal: találati arány, k = 1, 3, 5, 10 |
+| 4.1 | Copilottal: a számellenőrző |
+| 5.1 | Copilottal: ismétlődő darabkezdetek |
+| 6.1 | olvasós: jó oldal a javítás után? |
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+### Mielőtt **Keep**-et nyomsz, olvasd el, amit a Copilot írt.
+
+::: notes
+Ez nem egy blokk: a 2.1 és a 3.1 az első szakaszban, a 4.1 a kiértékelés előtt, az 5.1 a hibalánc közben, a 6.1 a javítás előtt. Ezt a diát akkor mutasd, amikor először elengeded őket, és hagyd kint a táblán.
+:::
+
+## Az első mérés
+
+::: {.szamok style="grid-template-columns: repeat(3, 1fr)"}
+::: {}
+[5/7]{.szam .rossz}
+
+[jó oldal az első 5 találatban]{.szam-cimke}
+:::
+::: {}
+[8/8]{.szam .jo}
+
+[hű a forráshoz: minden szám a darabokból]{.szam-cimke}
+:::
+::: {}
+[7/8]{.szam .rossz}
+
+[helyes: a várt szám a válaszban]{.szam-cimke}
+:::
+:::
+
+<br>
+
+**Hű, de rossz:** mind a nyolc válasz száma ott van a darabokban, mégis egy rossz, és egy csak azért „helyes”, mert a mérés engedékeny. A modell nem talált ki számot, csak **rosszat választott**.
+
+[8 kérdés, 16 modellhívás (a fele egytokenes tokenszámlálás), kb. fél perc, gondolkodás nélkül. Saját gép (Apple M4). Notebook 4. rész.]{.halvany}
+
+::: notes
+Kérdésenként is nézzétek meg. Helyes, pedig nincs jó oldal: a márciusi infláció-előrejelzési kérdésnél a modell a 13. oldali táblázatból vette a sávot, nem a 12. oldal mondatából (az a 10. helyen jön): a mérőszám is tévedhet. „Helyes”, de olvasd el: az általános GDP-kérdésnél a modell a 2024. szeptemberi előrejelzéssel (1,0–1,8) kezd, a 0,5-ös tényadatot csak harmadikként, előrejelzésnek nevezve említi; a „helyes” oszlop átengedi, mert csak azt nézi, benne van-e a 0,5. A rossz válasz: a márciusi GDP-kérdésnél „nincs benne”, és helyette a 2024-es tényadat, 0,5 (egy korábbi futásban −3,8 és −2,8). A modell válaszai futásonként változnak, a „jó oldal” oszlop nem.
+:::
+
+## Egy valódi hiba
+
+„Mekkora GDP-növekedést várt az MNB 2024-re a 2024. márciusi Inflációs jelentésben?”
+
+::: {.szamok}
+::: {}
+[0,5%]{.szam .rossz}
+
+[a modell válasza nálam: „az előrejelzést nem adta meg”, helyette a 2024-es tényadat (2025. március). Egy korábbi futásban: −3,8 – −2,8, a költségvetési egyenleg sávja.]{.szam-cimke}
+:::
+::: {}
+[2,0–3,0%]{.szam .jo}
+
+[a várt sáv: MNB Inflációs jelentés, 2024. március, 19. oldal]{.szam-cimke}
+:::
+:::
+
+<br>
+
+A jó szám **ott volt** a kontextusban: egy táblázatdarabban, „MNB (2024. március) 2,0 - 3,0”. Miért nem azt mondta?
+
+::: notes
+Élőben: futtasd az 5. rész első két celláját. A keresés öt találatából kettő ugyanannak a táblázatnak két darabja (2024. március, 26. oldal: „Az MNB alap-előrejelzése összevetve más prognózisokkal”). A jó mondat (19. oldal) csak a 21. helyen van. Kérdezd meg a termet, mielőtt a következő diára lépsz: mit lát a modell ebből a táblázatból?
+:::
+
+## A hibalánc
+
+::: {.columns}
+::: {.column width="52%"}
+``` text
+   1-5. táblázat: Az MNB alap-előrejel…
+>> 2024 2025 2026
+   Fogyasztóiár-index (éves átlagos…
+   MNB (2024. március) 3,5 - 5,0 …
+>> GDP (éves növekedés, %)
+   MNB (2024. március) 2,0 - 3,0 …
+   Államháztartás egyenlege (ESA…
+   ────── darabhatár ──────
+   MNB (2024. március) … (-3,8) - (-2,8)
+```
+:::
+::: {.column width="46%"}
+::: {style="padding-left: 1.4em"}
+1. **Takarítás:** az 5 szónál rövidebb blokk kimarad (3. alkalom). Kiesett az **évek sora** és a **„GDP” sorcím** (>>).
+2. **Darab:** a táblázatban nincs mondatvég, szóhatáron vágunk: a költségvetési sor elvált a címétől.
+3. **Találat:** a címke nélküli táblázat előre kerül, a jó mondat a 21. helyre.
+4. **Válasz:** a modell címke nélküli sort olvas: **hű, de rossz**.
+:::
+:::
+:::
+
+::: notes
+A takarítási szabály a grafikonok tengelyfelirataira készült a 3. alkalommal, és ott jó volt. Itt a táblázat sor- és oszlopcímeit is kidobta. Minden szabály elront valamit (3. alkalom tanulsága). A notebookban a nyers oldal blokkjai mellett >> jelzi, mit dobott ki. Az 5.1: 1219 darabból 210 kezdődik szó szerint ugyanígy egy másik jelentésben is (táblázatfejek, Monetáris Tanács, belső borító, nyomda, a hátsó borító Mátyás király-szövege): a darab szövegéből nem derül ki, melyik jelentésé.
+:::
+
+## Javítási kísérlet: fejléc a darab elé
+
+``` text
+MNB Inflációs jelentés, 2024. március. A tavaly utolsó negyedévi stagnálást követően…
+```
+
+Minden darab elejére a jelentés neve, és újra beágyazzuk (kb. 2 perc). **Segít?**
+
+| | előtte | fejléccel |
+|---|---|---|
+| jó oldal az első 5-ben | 5/7 | 5/7 |
+| hű a forráshoz | 8/8 | 8/8 |
+| helyes | 7/8 | [4/8]{.cimke .hiba} |
+
+[A jelentést megnevező kérdéseknél a jó oldal előrébb jött (márciusi infláció: 10. → 2.; márciusi GDP: 10-en kívül → 6.), a többinél hátrébb (2024-es infláció: 1. → 6.). **Összességében rontott: nem tartjuk meg.** Notebook 6. rész.]{.halvany}
+
+::: notes
+Előtte kérdezd meg: szerintetek javít? (Ésszerűen hangzik, a nagy rendszerek is csinálják.) Aztán a mérés. Ahol segített: a jelentést megnevező kérdések. Ahol ártott: a 2024-es inflációs kérdésnél a kérdés évszáma most a fejlécek dátumaira is hasonlít, a jó oldal az 1. helyről a 6.-ra esik, és a modell nálam a szeptemberi becslést (3,5–3,9) mondta. A márciusi inflációs kérdésnél a jó oldal bekerült, a modell mégis a szeptemberi sávot írta a márciusi jelentésnek tulajdonítva. Mondd el: a korábbi darabolással (fix vágás a hosszú bekezdésekben) ugyanez a javítás 4/7-ről 7/7-re és 6/8-ról 8/8-ra javított. A darabolás változott, a javítás hatása megfordult: ezért mérünk a teljes tesztkészleten minden változtatás után. Célzottabb javítások (otthon): szűrés a jelentésre, ha a kérdés megnevezi (nálam a márciusi GDP-kérdésen ez sem elég: a jelentésen belül is a táblázatdarabok vezetnek); a táblázatok takarítása (a gyökérok); a rendszerprompt 3. szabálya. A helyes oszlop újrafuttatva változhat, a jó oldal oszlop determinisztikus.
+:::
+
+## A projektben: 10 tesztkérdés
+
+(Párban: közösen.) A futtatás **előtt**, elvárt válasszal:
+
+::: {.kartyak .harom}
+::: {.kartya}
+**~4 dokumentumos**
+
+mint a maiak: kérdés, jelentés, minta
+:::
+::: {.kartya}
+**~3 adatos + ~3 kombinált**
+
+a várt értéket a KSH- vagy Eurostat-táblából számolja a script (8–10. alkalom)
+:::
+::: {.kartya .ma}
+**≥ 1 „nincs benne”**
+
+a helyes válasz: ez nincs a forrásokban
+:::
+:::
+
+<br>
+
+Helyük: `tesztkerdesek.md` (sablon a notebook 7. részében). Ma a dokumentumos és a „nincs benne” kérdések teljesen; az adatosaknál a kérdés és a tábla.
+
+::: notes
+Ez a 10 kérdés a záró projekt tesztkészlete; a bemutatón ezen mérik a rendszerüket, a frissítési próbán is. Az adatos kérdések várt értékét a 9–10. alkalommal írják meg, amikor már van adatlekérő függvényük. A mintaprojekt kombinált kérdése: mit várt a 2024. márciusi jelentés 2024-re, és mennyi lett (KSH fogyasztóiár-index, nem HICP).
+:::
+
+## Otthonra
+
+- A notebook hátralévő részei: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
+- A `sajat_tesztek` kiegészítése **10 kérdésre** (köztük legalább egy „nincs benne”), és a kiértékelés: `kiertekel(sajat_tesztek, darabok, index)`, aztán a fejléces indexszel is
+- Hol hibázik a lánc? A hibalánc melyik pontján?
+- Ha van időd: szűrés a jelentésre, a táblázatok takarítása, vagy a rendszerprompt 3. szabálya, mindegyik méréssel (jegyzet, 6. rész)
+
+<br>
+
+**Jövő alkalommal:** félidő. Checkpoint (a RAG-rész kész?), és a chattől az ágens felé.
+
+::: notes
+Kilépőkérdés: melyik a három szempont közül az, amelyet a számellenőrző nem fog meg? (A helyesség: a hű, de rossz számot átengedi.) A checkpointon mindenki (páronként) 2 percben megmutatja a saját láncát és az első mérését.
+:::

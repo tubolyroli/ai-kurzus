@@ -43,6 +43,16 @@ Az óra után ide teszem ugyanazt a notebookot teljes magyarázattal és lefutta
 
 [Az összes notebook egyben, adatokkal: **notebookok.zip**](notebookok.zip){.cta}
 
+## Hétről hétre: a heti csomag
+
+Az első órán a teljes **notebookok.zip**-et csomagolod ki. Utána minden alkalom előtt csak az aznapi notebook **heti csomagját** töltsd le (a notebook oldalán, a cím alatt). Benne van az új notebook és a kurzus saját fájljai: `kurzus.py`, `data/`, `requirements.txt`.
+
+1. Csomagold ki a heti csomagot.
+2. A kicsomagolt mappa **tartalmát** másold át a saját `notebookok` mappádba. Ha megkérdezi, felülírja-e a meglévő fájlokat, mondj igent: csak a kurzus saját fájljait cseréli.
+3. A korábbi, kitöltött notebookjaidat és a saját `AGENTS.md`-det nem bántja, mert nincsenek a csomagban.
+
+A teljes zipet később ne csomagold ki a meglévő mappádra, mert felülírná a munkádat.
+
 ## Így nyisd meg VS Code-ban
 
 Ehhez a [telepítési útmutató](../telepites/) lépései kellenek, a VS Code-ban a Python- és a Jupyter-bővítménnyel.

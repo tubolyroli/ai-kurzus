@@ -8,6 +8,7 @@ Alapértelmezés: a gépen futó Ollama.
 import inspect
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -83,7 +84,58 @@ def chat(uzenetek, eszkozok=None, modell=None, homerseklet=0.0, gondolkodas=None
     valasz = _keres("/chat/completions", adat)
     utolso_hasznalat.clear()
     utolso_hasznalat.update(valasz.get("usage", {}))
+    _csonkolas_figyelmeztetes(adat, utolso_hasznalat.get("prompt_tokens", 0))
     return valasz["choices"][0]["message"]
+
+
+def _csonkolas_figyelmeztetes(adat, prompt_tokens):
+    """Szól, ha a helyi modell levágta a kérést, mert nem fért a kontextusablakba.
+
+    Az Ollama ilyenkor nem ad hibát: csendben eldobja a kérés elejét, és a modell úgy válaszol,
+    mintha a levágott rész ott se lett volna. A régebbi Ollama az ablakot színültig töltötte
+    (prompt_tokens = ablak − 1), az újabb (0.40-től) az ablak felére-háromnegyedére vágja vissza
+    a kérést, így a tokenszámból önmagában nem látszik. Ezért ha a kérés legalább fél ablaknyi,
+    megkérdezzük az Ollamát levágás nélkül is (`truncate: false`): ha nem fér bele, hibát ad,
+    benne a kérés valódi hosszával. Ha a kérés belefér, ez egy gyors, gyorsítótárazott hívás.
+    """
+    url = beallitas("LLM_BASE_URL")
+    if prompt_tokens < 1000 or not ("localhost" in url or "127.0.0.1" in url):
+        return
+    gyoker = url.rstrip("/").removesuffix("/v1")
+    try:
+        with urllib.request.urlopen(gyoker + "/api/ps", timeout=5) as v:
+            futo = json.loads(v.read()).get("models", [])
+    except (urllib.error.URLError, ValueError, OSError):
+        return
+    ablak = next((m.get("context_length") for m in futo if m.get("name") == adat["model"]), None)
+    if not ablak or prompt_tokens < ablak // 2:
+        return
+    valodi = prompt_tokens if prompt_tokens >= ablak - 1 else _valodi_hossz(gyoker, adat)
+    if valodi and valodi > prompt_tokens:
+        print(f"FIGYELEM: a kérés nem fért a modell kontextusablakába ({ablak} token): {valodi} token volt, "
+              f"ebből a modell csak az utolsó {prompt_tokens} tokent látta, az eleje levágódott.")
+    elif prompt_tokens >= ablak - 1:
+        print(f"FIGYELEM: a kérés nem fért a modell kontextusablakába ({ablak} token), az eleje levágódott. "
+              "A modell a levágott részt nem látta.")
+
+
+def _valodi_hossz(gyoker, adat):
+    """A kérés tokenszáma levágás nélkül, ha nem fér az ablakba (az Ollama hibaüzenetéből); különben None."""
+    proba = {"model": adat["model"], "messages": adat["messages"], "stream": False, "think": False,
+             "truncate": False, "options": {"num_predict": 1, "temperature": 0, "seed": 42}}
+    if adat.get("tools"):
+        proba["tools"] = adat["tools"]
+    keres = urllib.request.Request(gyoker + "/api/chat", data=json.dumps(proba).encode("utf-8"),
+                                   headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(keres, timeout=600):
+            return None                                   # belefért: nincs levágás
+    except urllib.error.HTTPError as hiba:
+        szoveg = hiba.read().decode("utf-8", "replace")
+        talalat = re.search(r"request \((\d+) tokens\) exceeds", szoveg)
+        return int(talalat.group(1)) if talalat else None
+    except (urllib.error.URLError, ValueError, OSError):
+        return None
 
 
 def kerdez(kerdes, rendszer=None, modell=None, gondolkodas=None, max_tokens=None):
