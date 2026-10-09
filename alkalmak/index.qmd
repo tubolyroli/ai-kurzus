@@ -6,7 +6,7 @@ Alkalmanként itt találod a diákat és a hozzájuk tartozó notebookot. A pont
 
 | Alkalom | Diák | Notebook |
 |---|---|---|
-| **Első óra:** eszközök, és annyi Python, hogy el tudd olvasni | [diák](01-elso-ora/diak.qmd) | [01-python-olvasas](../notebookok/01-python-olvasas.ipynb) |
+| **Első óra:** eszközök, és annyi Python, hogy el tudd olvasni | [diák](00-elso-ora/diak.qmd) | [00-python-olvasas](../notebookok/00-python-olvasas.ipynb) |
 | **2. alkalom:** nyelvi modellek Pythonból | [diák](02-llm-pythonbol/diak.qmd) | [02-llm-pythonbol](../notebookok/02-llm-pythonbol.ipynb) |
 
 A diák böngészőben vetíthetők: az <kbd>F</kbd> billentyű teljes képernyőre vált, az <kbd>S</kbd> az előadói nézetet nyitja meg a jegyzetekkel.

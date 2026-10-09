@@ -23,9 +23,8 @@ website:
   description: "RAG és AI-ágensek közgazdászoknak. Projektkurzus az Eötvös József Collegium Gazdaságtudományi műhelyében, 2027 tavasz."
   site-url: "https://tubolyroli.github.io/ai-kurzus/"
   navbar:
+    # Nincs külön „Kezdőlap”: a bal oldali cím visz haza.
     left:
-      - text: "Kezdőlap"
-        href: index.qmd
       - text: "Telepítés"
         href: telepites/index.html
       - text: "Tematika"

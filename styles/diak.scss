@@ -10,6 +10,8 @@ $ejc-muted: #5A5E7A;
 $ejc-line: #D9DBE6;
 $ejc-ok: #2D7A4E;
 $ejc-warn: #A8442B;
+// Felületek: keret helyett halvány gyűrű + puha árnyék (a mélység választja el őket).
+$ejc-edge: 0 0 0 1px rgba(37, 42, 81, 0.07), 0 1px 2px rgba(37, 42, 81, 0.05), 0 10px 28px -10px rgba(37, 42, 81, 0.14);
 
 $body-bg: #F6F6F9;
 $body-color: #1B1E38;
@@ -26,56 +28,65 @@ $code-block-color: #E6E7F2;
 $code-block-font-size: 0.66em;
 
 /*-- scss:rules --*/
-.reveal h2 { letter-spacing: -0.01em; margin-bottom: 0.6em; }
-.reveal .eyebrow { display: block; font-size: 0.55em; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: $ejc-gold; margin-bottom: 0.4em; }
+.reveal h1, .reveal h2 { letter-spacing: -0.022em; line-height: 1.08; text-wrap: balance; }
+.reveal h2 { margin-bottom: 0.6em; }
+.reveal h3 { letter-spacing: -0.012em; }
+.reveal { -webkit-font-smoothing: antialiased; }
+.reveal .eyebrow { display: block; font-size: 0.55em; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: $ejc-gold; margin-bottom: 0.4em; }
 .reveal .halvany { color: $ejc-muted; }
 .reveal .arany { color: $ejc-gold; }
 .reveal code { font-variant-ligatures: none; }
 // Minden kódblokk sötét, a nyelv nélküliek (pl. kimenet) is.
-.reveal pre { background: $code-block-bg; border-radius: 8px; }
-.reveal pre code { color: #E6E7F2; background: transparent; }
+.reveal div.sourceCode { border-radius: 14px; overflow: hidden; border: 0; }
+.reveal pre { background: $code-block-bg; border-radius: 14px; box-shadow: 0 10px 28px -12px rgba(30, 34, 64, 0.45); }
+.reveal pre code { color: #E6E7F2; background: transparent; padding: 0.55em 0.8em; }
 // A Quarto minden kódsort tördelés nélküli elembe tesz; vetítve inkább törjön, mint lógjon ki.
 .reveal pre.sourceCode code, .reveal pre.sourceCode code > span { white-space: pre-wrap !important; overflow-wrap: anywhere; }
-.reveal :not(pre) > code { background: #ECEDF3; color: $body-color; border-radius: 5px; padding: 0.05em 0.3em; }
-.reveal kbd { font-family: $font-family-monospace; font-size: 0.8em; border: 1px solid $ejc-line; border-bottom-width: 3px; border-radius: 6px; padding: 0.05em 0.35em; background: #fff; }
+.reveal :not(pre) > code { background: #ECEDF3; color: $body-color; border-radius: 7px; padding: 0.05em 0.3em; }
+.reveal kbd { font-family: $font-family-monospace; font-size: 0.8em; border: 1px solid $ejc-line; border-bottom-width: 3px; border-radius: 7px; padding: 0.05em 0.35em; background: #fff; }
 
 /* Címdia: navy háttér, címer */
 .reveal .cimdia h1, .reveal .cimdia h2 { color: #F4F1EA; }
-.reveal .cimdia .alcim { font-family: $presentation-heading-font; font-style: italic; color: $ejc-gold-light; font-size: 1.3em; }
+.reveal .cimdia h1 { letter-spacing: -0.03em; line-height: 1.0; }
+.reveal .cimdia .alcim { font-family: $presentation-heading-font; font-style: italic; color: $ejc-gold-light; font-size: 1.3em; letter-spacing: -0.012em; }
 .reveal .cimdia .halvany { color: #B9BCD8; }
 .reveal .jobbra { text-align: right; padding-top: 1.2em; }
-.reveal .cimer { width: 220px; border-radius: 50%; box-shadow: 0 0 0 3px rgba($ejc-gold-light, 0.6); }
+.reveal .cimer { width: 220px; border-radius: 50%; box-shadow: 0 0 0 3px rgba($ejc-gold-light, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.5); }
 
 /* Folyamat: dobozok nyilakkal */
 .reveal .folyamat { display: flex; align-items: center; gap: 0.35em; flex-wrap: wrap; font-size: 0.8em; margin-top: 0.6em; }
-.reveal .folyamat .lep { background: #fff; border: 1px solid $ejc-line; border-radius: 12px; padding: 0.45em 0.7em; }
-.reveal .folyamat .lep.kiemelt { border-color: $ejc-gold; box-shadow: inset 0 0 0 1px $ejc-gold; }
+.reveal .folyamat .lep { background: #fff; box-shadow: $ejc-edge; border-radius: 14px; padding: 0.45em 0.75em; }
+.reveal .folyamat .lep.kiemelt { box-shadow: $ejc-edge, inset 0 0 0 2px $ejc-gold; }
 .reveal .folyamat .nyil { color: $ejc-gold; font-weight: 700; }
 
 /* Kártyák */
-.reveal .kartyak { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5em; font-size: 0.8em; }
+.reveal .kartyak { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6em; font-size: 0.8em; }
 .reveal .kartyak.harom { grid-template-columns: repeat(3, 1fr); }
-.reveal .kartya.rossz { border-color: $ejc-warn; box-shadow: inset 0 0 0 1px $ejc-warn; }
-.reveal .kartya { background: #fff; border: 1px solid $ejc-line; border-radius: 12px; padding: 0.5em 0.7em; }
-.reveal .kartya b { font-family: $presentation-heading-font; color: $ejc-navy; font-size: 1.15em; }
-.reveal .kartya.ma { border-color: $ejc-gold; box-shadow: inset 0 0 0 1px $ejc-gold; }
+.reveal .kartya.rossz { box-shadow: $ejc-edge, inset 0 0 0 2px $ejc-warn; }
+.reveal .kartya { background: #fff; box-shadow: $ejc-edge; border-radius: 18px; padding: 0.55em 0.75em; }
+.reveal .kartya b { font-family: $presentation-heading-font; color: $ejc-navy; font-size: 1.15em; letter-spacing: -0.012em; }
+.reveal .kartya.ma { box-shadow: $ejc-edge, inset 0 0 0 2px $ejc-gold; }
 
 /* Napirend */
 .reveal .napirend table { font-size: 0.8em; width: 100%; }
-.reveal .napirend td { padding: 0.25em 0.5em; border-bottom: 1px solid $ejc-line; }
+.reveal .napirend td { padding: 0.28em 0.5em; border-bottom: 1px solid rgba(37, 42, 81, 0.09); }
 .reveal .napirend td:first-child { font-variant-numeric: tabular-nums; color: $ejc-gold; font-weight: 600; white-space: nowrap; }
 
 /* Nagy számok összevetése */
 .reveal .szamok { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; text-align: center; margin-top: 0.4em; }
-.reveal .szam { font-family: $presentation-heading-font; font-size: 2.6em; line-height: 1; font-variant-numeric: tabular-nums; }
+.reveal .szam { font-family: $presentation-heading-font; font-size: 2.6em; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .reveal .szam.rossz { color: $ejc-warn; }
 .reveal .szam.jo { color: $ejc-ok; }
 .reveal .szam-cimke { font-size: 0.7em; color: $ejc-muted; margin-top: 0.3em; }
 
 /* Állapotcímkék (RENDBEN / HIBA / MÉG NINCS KÉSZ) */
-.reveal .cimke { font-family: $font-family-monospace; font-weight: 600; font-size: 0.8em; padding: 0.1em 0.45em; border-radius: 6px; }
+.reveal .cimke { font-family: $font-family-monospace; font-weight: 600; font-size: 0.8em; padding: 0.1em 0.5em; border-radius: 999px; }
 .reveal .cimke.ok { background: #E2F1E8; color: $ejc-ok; }
 .reveal .cimke.hiba { background: #F8E6DF; color: $ejc-warn; }
 .reveal .cimke.var { background: #ECEDF3; color: $ejc-muted; }
 
 .reveal .slide-number { color: $ejc-muted; }
+
+/* Táblázatok: hajszálvonalak a vastag navy vonalak helyett */
+.reveal table th { border-bottom: 1px solid rgba(37, 42, 81, 0.22) !important; }
+.reveal table td { border-bottom: 1px solid rgba(37, 42, 81, 0.09) !important; }

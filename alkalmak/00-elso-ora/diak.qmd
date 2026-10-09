@@ -210,7 +210,7 @@ Megnyitni a notebookok mappában az AGENTS.md-t. Megkérdezni: szerintetek mi hi
 
 ## Most ti: notebook, 0–5. rész
 
-Nyisd meg: `01-python-olvasas.ipynb` · jobb felül **Select Kernel → .venv**
+Nyisd meg: `00-python-olvasas.ipynb` · jobb felül **Select Kernel → .venv**
 
 | Billentyű | Mit csinál |
 |---|---|

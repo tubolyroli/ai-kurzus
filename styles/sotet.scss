@@ -8,6 +8,8 @@ $ejc-muted: #A2A5C2;
 $ejc-line: #2D3157;
 $ejc-surface: #1A1D38;
 $ejc-sunk: #15182F;
+$ejc-edge: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px -10px rgba(0, 0, 0, 0.55);
+$ejc-hairline: rgba(255, 255, 255, 0.08);
 
 $body-bg: #111329;
 $body-color: #E8E9F3;
@@ -23,8 +25,8 @@ $font-size-root: 17px;
 $line-height-base: 1.6;
 $headings-font-weight: 600;
 
-$navbar-bg: #0B0D1F;
-$navbar-fg: #C9CBE0;
+$navbar-bg: #111329;
+$navbar-fg: #A9ACC8;
 $navbar-hl: #D9B85A;
 $footer-bg: $body-bg;
 $footer-fg: $ejc-muted;

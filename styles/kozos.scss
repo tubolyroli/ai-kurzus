@@ -1,9 +1,16 @@
 /*-- scss:rules --*/
 // Mindkét témában ugyanazok a szabályok; a színek a téma saját $ejc-* változóiból jönnek.
+// Irány (Apple-féle tervezési elvek): a betűköz a mérettel változik, a felületeket mélység
+// választja el keret helyett, a gombok lenyomásra azonnal reagálnak, a menüsor áttetsző.
 
-h1, h2, h3 { text-wrap: balance; letter-spacing: -0.01em; font-optical-sizing: auto; }
-h2 { margin-top: 3rem; color: $ejc-navy; }
-.navbar-brand .navbar-title { font-family: $headings-font-family; font-weight: 600; font-size: 1.25rem; letter-spacing: 0; }
+body { -webkit-font-smoothing: antialiased; }
+
+// Nagy betű: szorosabb betűköz és sorköz; kicsi, nagybetűs címke: lazább.
+h1, h2, h3 { text-wrap: balance; font-optical-sizing: auto; }
+h1, .title { letter-spacing: -0.022em; line-height: 1.06; }
+h2 { margin-top: 3rem; color: $ejc-navy; border-bottom-color: $ejc-hairline !important; letter-spacing: -0.018em; line-height: 1.15; }
+h3 { letter-spacing: -0.01em; line-height: 1.25; }
+.navbar-brand .navbar-title { font-family: $headings-font-family; font-weight: 600; font-size: 1.25rem; letter-spacing: -0.01em; }
 // A bemásolandó parancsokban a -- ne olvadjon össze egy jellé.
 code, pre { font-variant-ligatures: none; }
 
@@ -11,9 +18,20 @@ code, pre { font-variant-ligatures: none; }
   display: block;
   font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: $ejc-gold;
+}
+
+/* ---- Menüsor: áttetsző anyag, alatta görgethető a tartalom ---- */
+#quarto-header .navbar {
+  background-color: rgba($body-bg, 0.72) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 1px 0 $ejc-hairline;
+  .nav-link { font-weight: 500; transition: color 150ms ease-out; }
+  // Hol vagyok? Az aktuális menüpont alatt arany vonal.
+  .nav-link.active { font-weight: 600; box-shadow: inset 0 -2px 0 $ejc-gold; }
 }
 
 /* ---- Kezdőlap: hős ---- */
@@ -33,27 +51,33 @@ code, pre { font-variant-ligatures: none; }
     font-family: $headings-font-family;
     font-size: clamp(2.8rem, 6.4vw, 4.6rem);
     font-weight: 500;
-    letter-spacing: -0.015em;
-    line-height: 1.02;
+    letter-spacing: -0.028em;
+    line-height: 1.0;
     color: $ejc-navy;
     margin: 0.4rem 0 0;
   }
-  .alcim { font-family: $headings-font-family; font-style: italic; font-size: clamp(1.35rem, 2.6vw, 1.75rem); font-weight: 400; color: $ejc-gold; margin-top: 0.4rem; }
+  .alcim { font-family: $headings-font-family; font-style: italic; font-size: clamp(1.35rem, 2.6vw, 1.75rem); font-weight: 400; letter-spacing: -0.01em; color: $ejc-gold; margin-top: 0.5rem; }
   .lead { font-size: 1.15rem; color: $ejc-muted; max-width: 36em; margin-top: 1.2rem; }
 }
 
+// Gombok: lenyomásra azonnal visszajeleznek (nem felengedéskor).
+.cta, .notebook-linkek a {
+  transition: transform 100ms ease-out, filter 150ms ease-out, background-color 150ms ease-out;
+  &:active { transform: scale(0.97); }
+}
 .cta {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  margin-top: 1.4rem;
-  padding: 0.7rem 1.3rem;
+  margin-top: 1.6rem;
+  padding: 0.75rem 1.4rem;
   border-radius: 999px;
   background: $ejc-navy;
   color: $body-bg !important;
   font-weight: 600;
   text-decoration: none;
-  &:hover { filter: brightness(1.15); }
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 6px 16px -6px rgba($ejc-navy, 0.45);
+  &:hover { filter: brightness(1.12); }
 }
 
 /* A címer navy pereme sötét háttéren beleolvadna, ezért vékony arany gyűrűt kap. */
@@ -62,7 +86,7 @@ code, pre { font-variant-ligatures: none; }
   height: auto;
   margin-top: 1.6rem;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba($ejc-gold, 0.55), 0 12px 32px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0 0 2px rgba($ejc-gold, 0.55), 0 16px 40px -8px rgba(0, 0, 0, 0.28);
 }
 
 /* ---- Notebook-oldalak: letöltés és Colab a cím alatt ---- */
@@ -71,15 +95,17 @@ code, pre { font-variant-ligatures: none; }
   flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 1rem;
-  a { font-size: 0.92rem; font-weight: 600; text-decoration: none; border-radius: 999px; padding: 0.35rem 0.9rem; }
-  .nb-gomb { background: $ejc-navy; color: $body-bg; }
-  .nb-colab { border: 1px solid $ejc-line; color: $ejc-muted; }
+  a { font-size: 0.92rem; font-weight: 600; text-decoration: none; border-radius: 999px; padding: 0.4rem 1rem; }
+  .nb-gomb { background: $ejc-navy; color: $body-bg; &:hover { filter: brightness(1.12); } }
+  // Másodlagos művelet: színezett kitöltés, keret nélkül.
+  .nb-colab { background: $ejc-sunk; color: $body-color; &:hover { background: rgba($ejc-gold, 0.16); } }
 }
-kbd { font-size: 0.85em; }
+kbd { font-size: 0.85em; border-radius: 6px; }
 
 /* ---- Kódblokkok és notebook-kimenetek ---- */
-div.sourceCode, pre.sourceCode { border: 0; border-radius: 8px; }
+div.sourceCode, pre.sourceCode { border: 0; border-radius: 12px; }
 pre.sourceCode, pre.sourceCode code { color: #E6E7F2; }
+:not(pre) > code { border-radius: 6px; padding: 0.08em 0.38em; }
 // A print() kimenete: a szövegszínt a témából kapja, és arany szegély jelzi, hogy ez eredmény, nem kód.
 .cell-output-stdout, .cell-output-stderr {
   border-left: 3px solid $ejc-gold;
@@ -87,41 +113,49 @@ pre.sourceCode, pre.sourceCode code { color: #E6E7F2; }
   margin-block: 0.6rem 1rem;
   pre, pre code { color: $body-color; background: transparent; font-size: 0.92rem; }
 }
-.cell-output-display img { border-radius: 6px; }
+.cell-output-display img { border-radius: 10px; }
 
 /* ---- Kártyarács (kontextustervezés, projekt pillérei) ---- */
 .kartyak {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-  margin-top: 1.2rem;
+  gap: 1rem;
+  margin-top: 1.4rem;
   @media (max-width: 640px) { grid-template-columns: minmax(0, 1fr); }
 }
 .kartya {
   background: $ejc-surface;
-  border: 1px solid $ejc-line;
-  border-radius: 10px;
-  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  box-shadow: $ejc-edge;
+  padding: 1.15rem 1.25rem 1.2rem;
   min-width: 0;
-  p { margin: 0.3rem 0 0; color: $ejc-muted; font-size: 0.97rem; }
-  .cim { font-family: $headings-font-family; font-weight: 600; font-size: 1.25rem; color: $ejc-navy; }
-  .mi { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: $ejc-gold; }
+  p { margin: 0.35rem 0 0; color: $ejc-muted; font-size: 0.97rem; }
+  .cim { font-family: $headings-font-family; font-weight: 600; font-size: 1.3rem; letter-spacing: -0.012em; color: $ejc-navy; }
+  .mi { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: $ejc-gold; }
 }
 
 /* ---- Megjegyzés ---- */
 .megjegyzes {
   background: $ejc-gold-soft;
-  border-radius: 8px;
-  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  padding: 0.85rem 1.05rem;
   margin-block: 1.2rem;
   p:last-child { margin-bottom: 0; }
 }
 
+/* ---- Táblázatok: hajszálvonalak, halk fejléc ---- */
+.table, table {
+  border-color: $ejc-hairline;
+  > :not(caption) > * > * { border-bottom-color: $ejc-hairline; padding-block: 0.7rem; }
+  > thead th { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: $ejc-muted; border-bottom-width: 1px; }
+  > :not(:first-child) { border-top: 0; }
+}
+
 /* ---- Tematika: blokkok és témák sorban ---- */
 .blokk {
-  border-top: 1px solid $ejc-line;
-  padding-top: 1.2rem;
-  margin-top: 2rem;
+  border-top: 1px solid $ejc-hairline;
+  padding-top: 1.3rem;
+  margin-top: 2.2rem;
   display: grid;
   grid-template-columns: 13rem minmax(0, 1fr);
   gap: 0.4rem 2rem;
@@ -131,4 +165,20 @@ pre.sourceCode, pre.sourceCode code { color: #E6E7F2; }
   ol { margin: 0; padding-left: 1.3rem; }
   li { margin-bottom: 0.35rem; }
   li::marker { color: $ejc-gold; font-weight: 600; }
+}
+
+.nav-footer { font-size: 0.85rem; }
+a:focus-visible, button:focus-visible { outline: 3px solid $ejc-gold; outline-offset: 2px; border-radius: 4px; }
+
+/* ---- Akadálymentesség: kevesebb mozgás, áttetszőség nélkül, nagyobb kontraszt ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 1ms !important; scroll-behavior: auto !important; }
+  .cta:active, .notebook-linkek a:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #quarto-header .navbar { background-color: $body-bg !important; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .kartya { box-shadow: 0 0 0 1.5px $body-color; }
+  #quarto-header .navbar { background-color: $body-bg !important; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: 0 1px 0 $body-color; }
 }

@@ -32,7 +32,7 @@ Ehhez a [telepítési útmutató](../telepites/) lépései kellenek, a VS Code-b
    - és pipáld be a `requirements.txt`-t, hogy a szükséges csomagokat is feltegye.
 
    Pár perc, és megjelenik egy `.venv` mappa. Ez a notebookok saját környezete.
-4. Nyisd meg a notebookot (pl. `00-minta.ipynb`). Jobb felül kattints a **Select Kernel** gombra → **Python Environments** → **.venv**. Ha felajánlja az `ipykernel` telepítését, engedd.
+4. Nyisd meg a notebookot (pl. `00-python-olvasas.ipynb`). Jobb felül kattints a **Select Kernel** gombra → **Python Environments** → **.venv**. Ha felajánlja az `ipykernel` telepítését, engedd.
 5. Futtasd: a cella melletti ▷ gombbal, a **Shift + Enter** billentyűkkel, vagy fent a **Run All** gombbal az egészet.
 
 ::: {.megjegyzes}
