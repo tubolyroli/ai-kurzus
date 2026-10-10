@@ -1,0 +1,376 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "9. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[9. alkalom: az ágensciklus]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitás: indítsák el a notebook 1. részét (Előkészítés), amíg beszélek: ha az ágensindex gyorsítótára nincs meg, 2-2,5 perc. Net kell (Eurostat, KSH). Kérdés: kinek van meg az eszközleírása a csomag függvényéhez (8. alkalom házi)?
+:::
+
+## Ma: a `lepes` egy ciklusba kerül
+
+::: {.folyamat}
+[kontextus]{.lep} [→]{.nyil} [a modell kér]{.lep} [→]{.nyil} [mi futtatjuk]{.lep} [→]{.nyil} [eredmény az előzménybe]{.lep} [→]{.nyil} [**újra**]{.lep .kiemelt}
+:::
+
+<br>
+
+A 8. alkalommal a `lepes` cellát addig futtattuk, amíg a modell szöveggel nem válaszolt. Ma ezt egy `while` ciklus csinálja: **ez az ágens**.
+
+- Mikor áll meg?
+- Mi nő lépésről lépésre?
+- Honnan tudjuk, hogy jó úton járt?
+
+::: notes
+A három kérdés az óra gerince: megállás (kész vagy lépéskorlát), memória (az előzmény nő), kiértékelés (a nyomvonal, nem csak a válasz). A Copilot Agent módja, a Claude Code és a többiek ugyanezt a ciklust futtatják.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`; ma a projekt rendszerpromptja javítja az ágenst
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a RAG-lánc: ma az ágens egyik **eszköze**
+:::
+::: {.kartya}
+**Eszközök**
+
+8. alkalom; ma több eszköz, a csomag függvénye is
+:::
+::: {.kartya .ma}
+**Memória** · *ma*
+
+az előzmény lépésről lépésre nő, minden lépésben újra elmegy
+:::
+:::
+
+::: notes
+Ma a negyedik elem kerül középre: az üzenetlista mint memória. A harness (a ciklus körüli keret) dönti el, mi marad a kontextusban.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–8 | Nyitás; az ágens egy ciklus (ReAct) |
+| 8–25 | **Ti:** az `agens` függvény, `while` és lépéskorlát (2.1) |
+| 25–40 | Többlépéses kérdés az Eurostatból; lépéskorlát (3.1, 3.2) |
+| 40–52 | Az előzmény mint memória: a tokenek (4.1) |
+| 52–64 | A harness; a nyomvonal ellenőrzése (5.1) |
+| 64–82 | A projekt ágense a csomag függvényével (6. rész) |
+| 82–90 | Otthonra; zárás |
+:::
+
+::: notes
+A notebook gyors: kb. 8 modellhívás gondolkodás nélkül, mind pár másodperc. A lassú rész csak az index, ha valakinél nincs meg a 7. alkalom gyorsítótára.
+:::
+
+## Az ágens egy ciklus
+
+::: {.folyamat}
+[1. kontextus]{.lep} [→]{.nyil} [2. a modell]{.lep .kiemelt} [→]{.nyil} [3. eszközhívás]{.lep} [→]{.nyil} [4. eredmény az előzménybe]{.lep} [↺ újra]{.nyil}
+:::
+
+[A kontextus: rendszerprompt + az eddigi előzmények + az eszközök leírása.]{.halvany}
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Gondolkodik**
+
+mi kell még a válaszhoz?
+:::
+::: {.kartya}
+**Cselekszik**
+
+eszközt kér (`tool_calls`)
+:::
+::: {.kartya}
+**Megfigyel**
+
+az eszköz eredménye (`role: "tool"`)
+:::
+:::
+
+**Megáll,** ha szöveggel válaszol (kész), vagy ha elérte a **lépéskorlátot**.
+
+[ReAct: *Reason + Act*. Forrás: RAGPack „Introduction to Agents” masterclass (Maarten Grootendorst, 34–43. perc); átvételre engedéllyel.]{.halvany}
+
+::: notes
+„Az ágens egy ciklus.” Minden harness, a Copilot ágensmódja is, ezt csinálja: összerakja a kontextust, hívja a modellt, futtatja a kért eszközt, visszaírja az eredményt, és újra. A 7. alkalom terve csak a gondolat és a cselekvés volt, a megfigyelés hiányzott; ma megvan.
+:::
+
+## Tíz sor Python
+
+``` python
+def agens(kerdes, leirasok, max_lepes=6, rendszer=None):
+    uzenetek = [{"role": "system", "content": rendszer or RENDSZER},
+                {"role": "user", "content": kerdes}]
+    NAPLO.clear()
+    lepes_szam = 0
+    while lepes_szam < max_lepes:
+        lepes_szam += 1
+        if lepes(uzenetek, leirasok):       # True: a modell válaszolt
+            return uzenetek
+    print(f"LÉPÉSKORLÁT: {max_lepes} lépés után sincs válasz, megállok.")
+    return uzenetek
+```
+
+Nincs keretrendszer: egy `while`, egy feltétel, egy korlát. **Notebook 2.1:** ezt íratjátok meg a Copilottal.
+
+::: notes
+A Copilot gyakori változatai: while True + break (a prompt tiltja, mert a korlát a lényeg); for ciklus range(max_lepes)-szel (az is jó, az ellenőrzés átengedi); a NAPLO.clear() kimarad (akkor a 4. rész táblája az előző futásé is). Mondd ki: a LangChain és társai is ezt csinálják, több kényelemmel; nálunk szándékosan nincs keretrendszer.
+:::
+
+## A ciklus tesztje, modell nélkül
+
+Az ellenőrzés egy **hamis modellt** tesz a `chat` helyére:
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Soha nem válaszol**, mindig eszközt kér
+
+`max_lepes=3` → pontosan **3** hívás, aztán `LÉPÉSKORLÁT`
+:::
+::: {.kartya}
+**A 2. lépésben válaszol**
+
+`max_lepes=6` → **2** hívás, és megáll
+:::
+:::
+
+<br>
+
+- Gyors (nincs modellhívás), és mindig ugyanazt adja
+- A végtelen ciklust is elkapja: a hamis modell 20 hívás után leállítja a próbát
+- Azt is nézi, hogy a 2. lépésben a modell látja-e az 1. lépés eszközeredményét (az előzmény megmarad)
+
+::: notes
+Ez a tesztelés egyik alapfogása: a nem determinisztikus részt (a modellt) kicseréljük egy kiszámíthatóra, és a körülötte lévő kódot teszteljük. A 11. alkalom törésteszténél visszajön.
+:::
+
+## Többlépéses kérdés
+
+„Melyik EU-országban nőtt legjobban a GDP 2022 és 2024 között, és mekkora volt ott az infláció 2024-ben?”
+
+``` text
+1. lépés (a kérés 600 token)
+   ESZKÖZ  gdp_valtozas({"tol":2022, "ig":2024, "n":1}) -> … "MT", "Málta", 12.76 …
+2. lépés (a kérés 728 token)
+   ESZKÖZ  inflacio_eu({"orszag":"MT", "ev":2024}) -> {… "hicp": 2.4 …}
+3. lépés (a kérés 818 token)
+   VÁLASZ  … Málta (MT), a növekedés 12.76%. Málta 2024-es inflációja 2.4%.
+```
+
+A 2. lépés **az 1. eredményére épül**: a modell előre nem tudhatta, melyik ország inflációja kell.
+
+[Eurostat `nama_10_gdp` (reál-GDP, láncolt volumen, 2020-as áron) és `prc_hicp_ainr`, élőben, kulcs nélkül; tartalék: `data/eu_orszagok.csv`. Magyarország: 0,00%, a 22. a 27-ből. Notebook 3. rész.]{.halvany}
+
+::: notes
+3.1: hány lépés? Sokan kettőt mondanak (két eszköz); de a válasz is egy lépés, és az inflációs hívás csak a GDP-eredmény után jöhet. Nálam n=1-et kért: a modell maga döntötte el, hogy elég a nyertes. A GDP-változást az eszköz számolja, nem a modell. Az ellenőrzés a mentett táblából számol, és a nyomvonalat is nézi.
+:::
+
+## A lépéskorlát: korlát, és ára van
+
+Ugyanaz a kérdés, `max_lepes=2`:
+
+``` text
+1. lépés  ESZKÖZ gdp_valtozas(…)  -> Málta
+2. lépés  ESZKÖZ inflacio_eu(MT, 2024) -> 2.4
+LÉPÉSKORLÁT: 2 lépés után sincs válasz, megállok.
+```
+
+- **Véd:** ha az ágens elakad, a ciklus akkor is véget ér (gépidő, fizetős API kerete)
+- **Ára:** túl szigorú korlátnál a jó úton járó ágens is félbemarad
+- Más korlátok: a **szótár** (csak az futhat, ami benne van), tömör eszközeredmény, tokenhatár
+
+::: notes
+3.2: a, b vagy c? (b.) Kérdezd meg: mekkora legyen a korlát? Egy kérdéshez 6 bőven elég; a Copilot ágensmódja is lépéskorláttal fut, és rákérdez, ha eléri. A 11. alkalommal szándékosan elakasztjuk az ágenst.
+:::
+
+## Az előzmény mint memória
+
+Minden lépésben a **teljes** eddigi beszélgetés újra elmegy.
+
+::: {.szamok style="grid-template-columns: repeat(3, 1fr)"}
+::: {}
+[600 → 818]{.szam .jo style="font-size:1.7em"}
+
+[GDP-kérdés, 3 lépés, gondolkodás nélkül]{.szam-cimke}
+:::
+::: {}
+[602 → 2012]{.szam .rossz style="font-size:1.7em"}
+
+[ugyanez gondolkodással: a gondolkodás is az előzménybe kerül]{.szam-cimke}
+:::
+::: {}
+[+635]{.szam .rossz style="font-size:1.7em"}
+
+[egyetlen RAG-keresés eredménye (3 részlet)]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Az Ollama ablaka 8192 token. Ha az előzmény nem fér bele, **csendben levágja az elejét**: a rendszerpromptot és a kérdést. Ezért: lépéskorlát, tömör eszközeredmény, 6000 token alatt.
+
+[A jegyzet tárolt kimenete; a gondolkodós futás egy előzetes próba.]{.halvany}
+
+::: notes
+4.1: átlagos növekedés lépésenként (nálam 109 token). Gondolkodással a modell a teljes, 27 országos rangsort kérte (1650 karakter), és a gondolkodás szövege is visszament: 602 → 1800 → 2012. Három ok, miért baj: költség (minden lépésben újra fizetsz), minőség, az ablak vége. A nagy ágensek tömörítik a régi lépéseket: ez a memóriakezelés.
+:::
+
+## A harness: ami a ciklus körül van
+
+::: {.kartyak}
+::: {.kartya}
+**Memória**
+
+az előzmény; mi maradjon benne, mi kerüljön ki (tömörítés)
+:::
+::: {.kartya}
+**Eszközök**
+
+leírás + szótár: csak az futhat, ami benne van
+:::
+::: {.kartya}
+**Korlátok** (*guardrails*)
+
+lépéskorlát, tömör eredmény, tokenhatár
+:::
+::: {.kartya .ma}
+**Kiértékelés**
+
+nem csak a válasz: az **út** is (*trajectory*)
+:::
+:::
+
+**A harness dönti el, mi kerül a modell kontextusába:** a kontextustervezés másik nézőpontból.
+
+[A masterclass harness-ábrája alapján (Maarten Grootendorst); átvételre engedéllyel.]{.halvany}
+
+::: notes
+Ágens = gondolkodó LLM + memória + eszközök + tervezés; köré jön a harness. A Copilot ágensmódjában is ott van mind: a munkamenet előzménye, a beépített eszközök és MCP-szerverek, a jóváhagyás kérése (korlát), és nálunk az ellenőrző script (kiértékelés).
+:::
+
+## A nyomvonal ellenőrzése
+
+``` python
+def eszkozbol_jott_v1(szam, uzenetek):        # 5.1: lefut, de rossz
+    return any(szam_benne(szam, u.get("content") or "") for u in uzenetek)
+```
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**A 8. alkalom esete:** a 17,6 a kérdésben volt, eszközhívás nem volt
+
+`eszkozbol_jott_v1` → `True`
+:::
+::: {.kartya}
+**Javítva:** csak a `role: "tool"` üzenetekben keres
+
+a kérdés és **maga a válasz** nem számít
+:::
+:::
+
+Az ellenőrzés legyen független attól, amit ellenőriz.
+
+::: notes
+A hiba: minden üzenetet átnéz, a kérdést és a választ is; a válaszban álló szám így mindig „eszközből jött”. Az én változatom azt is megmondja, melyik eszköz eredményében keressen. Masterclass: ha van objektív helyes válasz, script ellenőriz, nem LLM-bíró; és az utat is nézzük (hány lépés, milyen eszköz).
+:::
+
+## A projektben: túl korán megállt
+
+„A 2023. szeptemberi MNB-jelentés mekkora éves inflációt várt 2023-ra, és **mennyi lett**?”
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Az eddigi rendszerprompttal**
+
+`dokumentum_kereses(2023-09)` → 17,6–18,1, aztán: „A jelentésben nem szerepel a tényleges infláció.” **Vége.**
+:::
+::: {.kartya}
+**Egy mondat a rendszerpromptban**
+
+„Hogy mi lett belőlük, azt a jelentés nem tudja: azt az `inflacio` eszközzel kérd le, és az összevetést az `osszevet` eszközzel végezd.”
+:::
+:::
+
+A kérdést nem írjuk át (a projekt kérdése adott): **a kontextust** javítjuk.
+
+::: notes
+6.1: lekérte-e a tényadatot? Nálam nem. Ez az ágens egyik tipikus hibája: igaz, amit mond, de nem válasz a kérdésre. Az inflacio eszköz a csomag adatlekérő függvénye, változtatás nélkül: a csomag ezért adott hibaüzenetet kivétel helyett, és ezért ad vissza kevés adatot.
+:::
+
+## A projektben: négy lépés, ellenőrizve
+
+``` text
+1. (641 token)   dokumentum_kereses(…, "2023-09")        -> „2023: 17,6 - 18,1”
+2. (1276 token)  inflacio(forras="KSH", tol="2023")      -> 17.6
+3. (1419 token)  osszevet(17.6, 17.6, 18.1)              -> "a sávon belül"
+4. (1499 token)  VÁLASZ … 17,6%-18,1% … KSH szerint 17,6% … a tartományon belül
+```
+
+- [RENDBEN]{.cimke .ok} a nyomvonalban `inflacio`, **KSH**, 2023
+- [RENDBEN]{.cimke .ok} a 17,6 az `inflacio` eszközből, a sáv a keresésből jött
+- [RENDBEN]{.cimke .ok} a válaszban a sáv, a tényadat és a „belül”; minden kérés < 6000 token
+
+[A forrást a modell választotta. Ha az Eurostatot (HICP: 17,0) választaná: HIBA. Ezt rögzíti az adatszótár (10. alkalom).]{.halvany}
+
+::: notes
+A legnagyobb ugrás a keresés eredménye (+635 token). Az összevetést kód végezte: a 8. alkalommal a modell egyszer „a sáv alatt”-ot írt ugyanerre. A várt értékek: a sáv a nyers PDF-ből (2023-09, nyomtatott 12. oldal), a tényadat a KSH STADAT ara0001-ből (data/inflacio_eves.csv).
+:::
+
+## Otthonra
+
+(Párban: közösen.)
+
+- `agens.py` a projekt repójában: `lepes`, `agens`, `nyomvonal`, és az `ESZKOZOK`-ban a csomagod függvénye a 8. alkalom leírásával, meg a `dokumentum_kereses` a saját RAG-láncodra
+- A 3 adatos és a 3 kombinált tesztkérdés: a nyomvonaluk a `nyomvonalak.md`-be (lépések, tokenek)
+- Ellenőrzés: jó eszköz, jó argumentumok (`hivott_eszkozok`), a szám eszközből jött (`eszkozbol_jott`) és egyezik az `ellenorzes.py`-éval
+- KT: `kormanyzati_adat`, `enum` a mutatóra és a mértékegységre; negatív = hiány, millió Ft
+
+**Jövő alkalommal:** adatelemző ágens, adatszótár és **skillek**.
+
+::: notes
+Kilépőkérdés: „Miből tudod, hogy az ágens a tényadatot nem fejből írta?” (A nyomvonalból: inflacio-hívás, és a szám a tool üzenetben.) Mondd el: a 10. alkalomra hozzák el a projekt adatszótárát, amennyire kész.
+:::

@@ -22,7 +22,7 @@ A PDF-ek nincsenek a zipben (az Országgyűlés honlapján elérhetők): az elle
 
 ## Hogyan indulj
 
-1. Csomagold ki a zipet, és a kapott `projekt-kt` mappát nyisd meg a VS Code-ban. Ez lesz a (közös) repótok kiindulópontja.
+1. Csomagold ki a zipet a `notebookok` mappád mellé (ne bele: az egy másik Git-repó), és a kapott `projekt-kt` mappát nyisd meg a VS Code-ban. Ez lesz a (közös) repótok kiindulópontja.
 2. Hozd létre a környezetet, ahogy a notebookoknál: parancspaletta → `Python: Create Environment` → `Venv`, és pipáld be a `requirements.txt`-t.
 3. A VS Code termináljában töltsd le a PDF-eket (kb. 25 MB). A munkához a szöveg már megvan, a PDF az idézett számok ellenőrzéséhez kell:
 

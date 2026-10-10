@@ -18,7 +18,7 @@ A PDF-ek nincsenek a zipben (nagyok, és az MNB honlapján elérhetők): az els�
 
 ## Hogyan indulj
 
-1. Csomagold ki a zipet, és a kapott `projekt-mnb` mappát nyisd meg a VS Code-ban. Ez lesz a (közös) repótok kiindulópontja.
+1. Csomagold ki a zipet a `notebookok` mappád mellé (ne bele: az egy másik Git-repó), és a kapott `projekt-mnb` mappát nyisd meg a VS Code-ban. Ez lesz a (közös) repótok kiindulópontja.
 2. Hozd létre a környezetet, ahogy a notebookoknál: parancspaletta → `Python: Create Environment` → `Venv`, és pipáld be a `requirements.txt`-t.
 3. A VS Code termináljában töltsd le a jelentéseket (kb. 30 MB):
 

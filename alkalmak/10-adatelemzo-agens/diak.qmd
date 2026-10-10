@@ -1,0 +1,348 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "10. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[10. alkalom: adatelemző ágens]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Nyitókérdés: kinek fut az agens.py a projektben (9. házi)? Hol állt meg túl korán, hol választott rossz eszközt? Ma kell a projekt mappája és az adatszótára (a csomag adatszotar.md-je). Net kell (Eurostat); tartalék van.
+:::
+
+## Ma: adatelemző ágens
+
+::: {.folyamat}
+[eszközkészlet]{.lep} [→]{.nyil} [az ágens dönt]{.lep} [→]{.nyil} [**skill**]{.lep .kiemelt} [→]{.nyil} [adatszótár]{.lep} [→]{.nyil} [saját skill a Copilotnak]{.lep}
+:::
+
+<br>
+
+„Hogyan alakult a magyar munkanélküliség az utóbbi 5 évben? Írj rövid összefoglalót egy táblázattal.”
+
+- Milyen eszközök kellenek hozzá, és mitől biztonságosak?
+- Honnan tudja a modell, **hogyan** kell ezt jól csinálni? (skill)
+- Honnan tudja, **mit jelent** az adat? (adatszótár)
+
+::: notes
+A mai óra a 9. alkalom ágensére épül, változtatás nélkül. Az új: négy eszköz, köztük fájlolvasás és számolás; a skill (amit a Copilot is ugyanígy használ); az adatszótár. A végén a projekt mérföldköve: adatszótár és saját skill.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya .ma}
+**Utasítások** · *ma*
+
+`AGENTS.md` (mindig), **skill** (név szerint), **adatszótár** (mit jelent az adat)
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a RAG-lánc; a projektben az ágens eszköze
+:::
+::: {.kartya}
+**Eszközök**
+
+ma: adatlekérés, fájlolvasás, számolás; MCP
+:::
+::: {.kartya}
+**Memória**
+
+az előzmény (9. alkalom); a skill teste csak betöltéskor kerül bele
+:::
+:::
+
+::: notes
+A kör bezárul: az első órán az AGENTS.md volt az első kontextustervezési eszköz. Ma a skill és az adatszótár: ugyanaz a gondolat, pontosabban adagolva.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–8 | Nyitás; a mai kérdés |
+| 8–22 | Eszközkészlet; **ti:** eszközleírás (1.1); biztonság (1.2) |
+| 22–32 | Az ágens dönti el a sorrendet (2.1) |
+| 32–50 | Skill: mi az, hogyan töltődik be; skillel és más adattal (3.1) |
+| 50–60 | Adatszótár: nélküle és vele (4.1) |
+| 60–66 | MCP: szabványos eszközkapcsolat |
+| 66–86 | **Ti:** adatszótár és saját skill a projekthez, a Copilotban |
+| 86–90 | Otthonra; zárás |
+:::
+
+::: notes
+A notebook gyors: kb. 12 modellhívás gondolkodás nélkül, nincs index. A 66–86 a legfontosabb blokk: ott készül a mérföldkő. Ha csúszol, az MCP egy diára rövidíthető.
+:::
+
+## Eszközkészlet egy gazdasági kérdéshez
+
+| Eszköz | Típus | Mit enged |
+|---|---|---|
+| `mai_datum()` | környezet | semmit, csak olvas |
+| `munkanelkuliseg(…)` | adat publikus API-ból | Eurostat `une_rt_a`; tartalék: CSV |
+| `fajl_olvasas(nev)` | fájlolvasás | **csak** a `data/` mappából |
+| `szamol(kifejezes)` | számítás | számok és + − × ÷ ^, **nincs `eval`** |
+
+- **Kevés, jól körülhatárolt eszköz,** és mindegyik **a lehető legkevesebbet engedje**
+- Hibánál `{"hiba": …}`, benne azzal, ami elérhető: ebből az ágens javíthat
+
+::: notes
+1.1 Copilottal: a munkanelkuliseg eszközleírása. Az ellenőrzés formai: név = függvénynév, a három paraméter típussal, mind kötelező. A leggyakoribb hiba: a Copilot más paraméternevet ír (country, start_year), vagy stringnek veszi az évet. Az adatlekérő a csomagok mintája: élő, tartalék, hiba kulcs.
+:::
+
+## Mit enged egy eszköz?
+
+``` python
+szamol("(4.4 - 4.0) / 4.0 * 100")
+# {'kifejezes': '(4.4 - 4.0) / 4.0 * 100', 'eredmeny': 10.0}
+
+szamol("__import__('os').system('rm -rf data')")
+# {'hiba': 'nem tudom kiszámolni: csak számok és a + - * / ** műveletek; …'}
+
+fajl_olvasas("../kurzus.py")
+# {'hiba': 'csak a data/ mappából olvashatok'}
+```
+
+Egy `eval`-os számológép a második sort **lefuttatta volna**. A modell nem rosszindulatú, de amit kér, jöhet egy letöltött dokumentumból is (*prompt injection*, 11. alkalom).
+
+::: notes
+1.2: a, b vagy c? (b.) A szamol szétszedi a kifejezést (ast.parse), és csak számot és hat műveletet enged. A fajl_olvasas a .env-et (API-kulcs!) sem adja ki. Ugyanez a Copilotban: Agent módban jóváhagyást kér a parancsok előtt; ne kapcsoljátok ki.
+:::
+
+## Skill nélkül: a „ma” a betanítás ideje
+
+``` text
+1. lépés  ESZKÖZ munkanelkuliseg({"orszag":"HU","tol":2019,"ig":2023})
+2. lépés  VÁLASZ  … az elmúlt öt évben (2019-2023) …
+          | 2019 | 3.3 |  | 2020 | 4.1 | … | 2023 | 4.1 |
+```
+
+::: {.kartyak .harom}
+::: {.kartya}
+**A számok** [RENDBEN]{.cimke .ok}
+
+az eszközből, a nyers adat szerint
+:::
+::: {.kartya .rossz}
+**Az időszak**
+
+2019–2023; a 2024-es és a 2025-ös adat már megvolt
+:::
+::: {.kartya .rossz}
+**A forma**
+
+tizedespont, nincs forrás
+:::
+:::
+
+A `mai_datum` ott volt, a modell nem használta: **nem tudta, hogyan kell ezt a feladatot jól csinálni.**
+
+::: notes
+2.1: lekéri-e a dátumot? (Nálam nem.) Ez a modell tipikus hibája: az „utóbbi 5 év” nála a betanítás idejéhez képest értendő. Az ellenőrzés a lekért évekre RENDBEN, és kiírja, hogy az utolsó elérhető év (2025) hiányzik. Eurostat une_rt_a, HU: 2019 3,3; 2023 4,1; 2024 4,5; 2025 4,4.
+:::
+
+## A skill: egy mappa, egy `SKILL.md`
+
+``` markdown
+---
+name: adat-osszefoglalo
+description: Egy gazdasági mutató alakulásának rövid összefoglalója egy
+  időszakra, táblázattal és forrással. Akkor használd, ha egy idősort kell …
+---
+# Adat-összefoglaló
+## Lépések
+1. Relatív időszaknál előbb kérd le a mai dátumot. Példa: ha ma 2026 van,
+   és az adat 2025-ig van meg, az „utóbbi 5 év” 2021–2025. …
+## A válasz formája
+- Markdown-táblázat | Év | Érték (%) |, tizedesvesszővel; a végén: Forrás: …
+```
+
+**Hol keresi a VS Code Copilot?** A projektben `.github/skills/<név>/SKILL.md` (vagy `.claude/skills/`, `.agents/skills/`). A `name` kisbetű-szám-kötőjel, egyezik a mappa nevével.
+
+[Forrás: code.visualstudio.com/docs/copilot/customization/agent-skills (megnézve 2026-10-10).]{.halvany}
+
+::: notes
+A notebook a data/skillek/-ből bemásolja a .github/skills/-be: így a ti notebook-repótokban a Copilot is látja, /adat-osszefoglalo paranccsal hívható. A dokumentáció szerint ha a name érvénytelen karaktert tartalmaz, a skill csendben nem töltődik be: a 6. rész ellenőrzése ezt is nézi.
+:::
+
+## Három szinten töltődik be
+
+::: {.folyamat}
+[1. **név + leírás**: mindig]{.lep} [→]{.nyil} [2. a **teste**: ha illik, vagy `/név`]{.lep .kiemelt} [→]{.nyil} [3. fájljai: ha kellenek]{.lep}
+:::
+
+<br>
+
+::: {.kartyak}
+::: {.kartya}
+**`AGENTS.md`**
+
+**mindig** a kontextusban: munkamód, nyelv, biztonság, a projekt szabályai
+:::
+::: {.kartya .ma}
+**Skill**
+
+egy **feladat eljárása**, név szerint: lépések, a válasz formája, ellenőrzés
+:::
+:::
+
+Kevés, pontos skill jobb, mint sok homályos: a leírásuk mind ugyanazért a kontextusért versenyez.
+
+::: notes
+3.1: mi kerül a rendszerpromptba? (b: név és leírás.) A mi ágensünk ugyanígy csinálja: skilles_rendszer() a listát teszi be, a skill_betoltese eszköz a testet adja. A leírás a legfontosabb mondat: ebből dönti el a modell, betölti-e.
+:::
+
+## Skillel
+
+``` text
+1. (815 token)  skill_betoltese("adat-osszefoglalo")
+2. (1274)       mai_datum() -> "2026-10-10"
+3. (1307)       munkanelkuliseg("HU", 2021, 2025)
+4. (1492)       adat-osszefoglalo({...})  -> {"hiba": "nincs ilyen eszköz"}
+5. (1625)       VÁLASZ  | 2021 | 4,0 | … | 2025 | 4,4 | … Forrás: Eurostat une_rt_a
+```
+
+- [RENDBEN]{.cimke .ok} dátum → a helyes 5 év; tizedesvessző; Forrás-sor
+- [RENDBEN]{.cimke .ok} cseh adat, 2019–2023: ugyanaz a forma, **utómunka nélkül**
+- A skill első, példa nélküli változatával 4 évet kapott: **a pontos példa számít**
+- A 4. lépés: a skill **nevét** hívta eszközként; a szótár megfogta
+
+::: notes
+A kitalált eszköz jó példa a 11. alkalomra: a rendszerprompt kimondja, hogy a skill nem eszköz, a modell mégis meghívta. Az eszkoz_uzenet hibaüzenetet adott, és az ágens folytatta. Ha a szótár helyett eval vagy getattr futtatna, ez baj lenne.
+:::
+
+## Adatszótár: nélküle és vele
+
+„Egy elemzés szerint az infláció 2023-ban 17,6 és 18,1 százalék között alakul. Igaz lett?”
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Nélküle**
+
+nincs eszközhívás: „A rendelkezésre álló eszközökkel nem tudom ellenőrizni…”
+:::
+::: {.kartya}
+**Vele** (a rendszerpromptban, mint az `AGENTS.md`)
+
+`inflacio(KSH, 2023)` → 17,6; de: „a felső határhoz (18,1) közel van”
+:::
+:::
+
+**Őszintén:** a KSH–HICP-csapda itt nem jött elő. 12 változatban az MNB-kérdésre **mindig a KSH-t** választotta, uniós összevetéshez az Eurostatot. Egy másik megfogalmazásnál az adatszótár hatása épp fordított volt.
+
+**Az adatszótár szükséges, de nem garancia. A script dönt.**
+
+::: notes
+4.1: hív-e eszközt adatszótár nélkül? (Nálam nem.) Mondd el, mit vártál és mi lett: a csapda a Copilotnál (7. alkalom, tenyadat: a HICP-oszlopot is választhatja) és a projekt ellenorzes.py-jában (TENYADAT_FORRASA) élesebb, mint ennél a modellnél. És a következtetés vele is rossz: a 17,6 az alsó szél. Ezért végzi kód az összevetést.
+:::
+
+## MCP: szabványos dugó az eszközökhöz
+
+::: {.folyamat}
+[kliens: Copilot, Claude]{.lep} [⇄]{.nyil} [**MCP-szerver**: eszközök]{.lep .kiemelt} [⇄]{.nyil} [API, adatbázis, fájlok]{.lep}
+:::
+
+``` json
+{ "servers": {
+    "eurostat": { "type": "stdio", "command": "python", "args": ["eurostat_mcp.py"] } } }
+```
+
+- `.vscode/mcp.json`; az eszközök a Chat **Configure Tools** gombja alatt
+- Ugyanaz, mint a mi `ESZKOZ_…` leírásaink, csak szabványos: **protokoll, nem keretrendszer**
+- **A hozzáférés nem megértés:** élő adattal is rossz a válasz adatszótár nélkül
+
+[A `mcp.json` csak minta (az `eurostat_mcp.py` nincs a csomagban). Forrás: code.visualstudio.com/docs/copilot/customization/mcp-servers; a workshop 2. része, forrásmegjelöléssel.]{.halvany}
+
+::: notes
+Anthropic, 2024. november. A workshop hasonlata: USB-hub; az API-t nem váltja ki. Tippek a workshopból: MCP-szerver tesztelésekor kapcsold ki az átfedő beépített eszközöket; új szerver után új chat-munkamenet. A modell itt is csak kér; a hívást a kliens hajtja végre, jóváhagyással.
+:::
+
+## Saját skill a projekthez, a Copilotban
+
+(Párban: közösen.) A projekted repójában, Agent módban:
+
+1. **Adatszótár:** a csomag `adatszotar.md`-jének `TODO`-i, forrással (dokumentum, oldal)
+2. **Skill:** a chatben `/create-skill`, és írd le, mit csináljon (minta-kérés a notebookban); vagy **Configure Chat** (fogaskerék) → **Skills** → **New Skill (Workspace)**
+3. **Olvasd el, mielőtt Keep:** `name` = mappa neve? a `description` megmondja, **mikor** kell? nem ismétli az `AGENTS.md`-t?
+4. **Próba új chatben:** `/mnb-osszevetes A 2023. szeptemberi jelentés mekkora inflációt várt 2023-ra, és mennyi lett?`
+5. A notebook 6. része formailag ellenőrzi (`skill_rendben`)
+
+::: notes
+Lásd a forgatókönyv lépéseit és B-terveit. A /create-skill a Copilot saját parancsa: kérdez, és megírja a fájlokat. Ha a Copilot a skillt a .github/skills helyett máshova teszi (pl. a gyökérbe), kérjétek, hogy helyezze át: a Copilot csak a dokumentált helyeken keresi.
+:::
+
+## Ha a Copilot nem azt teszi
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Nem tölti be magától**
+
+A leírás nem illik a kérdéshez: írd bele, *mikor* kell. Vagy hívd név szerint: `/név`.
+:::
+::: {.kartya .rossz}
+**Nem jelenik meg a `/` listában**
+
+`name` ≠ mappanév, nagybetű vagy ékezet a névben, rossz mappa: **csendben** nem töltődik be.
+:::
+::: {.kartya .rossz}
+**A választ javítgatod kézzel**
+
+Ne: a **skillt** javítsd, és futtasd újra. A skill értéke, hogy utómunka nélkül ugyanazt adja.
+:::
+::: {.kartya}
+**Frissebb adattal**
+
+egyszer net nélkül (tartalék), egyszer élőben: ugyanaz a forma?
+:::
+:::
+
+::: notes
+A dokumentáció szerint a felfedezés nem garantálja, hogy a Copilot minden illő kérdésnél betölti a skillt. A /név parancs biztos. Ha valakinél a Copilot nem fér hozzá a Pythonhoz (nincs .venv kiválasztva), a skill 4. lépése (ellenorzes.py) nem fut: Python: Select Interpreter.
+:::
+
+## Otthonra
+
+(Párban: közösen.)
+
+- `adatszotar.md`: a `TODO`-k kitöltve, forrással
+- Legalább egy saját skill a `.github/skills/` mappában; a notebook 6. része `RENDBEN`-t ír rá
+- **Frissebb adattal:** a skill egyszer tartalékból, egyszer élő adattal; ugyanaz a forma, utómunka nélkül? Ha nem: a skillt javítsd, és `feltetelezesek.md`
+- `AGENTS.md`: ami csak egy feladathoz kell, menjen a skillbe
+
+**Jövő alkalommal:** megbízhatóság és biztonság; töréspróba egymás projektjén.
+
+::: notes
+Kilépőkérdés: „Mi kerül mindig a kontextusba, és mi csak akkor, ha kell?” (Az AGENTS.md mindig; a skill neve és leírása mindig, a teste csak betöltéskor.) Szólj: a 11. alkalomra a projekt ágense fusson, mert egymásét fogják feltörni.
+:::

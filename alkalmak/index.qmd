@@ -15,5 +15,7 @@ Alkalmanként itt találod a diákat és a hozzájuk tartozó notebookot. A pont
 | **6. alkalom:** RAG-kiértékelés és javítás | [diák](06-rag-kiertekeles/diak.qmd) | [06-rag-kiertekeles](../notebookok/06-rag-kiertekeles.ipynb) |
 | **7. alkalom:** félidő, a chattől az ágens felé | [diák](07-felido/diak.qmd) | [07-felido](../notebookok/07-felido.ipynb) |
 | **8. alkalom:** eszközhasználat, az LLM kezet kap | [diák](08-eszkozok/diak.qmd) | [08-eszkozok](../notebookok/08-eszkozok.ipynb) |
+| **9. alkalom:** az ágensciklus | [diák](09-agensciklus/diak.qmd) | [09-agensciklus](../notebookok/09-agensciklus.ipynb) |
+| **10. alkalom:** adatelemző ágens, adatszótár és skillek | [diák](10-adatelemzo-agens/diak.qmd) | [10-adatelemzo-agens](../notebookok/10-adatelemzo-agens.ipynb) |
 
 A diák böngészőben vetíthetők: az <kbd>F</kbd> billentyű teljes képernyőre vált, az <kbd>S</kbd> az előadói nézetet nyitja meg a jegyzetekkel.
