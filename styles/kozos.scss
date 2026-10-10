@@ -120,7 +120,7 @@ pre.sourceCode, pre.sourceCode code { color: #E6E7F2; }
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  margin-top: 1.4rem;
+  margin-block: 1.4rem 2rem;
   @media (max-width: 640px) { grid-template-columns: minmax(0, 1fr); }
 }
 .kartya {

@@ -1,0 +1,8 @@
+# A letöltött dokumentumok (PDF) nem kerülnek a repóba: a forrasok.csv alapján bárki letöltheti őket.
+dokumentumok/
+.venv/
+.env
+__pycache__/
+.ipynb_checkpoints/
+# Futás közben számolt gyorsítótár (pl. darabok, embeddingek), bármikor újraszámolható
+data/cache/

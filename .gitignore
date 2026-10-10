@@ -9,3 +9,6 @@ __pycache__/
 notebookok/data/**/*.pdf
 # Futás közben számolt gyorsítótár (pl. embeddingek), bármikor újraszámolható
 notebookok/data/cache/
+# A projektcsomagok letöltött dokumentumai (PDF): a forrasok.csv alapján bárki letöltheti őket
+csomagok/**/dokumentumok/
+csomagok/**/*.pdf

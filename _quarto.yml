@@ -13,8 +13,10 @@ project:
     - "notebookok/*.ipynb"
     - "notebookok/data/**"
     - "notebookok/requirements.txt"
+  # A projektcsomagok (csomagok/<nev>/) nem renderelődnek: a post-render lépés zipeli őket a _site/csomagok/ alá.
   post-render:
     - eszkozok/notebook_zip.py
+    - eszkozok/csomag_zip.py
 
 lang: hu
 

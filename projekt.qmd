@@ -30,8 +30,8 @@ Lekéri a tényadatot egy nyilvános adatforrásból (pl. KSH, Eurostat), számo
 
 ## Egy minta: „Mit ígért az MNB, és mi lett?”
 
-- **Gyűjtemény:** az MNB Inflációs jelentései 2023 közepétől 2026 őszéig, negyedévente, 14 PDF.
-- **Kérdés:** „A 2024. márciusi jelentés mekkora éves inflációt várt 2024-re, és mennyi lett?”
+- **Gyűjtemény:** az MNB Inflációs jelentései 2023 közepétől, negyedévente (a csomagban 13 PDF).
+- **Kérdés:** „A 2023. szeptemberi jelentés mekkora éves inflációt várt 2023-ra, és mennyi lett?”
 - **A RAG** megtalálja az előrejelzést a jelentésben. **Az ágens** lekéri a tényadatot, kiszámolja az eltérést, és forrásmegjelöléssel válaszol.
 - **Az ellenőrző script** a nyers adatból maga is kiszámolja a tényértéket és az eltérést. Ha a válaszban más szám áll, az eredmény `HIBA`.
 
@@ -40,8 +40,75 @@ A minta szándékosan tartalmaz egy csapdát, amelybe egy elsőre meggyőzőnek 
 ## Hogyan zajlik
 
 - (**Párban** dolgoztok, egy közös GitHub-repóban.)
-- **Előre elkészített projektcsomagokból** választotok (dokumentumgyűjtemény, adatforrás, ellenőrző script). A csomagok listája a félév elején kerül ide.
+- **Két előre elkészített projektcsomag** közül választotok a 3. alkalommal. Egy csomagban benne van a dokumentumgyűjtemény, egy működő adatlekérő függvény és egy adatszótár-váz:
+    - **MNB:** az Inflációs jelentések ↔ KSH- és Eurostat-inflációs adatok (ez a fenti minta);
+    - **Költségvetési Tanács:** a Tanács elemzései ↔ Eurostat kormányzati hiány és adósság.
 - **Saját téma** is választható: ilyenkor a dokumentumgyűjteményt és az adatforrást ti készítitek elő, és a 3. alkalomig jóvá kell hagynom.
 - **Mérföldkövek** segítenek, hogy a projekt ne az utolsó héten készüljön el.
 - **Frissítési próba:** a bemutató előtt két nappal minden csomaghoz érkezik egy frissítés (új jelentés vagy új havi adat). A rendszereteknek ezzel utómunka nélkül kell lefutnia. Ha mégis kódot kellett módosítani, a dokumentációban leírjátok, mit és miért.
 - **Bemutató:** (páronként) kb. 8 perc, utána kérdések.
+
+## Projektcsomagok
+
+Mindkét csomag egy zip: kicsomagolva egy projektmappa, ebből indul a (közös) repótok. Benne van a dokumentumok listája a letöltési címekkel (a PDF-eket az első lépésben töltöd le), egy adatlekérő függvény, mentett adat arra az esetre, ha nincs net, az adatszótár váza és egy ellenőrző script mintája. A részleteket a csomag `README.md`-je írja le.
+
+::: {.kartyak}
+::: {.kartya}
+[MNB]{.cim}
+
+[mit ígért az MNB, és mi lett?]{.mi}
+
+Az MNB 13 Inflációs jelentése (2023. június – 2026. június) ↔ a KSH fogyasztóiár-indexe és az Eurostat HICP-adatai.
+
+[MNB-csomag (.zip)](csomagok/mnb.zip){.cta}
+:::
+
+::: {.kartya}
+[Költségvetési Tanács]{.cim}
+
+[mit tervezett a költségvetés, és mi lett?]{.mi}
+
+A Tanács 14 véleménye és kitekintése (2023. október – 2026. augusztus) ↔ az Eurostat kormányzati hiány- és adósságadatai.
+
+[KT-csomag (.zip)](csomagok/kt.zip){.cta}
+:::
+:::
+
+A KT dokumentumainak többsége beszkennelt PDF, a szövegükben gépi karakterfelismerési hibák vannak. Ez a csomag ezért nehezebb, de egyben valóságosabb feladat. A 3. alkalomig nézzetek bele mindkettőbe.
+
+## Mérföldkövek
+
+| Mikor | Mi készül el |
+|---|---|
+| 3. alkalom | (Pár és) csomag kiválasztása; a darabolást a saját gyűjteményeteken gyakoroljátok. |
+| 5. alkalom | A RAG-lánc a saját gyűjteményeteken fut. |
+| 6. alkalom | 10 tesztkérdés elvárt válaszokkal, első kiértékelés. |
+| 7. alkalom | Checkpoint: a RAG-rész kész, közös hibakeresés. |
+| 9. alkalom | Az ágens a csomag adatlekérő függvényét használja. |
+| 10. alkalom | Adatszótár és saját skill a projekthez. |
+| 11. alkalom | Töréstesztelés egymás projektjén, átnézés friss munkamenetben. |
+| bemutató előtt 2 nappal | Kikerül a frissítés. |
+| 12. alkalom | Bemutató. |
+
+## Mit adtok le
+
+- **Működő kód** a GitHub-repóban, benne `AGENTS.md`, adatszótár és legalább egy saját skill.
+- **Ellenőrző script**, amely a kimenetben szereplő számokat a nyers adatból újraszámolja.
+- **`tesztkerdesek.md`:** 10 tesztkérdés az elvárt válasszal, és a kiértékelés eredménye. Kb. 4 kérdés csak a dokumentumokból, 3 csak az adatból, 3 a kettőből együtt, és legalább egy, amelyre a helyes válasz: „ez nincs a forrásokban”. Az elvárt választ a futtatás *előtt* írjátok le, a számot script számolja.
+- **Rövid dokumentáció:** mit csinál, hogyan működik, mik az ismert korlátai, és mi történt a frissítési próbán.
+
+## Értékelés
+
+| Rész | Arány | Mit nézek |
+|---|---|---|
+| Órai gyakorlatok | 30% | Az alkalmak notebookjainak feladatai, ahogy a GitHub-repótokba feltöltöttétek. |
+| Záró projekt | 50% | Lásd lent. |
+| Bemutató | 20% | Érthetően elmagyarázzátok-e, hogyan működik, és milyen hibákat találtatok benne. |
+
+A záró projektnél ezt nézem:
+
+- **Működik-e:** a kód lefut egy friss gépen, a leírás alapján.
+- **Visszakeresés:** a RAG a jó oldalt találja-e meg, és hivatkozik-e rá; ezt a tesztkérdéseitek mérik.
+- **Ágens:** valóban az ágens kéri-e le és számolja-e ki a tényadatot, és az ellenőrző script egyetért-e vele.
+- **Frissítési próba:** az új adattal utómunka nélkül lefut-e (ha nem, a dokumentáció leírja, mit kellett módosítani és miért).
+- **Korlátok:** tudjátok-e, hol hibázik a rendszeretek. Egy őszintén leírt hiba többet ér, mint egy eltitkolt.
