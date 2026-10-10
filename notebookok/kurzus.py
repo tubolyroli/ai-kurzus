@@ -97,9 +97,14 @@ def _csonkolas_figyelmeztetes(adat, prompt_tokens):
     a kérést, így a tokenszámból önmagában nem látszik. Ezért ha a kérés legalább fél ablaknyi,
     megkérdezzük az Ollamát levágás nélkül is (`truncate: false`): ha nem fér bele, hibát ad,
     benne a kérés valódi hosszával. Ha a kérés belefér, ez egy gyors, gyorsítótárazott hívás.
+
+    Eszközhívásokat tartalmazó előzményeknél az Ollama egész üzeneteket dob el (a rendszerpromptot és
+    a kérdést is), és a megmaradt rész akár néhány tucat token: ezért a kérés hosszát a szövegből is
+    megbecsüljük (kb. 4 karakter tokenenként, a magyar szövegnél ez inkább alá-, mint fölébecslés).
     """
     url = beallitas("LLM_BASE_URL")
-    if prompt_tokens < 1000 or not ("localhost" in url or "127.0.0.1" in url):
+    becsles = len(json.dumps(adat["messages"], ensure_ascii=False)) // 4
+    if max(prompt_tokens, becsles) < 1000 or not ("localhost" in url or "127.0.0.1" in url):
         return
     gyoker = url.rstrip("/").removesuffix("/v1")
     try:
@@ -108,7 +113,7 @@ def _csonkolas_figyelmeztetes(adat, prompt_tokens):
     except (urllib.error.URLError, ValueError, OSError):
         return
     ablak = next((m.get("context_length") for m in futo if m.get("name") == adat["model"]), None)
-    if not ablak or prompt_tokens < ablak // 2:
+    if not ablak or max(prompt_tokens, becsles) < ablak // 2:
         return
     valodi = prompt_tokens if prompt_tokens >= ablak - 1 else _valodi_hossz(gyoker, adat)
     if valodi and valodi > prompt_tokens:
@@ -121,7 +126,7 @@ def _csonkolas_figyelmeztetes(adat, prompt_tokens):
 
 def _valodi_hossz(gyoker, adat):
     """A kérés tokenszáma levágás nélkül, ha nem fér az ablakba (az Ollama hibaüzenetéből); különben None."""
-    proba = {"model": adat["model"], "messages": adat["messages"], "stream": False, "think": False,
+    proba = {"model": adat["model"], "messages": _nativ_uzenetek(adat["messages"]), "stream": False, "think": False,
              "truncate": False, "options": {"num_predict": 1, "temperature": 0, "seed": 42}}
     if adat.get("tools"):
         proba["tools"] = adat["tools"]
@@ -136,6 +141,28 @@ def _valodi_hossz(gyoker, adat):
         return int(talalat.group(1)) if talalat else None
     except (urllib.error.URLError, ValueError, OSError):
         return None
+
+
+def _nativ_uzenetek(uzenetek):
+    """Az üzenetlista a natív /api/chat formájában: ott az eszközhívás argumentuma objektum, nem JSON-szöveg.
+
+    Enélkül az Ollama 400-as hibát ad az eszközhívást tartalmazó előzményekre, és a levágás nem derülne ki.
+    """
+    ki = []
+    for u in uzenetek:
+        if u.get("tool_calls"):
+            hivasok = []
+            for h in u["tool_calls"]:
+                arg = h.get("function", {}).get("arguments")
+                if isinstance(arg, str):
+                    try:
+                        arg = json.loads(arg or "{}")
+                    except ValueError:
+                        arg = {}
+                hivasok.append(dict(h, function=dict(h.get("function", {}), arguments=arg)))
+            u = dict(u, tool_calls=hivasok)
+        ki.append(u)
+    return ki
 
 
 def kerdez(kerdes, rendszer=None, modell=None, gondolkodas=None, max_tokens=None):

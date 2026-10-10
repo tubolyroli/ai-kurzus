@@ -1,0 +1,331 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "8. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[8. alkalom: eszközhasználat, az LLM kezet kap]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Ma nincs index, nincs hosszú futás: a notebook pár perc alatt végigfut. Net kell (árfolyam-API). Nyitókérdés: ki írta meg az agens_terv.md-t? Kinek mi lett az első eszköze?
+:::
+
+## Ma: a modell kezet kap
+
+::: {.folyamat}
+[fejből számol]{.lep} [→]{.nyil} [függvény + leírás]{.lep} [→]{.nyil} [a modell **kér**]{.lep .kiemelt} [→]{.nyil} [mi **futtatjuk**]{.lep} [→]{.nyil} [válasz]{.lep}
+:::
+
+<br>
+
+Az eszköz egy Python-függvény, amelyet a modell meghívhat, ha számolni kell, vagy adat kell.
+
+**A modell nem futtat semmit.** Megmondja, mit szeretne; a mi kódunk futtatja, és visszaadja az eredményt.
+
+[És ma azt is ellenőrizzük, hogy tényleg meghívta-e: a válasz szövege ezt nem bizonyítja.]{.halvany}
+
+::: notes
+A tervezet mondata: „az LLM nem futtatja a kódot, hanem megmondja, melyik eszközt szeretné használni”. Ezt sokan félreértik: a ChatGPT-ben úgy látszik, mintha a modell maga keresne a neten. Valójában mindig egy program futtatja az eszközt; ma mi írjuk ezt a programot.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: az első óra, a 2. és 5. alkalom
+:::
+::: {.kartya}
+**Visszakeresés**
+
+a RAG-lánc: 3–6. alkalom
+:::
+::: {.kartya .ma}
+**Eszközök** · *ma*
+
+a leírásuk és az eredményük is a kontextusba kerül
+:::
+::: {.kartya}
+**Memória**
+
+az üzenetlista: ma két kör, a 9. alkalommal ciklus
+:::
+:::
+
+::: notes
+Az eszköz kétszer kerül a kontextusba: a leírása a kérdés mellé (ebből dönt a modell), az eredménye a válasz elé (role: tool). Mindkettő tokenbe kerül.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–10 | Nyitás; a modell fejből számol (1. rész, 1.1) |
+| 10–22 | Az eszköz: hibakeresés (2.1), a JSON-leírás (2.2) |
+| 22–42 | A modell kér, mi futtatjuk (3–4. rész); **ti:** `eszkoz_uzenet` (4.1) |
+| 42–50 | A mai dátum; két ellenőrzés; kell-e eszköz? (5. rész, 5.1) |
+| 50–68 | **Ti:** árfolyam az EKB adataiból (6.1); a modell eszközzel |
+| 68–80 | Ha egy kör nem elég (7. rész); a projekt eszköze (8. rész) |
+| 80–90 | Otthonra: a projekt eszközleírása; zárás |
+:::
+
+::: notes
+A notebook gyors: kb. 20 modellhívás, mind pár másodperc, egy gondolkodó (kb. fél perc). Ha csúszol, a 7. rész rövidíthető (a 9. alkalom úgyis ezzel kezd).
+:::
+
+## A modell fejből számol
+
+HICP-index (Eurostat, 2025 = 100): **2020: 65,05**, **2024: 95,75**. Hány százalékkal nőtt az árszínvonal?
+
+::: {.szamok style="grid-template-columns: repeat(3, 1fr)"}
+::: {}
+[46,53]{.szam .rossz}
+
+[a modell, gondolkodás nélkül]{.szam-cimke}
+:::
+::: {}
+[47,20]{.szam .rossz}
+
+[a modell, gondolkodással (kb. fél perc)]{.szam-cimke}
+:::
+::: {}
+[47,19]{.szam .jo}
+
+[Python: `uj / regi - 1`]{.szam-cimke}
+:::
+:::
+
+<br>
+
+A 2. alkalommal ugyanez: 24 havi adat átlaga, a modell 9,63, a Python 10,63. **A modell nem számol, hanem szöveget ír**: a számjegyeket is jósolja.
+
+[És az éves változások összege (5,2 + 15,3 + 17,0 + 3,7 = 41,2) sem jó: kamatos kamat. Notebook 1. rész; a modell válasza futásonként eltérhet.]{.halvany}
+
+::: notes
+Az 1.1 tippje előtte: 41, 44, 47 vagy 50? Sokan 41-et mondanak (az összeg). A modell válaszai nálam; egy előzetes próbán 2015 = 100-as indexszel gondolkodás nélkül 58,11 jött ki a 47,20 helyett. A masterclass példája ugyanez: az LLM rosszul szoroz (5,1 × 7,3), ezért kap egy szorzó eszközt.
+:::
+
+## Az eszköz: függvény és leírás
+
+``` python
+def szazalekos_valtozas(regi, uj):     # 2.1: a Copilot / uj-val osztott (32,06)
+    return round((uj - regi) / regi * 100, 2)
+```
+
+``` python
+{"type": "function", "function": {
+  "name": "szazalekos_valtozas",
+  "description": "Kiszámolja, hány százalékkal nőtt egy érték …",
+  "parameters": {
+    "type": "object", "required": ["regi", "uj"],
+    "properties": {
+      "regi": {"type": "number", "description": "a kiinduló érték"},
+      "uj":   {"type": "number", "description": "az új érték"}}}}}
+```
+
+A modell **csak a leírást** látja, a kódot nem: név, mit csinál, paraméterek. Ára: a kérés 86 → 218 token.
+
+::: notes
+A 2.2: mit kap meg a modell? (b: nevet, leírást, paramétereket.) A leírás ugyanolyan kontextus, mint a rendszerprompt: ebből dönti el, hívja-e. Ez az OpenAI-kompatibilis formátum: Ollama, OpenAI, Gemini ugyanígy érti.
+:::
+
+## A modell csak kér
+
+``` python
+valasz = chat(uzenetek, eszkozok=[ESZKOZ_VALTOZAS], gondolkodas="none")
+```
+
+``` text
+{"role": "assistant",
+ "content": "",
+ "tool_calls": [{"id": "call_bubrp1ow", "type": "function",
+                 "function": {"name": "szazalekos_valtozas",
+                              "arguments": "{\"regi\":65.05,\"uj\":95.75}"}}]}
+```
+
+- `content` üres: **nem válaszolt**, hanem kért
+- `arguments` **szöveg** (JSON): nekünk kell szótárat csinálni belőle
+- `id`: az eredményt erre hivatkozva adjuk vissza
+
+::: notes
+Az ellenőrző cella a tool_calls-t nézi: a jó eszközt kérte-e, a táblázat két számával. Kérdezd meg: honnan vette a 65.05-öt? (A kérdésből: magyar tizedesvesszővel kapta, ponttal küldte vissza. Ezt is a modell fordította le.)
+:::
+
+## A kör
+
+::: {.folyamat}
+[a modell kér]{.lep} [→]{.nyil} [függvény a szótárból]{.lep .kiemelt} [→]{.nyil} [futtatás]{.lep} [→]{.nyil} [eredmény a listába]{.lep} [→]{.nyil} [újra a modell]{.lep}
+:::
+
+``` python
+ESZKOZOK = {"szazalekos_valtozas": szazalekos_valtozas}    # név → függvény
+
+hivas = valasz["tool_calls"][0]
+argumentumok = json.loads(hivas["function"]["arguments"])
+fuggveny = ESZKOZOK[hivas["function"]["name"]]
+eredmeny = fuggveny(**argumentumok)
+
+uzenetek.append(valasz)
+uzenetek.append({"role": "tool", "tool_call_id": hivas["id"], "content": json.dumps(eredmeny)})
+vegso = chat(uzenetek, eszkozok=[ESZKOZ_VALTOZAS], gondolkodas="none")
+```
+
+[„Az árszínvonal **47,19%**-kal nőtt 2020 és 2024 között.” Csak az futhat, ami a szótárban van. Notebook 4. rész; 4.1: ez egy függvényben.]{.halvany}
+
+::: notes
+Miért szótár? A modell csak egy nevet küld (szöveg). A szótár a mi listánk arról, mit engedünk futtatni: ha a modell kitalál egy eszközt, az nincs benne (a 4.1 ezt is kezeli: hibaüzenet, nem összeomlás). A második hívásban a modell újra megkapja a kérdést, a saját kérését és az eredményt: nincs emlékezete, az üzenetlista a memória (2. alkalom).
+:::
+
+## Ha az eszköz hibás, a modell elhiszi
+
+Ugyanaz a kör, a szótárban a 2.1 hibás számológépével:
+
+``` text
+ESZKÖZ  szazalekos_valtozas({"regi":65.05,"uj":95.75}) -> 32.06
+VÁLASZ  Az árszínvonal **32,06%**-kal nőtt 2020 és 2024 között.
+```
+
+<br>
+
+- A modell nem ellenőrzi az eszközt: **átveszi, és magabiztosan megfogalmazza**
+- Az eszköz kód: úgy kell tesztelni, mint bármely kódot, **előre megírt esetekkel** (2.1 ellenőrzése)
+- Nem a modellt kérdezzük meg utólag, hogy jó-e
+
+::: notes
+Ez a kurzus elve az eszközökre: a várt értéket script számolja, nem a modell ellenőrzi magát. Egy ágens annyira megbízható, amennyire a leggyengébb eszköze.
+:::
+
+## Amit a modell nem tudhat: a mai dátum
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Eszköz nélkül**
+
+„Sajnálom, de nem tudom, hogy ma milyen nap van …”
+:::
+::: {.kartya}
+**A `mai_datum` eszközzel** (nincs paramétere)
+
+`ESZKÖZ mai_datum({}) -> "2026-10-10"`
+
+„A mai dátum 2026-10-10.”
+:::
+:::
+
+**Két ellenőrzés:** (1) a `tool_calls`-ban a `mai_datum` áll; (2) a válaszban a mai dátum. Az első bizonyítja, **honnan** jött.
+
+[„Mi a HICP? Egy mondatban.”, ugyanezzel a két eszközzel: a modell nem kért eszközt. Ő dönti el, kell-e. Notebook 5. rész, 5.1.]{.halvany}
+
+::: notes
+Miért kell az első ellenőrzés? Ha a modell véletlenül eltalálná a dátumot (vagy egy árfolyamot), a szöveg átmenne, pedig nem az eszközből tudja. A 7. alkalommal a munkafolyamatban mi döntöttük el a lépéseket; itt a modell dönt a leírások alapján.
+:::
+
+## Adat a netről: az euró árfolyama
+
+``` python
+url = f"https://api.frankfurter.dev/v1/{datum}?base=EUR&symbols=HUF"
+keres = urllib.request.Request(url, headers={"User-Agent": "kurzus-notebook"})
+with urllib.request.urlopen(keres, timeout=20) as valasz:
+    adat = json.loads(valasz.read())
+return {"datum": adat["date"], "eur_huf": adat["rates"]["HUF"]}
+```
+
+- Frankfurter: az **EKB referenciaárfolyamai**, kulcs nélkül
+- 2024-01-02: **382,1** · szombat, 2024-01-06: a péntek (01-05) árfolyama, **378,23**: a dátum a **válaszból**
+- Az ellenőrzés **független forrásból**: az EKB saját adat-API-ja (data-api.ecb.europa.eu)
+
+::: notes
+A 6.1 Copilottal. Tipikus hibák: User-Agent nélkül HTTP Error 403: Forbidden (a szerver a Python alapértelmezett fejlécét elutasítja); a dátumot a kérésből veszi, így szombatra is „van” árfolyam; requests csomag (nincs telepítve). Eszköz nélkül a modell nálam nem mondott számot („nincs hozzáférésem”): ez a jó viselkedés, de nem mindig ez jön.
+:::
+
+## Ha egy kör nem elég
+
+„Hány százalékkal változott az euró forintárfolyama 2024. január 2. és 2025. január 2. között?”
+
+``` text
+(a kérés 385 token)
+ESZKÖZ  arfolyam({"datum":"2024-01-02"}) -> {"datum": "2024-01-02", "eur_huf": 382.1}
+ESZKÖZ  arfolyam({"datum":"2025-01-02"}) -> {"datum": "2025-01-02", "eur_huf": 412.9}
+(a kérés 513 token)
+ESZKÖZ  szazalekos_valtozas({"regi":382.1,"uj":412.9}) -> 8.06
+(a kérés 565 token)
+VÁLASZ  Az euró forintárfolyam … **8.06%**-kal nőtt.
+```
+
+Ugyanazt a `lepes` cellát futtattuk újra, amíg a modell szöveggel nem válaszolt. **Jövő héten ezt egy `while` ciklus csinálja: ez az ágens.**
+
+::: notes
+Az első lépésben a modell egyszerre két eszközhívást kért (párhuzamos tool_calls), a másodikban a két eredményből a számolást. Minden lépésben a teljes üzenetlista megy el újra: ezért nő a tokenszám. A 9. alkalom kérdései: mikor álljon meg a ciklus, és mi van, ha nem áll meg?
+:::
+
+## A projektben: „és mennyi lett?”
+
+„Az MNB 2023. szeptemberi jelentése 2023-ra 17,6–18,1%-ot várt. **Mennyi lett**, és a sávon belül van?”
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Ahogy írtam**
+
+nem kért eszközt: „adj meg a való infláció számát”. A válaszban ott a 17,6, de **a kérdésből**.
+:::
+::: {.kartya}
+**Pontosítva:** „Mennyi lett a **tényleges éves infláció 2023-ban**…?”
+
+`inflacio({"ev": 2023, "forras": "KSH"})` → 17,6, „a sávon belül”
+:::
+:::
+
+**A számot az eszköz adja, az összevetést a kód.** Egy előzetes próbán a modell ugyanerre a 17,6-ra azt írta: „a sáv alatt”.
+
+::: notes
+Ez a mai legjobb példa arra, miért a tool_calls-t ellenőrizzük: az első válaszban szerepel a 17,6, egy szövegellenőrzés átengedné. A forrást (KSH vagy Eurostat) a modell választotta; nálam minden próbán a KSH-t. Egy bővebb eszközleírással („az MNB-előrejelzésekkel a KSH-adatot vesd össze”) gondolkodással mindkettőt lekérte. Az eszközleírás is kontextustervezés.
+:::
+
+## Otthonra
+
+(Párban: közösen.)
+
+- A notebook végén mindenhol [RENDBEN]{.cimke .ok} legyen (a 6.1-hez net kell)
+- A csomagod adatlekérő függvényéhez **eszközleírás** JSON-ben, az `ESZKOZ_INFLACIO` mintájára, az `eszkozok.py`-ba
+- Egy kör (`egy_kor`) a projekted egyik adatos tesztkérdésére; a `hivott_eszkozok` megmutatja, jó eszközt, jó argumentumokkal kért-e
+- Ha a modell a következtetésben hibázik: `feltetelezesek.md`, és melyik lépést kell kódra bízni?
+
+<br>
+
+**Jövő alkalommal:** az ágensciklus. A `lepes` egy `while` ciklusba kerül, lépéskorláttal.
+
+::: notes
+Kilépőkérdés: „Honnan tudod, hogy a modell az eszközből vette a számot, és nem fejből?” (A tool_calls-ból és a tool üzenetből, nem a válasz szövegéből.)
+:::

@@ -810,6 +810,11 @@ ollama pull bge-m3</code><button class="copy" type="button">Másolás</button></
             <pre class="cmd"><code>ollama run gemma4:e4b "Egy mondatban: mi az infláció?"</code><button class="copy" type="button">Másolás</button></pre>
             <p>Ha magyarul válaszol, működik. Az első válasz akár egy percig is tarthat, mert a modellt ilyenkor tölti be a memóriába. A modell válasz előtt „gondolkodik”, ezért a további válaszok is 10–30 másodpercig tartanak. Ez a saját gépen futó modelleknél normális.</p>
           </div></li>
+          <li><div>
+            <p><b>A 6. alkalom után, a 7. előtt</b> (korábban ne, mert a 3. alkalom egyik kísérlete a kisebb ablakra épül): állítsd nagyobbra, mennyi szöveget lát egyszerre a modell. Az ágensek minden lépésben újra elküldik a modellnek az egész eddigi beszélgetést, és az alapbeállítás (4k, kb. 4000 token) erre kevés. Nyisd meg az Ollama alkalmazást, a <span class="ui">Settings</span> oldalon a <span class="ui">Context length</span> csúszkát tedd <span class="ui">8k</span>-ra, és zárd be az ablakot. Ellenőrzés: futtasd újra a fenti próbát, utána ezt:</p>
+            <pre class="cmd"><code>ollama ps</code><button class="copy" type="button">Másolás</button></pre>
+            <p>A <code>CONTEXT</code> oszlopban <code>8192</code> álljon. A nagyobb ablak valamivel több memóriát használ. Ennél nagyobbra ne állítsd, ha a gépedben csak 8 GB memória van.</p>
+          </div></li>
         </ol>
         <div class="note tip"><b>Mennyire jó ez a modell?</b> Sokkal kisebb, mint a ChatGPT vagy a Copilot mögötti modellek, ezért többet téved, és a magyarja is döcögősebb. A kurzuson ez kifejezetten hasznos: így jól látszik, miért kell minden számot ellenőrizni.</div>
       </div>

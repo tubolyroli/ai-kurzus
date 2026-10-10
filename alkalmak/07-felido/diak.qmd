@@ -1,0 +1,368 @@
+---
+# A címdiát kézzel építjük (címerrel), ezért nincs title: az automatikus címdiát kihagyjuk.
+pagetitle: "7. alkalom · diák"
+format:
+  revealjs:
+    theme: [default, ../../styles/diak.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    slide-number: c/t
+    hash: true
+    transition: none
+    center: false
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: a11y-dark
+    menu: false
+---
+
+## {.cimdia background-color="#252A51"}
+
+::: {.columns}
+::: {.column width="68%"}
+[Eötvös József Collegium · Gazdaságtudományi műhely · 2027 tavasz]{.eyebrow}
+
+# Saját AI-eszközök
+
+[7. alkalom: félidő, a chattől az ágens felé]{.alcim}
+
+[Tuboly Roland]{.halvany}
+:::
+::: {.column width="32%" .jobbra}
+![](../../kepek/cimer.png){.cimer fig-alt="Az Eötvös József Collegium címere"}
+:::
+:::
+
+::: notes
+Első mondat: mindenki indítsa el a notebook 1. részét (négy cella). Az ágensindex 6 jelentésből készül, kb. 2-2,5 perc; a checkpoint alatt lefut. Ellenőrizd, hogy az Ollama 8192 tokenes kontextussal fut (a telepítési oldal új lépése): `ollama ps` a CONTEXT oszlopban 8192-t mutat.
+:::
+
+## Ma: félidő
+
+::: {.folyamat}
+[checkpoint: a RAG-rész]{.lep} [→]{.nyil} [chat]{.lep} [→]{.nyil} [munkafolyamat]{.lep} [→]{.nyil} [**ágens**: a terve]{.lep .kiemelt}
+:::
+
+<br>
+
+A projekt első fele kész: a lánc **megtalálja az állítást**, és megmondja, hol áll. A második fele hiányzik: **mi lett belőle?** Ehhez adatot kell lekérni, számolni, összevetni.
+
+Ma ugyanazt a kérdést három szinten oldjuk meg.
+
+[A számokat most is script ellenőrzi: az előrejelzést a nyers PDF-ből, a tényadatot a KSH táblájából.]{.halvany}
+
+::: notes
+Félidő: a RAG-blokk (3–6. alkalom) lezárul, jön az ágensblokk (8–11.). A mai óra fele beszélgetés: checkpoint és fogalmak. A notebook rövid.
+:::
+
+## Hol tartunk: kontextustervezés
+
+A modell csak azt „tudja”, ami a kontextusában van.
+
+::: {.kartyak}
+::: {.kartya}
+**Utasítások**
+
+rendszerprompt, `AGENTS.md`: az első óra, a 2. és 5. alkalom
+:::
+::: {.kartya}
+**Visszakeresés** · *kész*
+
+a RAG-lánc, mérve és javítva: 3–6. alkalom
+:::
+::: {.kartya .ma}
+**Eszközök** · *ma: előzetes*
+
+a modell maga dönti el, mit kér: 8–10. alkalom
+:::
+::: {.kartya}
+**Memória**
+
+az ágens lépései az üzenetlistában: 9. és 11. alkalom
+:::
+:::
+
+::: notes
+A térkép negyedik és ötödik eleme jön. Az eszköz is kontextus: a modell egy leírást kap róla, és az eredménye is a kontextusba kerül.
+:::
+
+## A mai terv
+
+::: {.napirend}
+| Perc | Mi történik |
+|---|---|
+| 0–3 | Nyitás; **mindenki indítsa el az indexet** (notebook 1. rész) |
+| 3–25 | **Checkpoint:** (páronként) 2 perc a RAG-részről; közös hibakeresés |
+| 25–35 | Három szint; az új mintakérdés; a chat (2–3. rész) |
+| 35–55 | Munkafolyamat: tényadat (4.1), ahol elcsúszik (4.2) |
+| 55–65 | Gondolkodás és cselekvés: ReAct; az ágens terve (5. rész) |
+| 65–82 | **Ti:** egy többlépéses feladat, „mi kellene hozzá?” (5.1) |
+| 82–90 | A projekt: `agens_terv.md`; zárás |
+:::
+
+::: notes
+A checkpoint időigényes (kb. 7 pár × 2 perc + kérdések). Ha több a pár, rövidebb bemutatók, vagy a közös hibakeresés kevesebb. A notebook 1. része a checkpoint alatt fut.
+:::
+
+## Checkpoint: a RAG-rész
+
+(Párban: közösen.) **2 perc**, a saját gépeteken, kivetítve:
+
+1. a projekt kérdése és a gyűjtemény (hány dokumentum, hány darab)
+2. egy kérdés a láncon: a válasz és a hivatkozott oldal
+3. az első mérés a 10 tesztkérdésen: jó oldal, hű, helyes
+4. **egy hiba**, amit találtatok, és hol van a hibaláncban
+
+<br>
+
+[Nem a hibátlan lánc a cél. Egy jól leírt hiba többet ér, mint egy szerencsés válasz.]{.halvany}
+
+::: notes
+Mindegyik párnál egy kérdés tőlem: „Honnan tudjátok, hogy a szám jó?” (a válasz: a minta a PDF-ből, script). Közös hibakeresés a végén: a leggyakoribb hiba a teremben (várhatóan: rossz minta a tesztkérdésben; táblázat a darabokban; régi előrejelzés tényadatként). Ha valakinél nem fut a lánc: a 6. notebook `darabok_t`, `index_t`-je és a `rag_valasz` a kiindulópont, a saját PDF-ekkel.
+:::
+
+## Három szint
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Chat**
+
+kérdés → válasz
+
+a modell abból dolgozik, ami a fejében van (2. alkalom)
+:::
+::: {.kartya}
+**Munkafolyamat**
+
+előre rögzített lépések
+
+a döntéseket **mi** kódoljuk be: *automatizálás* (a RAG-lánc is ilyen)
+:::
+::: {.kartya .ma}
+**Ágens**
+
+a modell dönti el a következő lépést
+
+eszközt választ, bemenetet ad, megáll, ha kész: *autonómia*
+:::
+:::
+
+<br>
+
+[A munkafolyamat és az ágens megkülönböztetése a RAGPack „Introduction to Agents” masterclassából (Luis Serrano), átvéve engedéllyel.]{.halvany}
+
+::: notes
+Kérdezd meg: a RAG-lánc melyik? (Munkafolyamat: mindig keresés → kontextus → modell, a lépéseket mi írtuk.) A Copilot ágensmódja melyik? (Ágens: maga dönti el, melyik fájlt nyitja meg, mit futtat.)
+:::
+
+## Az új mintakérdés
+
+„A 2023. szeptemberi MNB-jelentés mekkora éves inflációt várt 2023-ra, és mennyi lett?”
+
+::: {.szamok style="grid-template-columns: repeat(3, 1fr)"}
+::: {}
+[17,6–18,1]{.szam .jo}
+
+[az előrejelzés, %: MNB Inflációs jelentés, 2023. szeptember, 12. oldal]{.szam-cimke}
+:::
+::: {}
+[17,6%]{.szam .jo}
+
+[KSH fogyasztóiár-index, 2023 (STADAT ara0001): a sáv alsó szélén]{.szam-cimke}
+:::
+::: {}
+[17,0%]{.szam .rossz}
+
+[Eurostat HICP, 2023 (prc_hicp_ainr): a sáv alatt]{.szam-cimke}
+:::
+:::
+
+<br>
+
+Az MNB a **fogyasztóiár-indexet** jelzi előre (a jelentés táblázata, 26. oldal). 2024-ben a kettő egyezik (3,7%): ott a csapda nem látszik.
+
+::: notes
+Ezért váltottunk a 2024. márciusi kérdésről a 2023. szeptemberire: itt látszik, ha valaki rossz adatsorral vet össze. Az 5. alkalommal már elhangzott, hogy az MNB a KSH-indexet jelzi előre; ma a 4.1-ben a Copilot is választ oszlopot. A tábla: data/inflacio_eves.csv, leírása data/inflacio_eves.md.
+:::
+
+## Első szint: chat
+
+A modell egyedül, forrás és eszköz nélkül (nálam):
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**Gondolkodás nélkül** · pár mp
+
+„… 2023-ra **4,5%-os** éves inflációt vártak. Valójában … **2,5%-os** lett.”
+:::
+::: {.kartya .rossz}
+**Gondolkodással** · kb. fél-egy perc, 593 token
+
+„… általában alacsonyabb, stabilabb számot vártak … a valóságban jelentősen magasabb lett …”
+:::
+:::
+
+<br>
+
+**A gondolkodás a meglévő kontextuson dolgozik.** Ami nincs benne (a jelentés, a KSH-adat), azt nem hozza be.
+
+[A válaszok futásonként változhatnak. Notebook 3. rész; a számokat script keresi a válaszban.]{.halvany}
+
+::: notes
+Futtasd élőben a 3. részt (kb. 1 perc a gondolkodó hívás miatt). Kérdezd meg: honnan vehetné a modell a 2023. szeptemberi sávot? Sehonnan. A 2023-as tényadat a betanítás része lehet, ha nálad eltalálja: kérdezd meg, melyik forrásból, melyik mutató.
+:::
+
+## Második szint: munkafolyamat
+
+::: {.folyamat}
+[1. keresés]{.lep} [→]{.nyil} [2. kiolvasás (modell, JSON)]{.lep .kiemelt} [→]{.nyil} [3. tényadat (KSH)]{.lep} [→]{.nyil} [4. összevetés (Python)]{.lep}
+:::
+
+<br>
+
+``` text
+2. lépés, a modell kiolvasta (1284 token): {'also': 17.6, 'felso': 18.1, 'forras': 2}
+Előrejelzés: 17.6–18.1% (MNB Inflációs jelentés, 2023. szeptember, 26. oldal).
+Tényadat (2023, KSH): 17.6%, a sávon belül.
+```
+
+A modell **egy** lépést végez, a többit a kódunk. Gyors, megismételhető, minden lépése ellenőrizhető.
+
+[Notebook 4. rész. A 3. lépés függvénye a 4.1, Copilottal.]{.halvany}
+
+::: notes
+A keresés szűrése a jelentésre a 6. alkalom otthoni ötlete volt: ha a kérdés megnevezi a jelentést, a többi csak zavar. A 4.1 promptja szándékosan nem mondja meg, melyik oszlop: nézd meg, ki kapott HIBA-t a 2023-as esetre (HICP-oszlop). A 2024-es eset ilyenkor átmegy: egy 2024-es tesztkérdés nem venné észre. „A hozzáférés nem megértés” (a workshop tanulsága).
+:::
+
+## Ahol a munkafolyamat elcsúszik
+
+„Mekkora GDP-növekedést várt az MNB 2023 egészére?”, ugyanazzal a munkafolyamattal:
+
+``` text
+2. lépés, a modell kiolvasta (809 token): {'also': -0.5, 'felso': -0.5, 'forras': 1}
+Előrejelzés: -0.5–-0.5% (MNB Inflációs jelentés, 2023. szeptember, 26. oldal).
+Tényadat (2023, KSH): 17.6%, a sáv fölött.
+```
+
+- **Nincs hibaüzenet**, és az eredmény értelmetlen: GDP-előrejelzés az inflációval összevetve
+- A 3. lépést mi kódoltuk be: **mindig az inflációt** kéri le
+- A modell a sávot is rosszul olvasta ki: a táblázatban (−0,5) – 0,5 áll
+
+::: notes
+A 4.2 tippje előtte: a, b vagy c? A helyes a c. Mikor jobb mégis a munkafolyamat? Ha a feladat mindig ugyanaz: olcsóbb, gyorsabb, kiszámíthatóbb. A projekt ellenőrző scriptje is munkafolyamat, és ez így van jól. Ha a kérdések változnak, minden esetet előre be kellene kódolni: itt jön az ágens.
+:::
+
+## Két út a modell gyengéi ellen
+
+::: {.kartyak}
+::: {.kartya}
+**Sima LLM**
+
+válaszol, ahogy a fejében van (3. rész)
+:::
+::: {.kartya}
+**Csak gondolkodik** · *reasoning*
+
+hosszabb belső levezetés; nem hoz be új adatot
+:::
+::: {.kartya}
+**Csak cselekszik** · *eszközök*
+
+keres, lekér, számol; de a lépéseket valaki más tervezi
+:::
+::: {.kartya .ma}
+**Gondolkodik és cselekszik** · *ReAct*
+
+gondolat → cselekvés → megfigyelés → … → kész: minden mai ágens mintája
+:::
+:::
+
+[A ReAct-négyzet a RAGPack masterclassból (Luis Serrano); a ReAct: Yao és mtsai, 2022 (*Reason + Act*).]{.halvany}
+
+::: notes
+A masterclass mondata: az LLM jobb bíráló, mint alkotó; a gyengéi ellen két út van, gondolkodás és cselekvés. A Copilot ágensmódja, a Claude Code és társai mind ReAct-ciklus, csak kiforrottabb keretben. A 9. alkalommal mi is megírjuk, egy while ciklusban.
+:::
+
+## Harmadik szint: az ágens terve
+
+A modell megkapja az eszközök listáját, és JSON-ben megírja a lépéseket (nálam):
+
+``` text
+1. dokumentum_kereses({"kerdes": "2023 éves infláció várt érték", "jelentes": "2023-09"})
+2. inflacio({"ev": 2023, "forras": "KSH"})
+```
+
+A GDP-kérdésre ugyanez a tervező:
+
+``` text
+1. dokumentum_kereses({"kerdes": "2023-as GDP-növekedés várható érték", "jelentes": "2023-09"})
+2. gdp_novekedes({"ev": 2023})
+```
+
+**A modell választotta** az adateszközt. Ma csak terv: nincs végrehajtás, nincs megfigyelés.
+
+::: notes
+Az ellenőrző cella a terv szerkezetét nézi: a GDP-kérdésnél gdp_novekedes van benne, inflacio nincs. Olvassák el a mintakérdés tervét: hiányzik az összevetés (a szamol eszközt nem használta). Egy előzetes próbán gondolkodással a modell a tényadatot is a 2023. szeptemberi jelentésben kereste volna: lehetetlen, a jelentés a tényadat előtt készült. A terv szöveg, a modell nem ellenőrzi.
+:::
+
+## Most ti: többlépéses feladat
+
+**5.1:** írj egy feladatot, amit egy „okos asszisztens” több lépésben oldana meg, és futtasd a tervezőt.
+
+> Hasonlítsd össze az inflációt a négy visegrádi országban az utóbbi öt évben, és mondd meg, hol volt a legmagasabb.
+
+- Milyen lépéseket ír? Jó a sorrend?
+- **Mi kellene hozzá?** A script jelöli a hiányzó eszközt.
+- Nálam: `inflacio_multi` (jogos: az Eurostatnál minden uniós ország megvan) … és a visegrádi országok között **Ukrajna**
+
+Az ellenőrzések: [RENDBEN]{.cimke .ok} [HIBA]{.cimke .hiba} [MÉG NINCS KÉSZ]{.cimke .var}
+
+::: notes
+A tervezett lépések mellé kérj tőlük egy mondatot: honnan lenne adat (Eurostat, KSH, MNB), milyen formában. Motiváló példák a teremből: adatelemzés (több ország, több év), automatikus jelentésírás (heti inflációs összefoglaló), kutatási asszisztens (cikkek + adat). Mindegyiknél ugyanaz a kérdés: milyen eszközök, és ki ellenőrzi az eredményt?
+:::
+
+## Mire jó egy ágens?
+
+::: {.kartyak .harom}
+::: {.kartya}
+**Adatelemzés**
+
+lekérdez, számol, összehasonlít: több ország, több év, több forrás
+:::
+::: {.kartya}
+**Jelentésírás**
+
+minden hónapban ugyanaz a váz, friss adattal, forrásmegjelöléssel
+:::
+::: {.kartya .ma}
+**Kutatási asszisztens**
+
+a projektetek: egy dokumentum állít valamit, az ágens megnézi, mi lett belőle
+:::
+:::
+
+<br>
+
+**Ami nem változik:** a számot script ellenőrzi, a nyers adatból. Az ágens is tévedhet, csak több lépésben.
+
+::: notes
+A záró projekt alakja ez a harmadik kártya. Az ágens nem okosabb modell: ugyanaz a gemma4:e4b, csak eszközöket kap és ciklusban fut.
+:::
+
+## A projektben: `agens_terv.md`
+
+(Párban: közösen.) Kód nélkül, a repóba:
+
+1. a projekt **fő kérdése**
+2. a lépések **munkafolyamatként**; hol kellene döntés, ha a kérdés változik?
+3. az **eszközök**: név, mit csinál, bemenetek (névvel, formával), kimenet. Az első: a csomag `adatlekeres.py`-ja
+4. melyik adatsorral kell összevetni az állításokat, és **miből derül ki** (oldalszámmal)
+
+<br>
+
+**Jövő alkalommal:** az eszközök valódi Python-függvények lesznek, és a modell meghívja őket.
+
+::: notes
+A 4. pont a CPI–HICP-csapda általános formája: minden csomagban van ilyen kérdés (a Költségvetési Tanácsnál például: ESA-egyenleg vagy pénzforgalmi hiány). Kilépőkérdés: „Mi a különbség a munkafolyamat és az ágens között, egy mondatban?” (Ki dönti el a következő lépést.)
+:::
