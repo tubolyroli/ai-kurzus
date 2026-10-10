@@ -35,7 +35,7 @@ format:
 :::
 
 ::: notes
-Első mondat: mindenki indítsa el a notebook 1. részét (négy cella). Az ágensindex 6 jelentésből készül, kb. 2-2,5 perc; a checkpoint alatt lefut. Ellenőrizd, hogy az Ollama 8192 tokenes kontextussal fut (a telepítési oldal új lépése): `ollama ps` a CONTEXT oszlopban 8192-t mutat.
+Első mondat: mindenki indítsa el a notebook 1. részét (négy cella). Az ágensindex 6 jelentésből készül, kb. 2 perc; a checkpoint alatt lefut. Ellenőrizd, hogy az Ollama 8192 tokenes kontextussal fut (a telepítési oldal új lépése): `ollama ps` a CONTEXT oszlopban 8192-t mutat.
 :::
 
 ## Ma: félidő
