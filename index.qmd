@@ -17,7 +17,7 @@ pagetitle: "Saját AI-eszközök"
 
 ## Kinek szól
 
-A Gazdaságtudományi műhely hallgatóinak. Python-tudás nem kell: a kódot egy AI-asszisztens írja, a kurzuson azt tanulod meg, hogyan irányítsd, és hogyan ellenőrizd, amit csinál. Pythonból annyit tanulunk, amennyi ehhez kell: hogy el tudd olvasni és meg tudd ítélni a kódot.
+Elsősorban a Gazdaságtudományi műhely hallgatóinak, de minden érdeklődő Colisnak. Python-tudás nem kell: a kódot egy AI-asszisztens írja, a kurzuson azt tanulod meg, hogyan irányítsd, és hogyan ellenőrizd, amit csinál. Pythonból annyit tanulunk, amennyi ehhez kell: hogy el tudd olvasni és meg tudd ítélni a kódot.
 
 ## Mit tanulsz meg
 
