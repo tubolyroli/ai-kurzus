@@ -111,7 +111,7 @@ A checkpoint időigényes (kb. 7 pár × 2 perc + kérdések). Ha több a pár, 
 
 1. a projekt kérdése és a gyűjtemény (hány dokumentum, hány darab)
 2. egy kérdés a láncon: a válasz és a hivatkozott oldal
-3. az első mérés a 10 tesztkérdésen: jó oldal, hű, helyes
+3. az első mérés a tesztkérdéseken (a 2 félretett nélkül): jó oldal, hű, helyes
 4. **egy hiba**, amit találtatok, és hol van a hibaláncban
 
 <br>

@@ -94,7 +94,7 @@ A KT dokumentumainak többsége beszkennelt PDF, a szövegükben gépi karakterf
 
 - **Működő kód** a GitHub-repóban, benne `AGENTS.md`, adatszótár és legalább egy saját skill.
 - **Ellenőrző script**, amely a kimenetben szereplő számokat a nyers adatból újraszámolja.
-- **`tesztkerdesek.md`:** 10 tesztkérdés az elvárt válasszal, és a kiértékelés eredménye. Kb. 4 kérdés csak a dokumentumokból, 3 csak az adatból, 3 a kettőből együtt, és legalább egy, amelyre a helyes válasz: „ez nincs a forrásokban”. Az elvárt választ a futtatás *előtt* írjátok le, a számot script számolja.
+- **`tesztkerdesek.md`:** 10 tesztkérdés az elvárt válasszal, és a kiértékelés eredménye. Kb. 4 kérdés csak a dokumentumokból, 3 csak az adatból, 3 a kettőből együtt, és legalább egy, amelyre a helyes válasz: „ez nincs a forrásokban”. Az elvárt választ a futtatás *előtt* írjátok le, a számot script számolja. Kettőt írás közben félretesztek: ezeket fejlesztés közben nem futtatjátok, csak a bemutató előtti héten, egyszer, és az eredményüket külön közlitek. Legalább két kérdés átfogalmazva is szerepel (ugyanaz a kérdés más szavakkal, ugyanazzal az elvárt válasszal), hogy kiderüljön, a rendszer a megfogalmazáson múlik-e.
 - **Rövid dokumentáció:** mit csinál, hogyan működik, mik az ismert korlátai, és mi történt a frissítési próbán.
 
 ## Értékelés

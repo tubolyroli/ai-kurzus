@@ -108,7 +108,7 @@ Ezt a diát a kitekintés elején is vissza lehet hozni. A négy elem a tervezet
 
 1. **A kérdés és a gyűjtemény:** melyik csomag (vagy saját téma), mit állít a dokumentum
 2. **Élőben:** egy kombinált kérdés, a válasz forrással, és **a nyomvonal** (eszközök, lépések, tokenek)
-3. **Ellenőrzés:** az `ellenorzes.py` kimenete; a 10 tesztkérdés eredménye
+3. **Ellenőrzés:** az `ellenorzes.py` kimenete; a tesztkérdések eredménye, a 2 félretett külön
 4. **A frissítési próba:** lefutott utómunka nélkül? Ha nem, mit kellett módosítani, és miért
 5. **Korlátok:** a törésteszt legfontosabb hibája, és mit kezdtetek vele
 

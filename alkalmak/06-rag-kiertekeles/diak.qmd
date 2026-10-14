@@ -333,7 +333,7 @@ A márciusi GDP-kérdésnél a címkézett GDP-sor a **2. találat**, és a vál
 [**Nem minden javítás javít.** A táblázatsorok egyszerű kidobása: jó oldal 6/7, de helyes 6/8. A jelentés neve a darab elé: helyes 4/8. Ezért mérünk, a teljes tesztkészleten. Notebook 6. rész.]{.halvany}
 
 ::: notes
-Először a 6.2: hány kérdésnél lesz jó oldal az első 5-ben? 5, ugyanannyi. Miért? A mérőszám a 19. oldali mondatot keresi, a modell pedig a 26. oldali táblázatból veszi a jó számot (mint a márciusi inflációs kérdésnél a 4. részben): a mérőszám is tévedhet, olvassátok a kérdésenkénti táblázatot. Az ellenőrző cella a GDP-sort közvetlenül nézi: az első 5-ben van, a várt sávval (determinisztikus). A helyes 7/8 → 8/8, a többi kérdés „helyes” értéke nem változott. Nálam az újrafuttatások betűre egyeztek, de ez csak azt mutatja, hogy a gépem determinisztikus (0 hőmérséklet, rögzített seed): más gépen egy-egy válasz eltérhet, a GDP-sor helye nem. A két másik kísérlet: a táblázatsorok kidobása a keresést javította, de a márciusi infláció-előrejelzési kérdésnél a modell a maginfláció sávját mondta, mert eltűnt a táblázat, amelyből a jó számot vette; a fejléc a darab elé a jelentést megnevező kérdéseken segített, a többin ártott. Az általános GDP-kérdésnél a válasz most is az előrejelzéssel kezd: az nem táblázatprobléma (otthon: a rendszerprompt 3. szabálya).
+Először a 6.2: hány kérdésnél lesz jó oldal az első 5-ben? 5, ugyanannyi. Miért? A mérőszám a 19. oldali mondatot keresi, a modell pedig a 26. oldali táblázatból veszi a jó számot (mint a márciusi inflációs kérdésnél a 4. részben): a mérőszám is tévedhet, olvassátok a kérdésenkénti táblázatot. Az ellenőrző cella a GDP-sort közvetlenül nézi: az első 5-ben van, a várt sávval (determinisztikus). A helyes 7/8 → 8/8, a többi kérdés „helyes” értéke nem változott. Nálam az újrafuttatások betűre egyeztek, de ez csak azt mutatja, hogy a gépem determinisztikus (0 hőmérséklet, rögzített seed): más gépen egy-egy válasz eltérhet, a GDP-sor helye nem. A két másik kísérlet: a táblázatsorok kidobása a keresést javította, de a márciusi infláció-előrejelzési kérdésnél a modell a maginfláció sávját mondta, mert eltűnt a táblázat, amelyből a jó számot vette; a fejléc a darab elé a jelentést megnevező kérdéseken segített, a többin ártott. Az általános GDP-kérdésnél a válasz most is az előrejelzéssel kezd: az nem táblázatprobléma (otthon: a rendszerprompt 3. szabálya). Végül: a 8/8 mintán belüli eredmény, a javítást ezen a 8 kérdésen terveztük. Kérdezd meg, ökonometriából mi ennek a neve (mintán belüli illeszkedés). Ezért tesznek félre a projektben 2 kérdést (következő dia).
 :::
 
 ## A projektben: 10 tesztkérdés
@@ -360,16 +360,19 @@ a helyes válasz: ez nincs a forrásokban
 
 <br>
 
+**2 félretett:** csak a bemutató előtti héten futnak, egyszer. **2 átfogalmazott:** ugyanaz más szavakkal, ugyanaz a várt válasz.
+
 Helyük: `tesztkerdesek.md` (sablon a notebook 7. részében). Ma a dokumentumos és a „nincs benne” kérdések teljesen; az adatosaknál a kérdés és a tábla.
 
 ::: notes
-Ez a 10 kérdés a záró projekt tesztkészlete; a bemutatón ezen mérik a rendszerüket, a frissítési próbán is. Az adatos kérdések várt értékét a 9–10. alkalommal írják meg, amikor már van adatlekérő függvényük. A mintaprojekt kombinált kérdése: mit várt a 2024. márciusi jelentés 2024-re, és mennyi lett (KSH fogyasztóiár-index, nem HICP).
+Ez a 10 kérdés a záró projekt tesztkészlete; a bemutatón ezen mérik a rendszerüket, a frissítési próbán is. A félretett 2 a mintán kívüli mérés: ha fejlesztés közben megnézik, elveszti az értékét. Az átfogalmazás azt méri, hogy a lánc a kérdés tartalmára válaszol-e, vagy a szavaira (a keresés a szavakon múlik, ezért az átfogalmazott kérdés más darabokat hozhat). Az adatos kérdések várt értékét a 9–10. alkalommal írják meg, amikor már van adatlekérő függvényük. A mintaprojekt kombinált kérdése: mit várt a 2024. márciusi jelentés 2024-re, és mennyi lett (KSH fogyasztóiár-index, nem HICP).
 :::
 
 ## Otthonra
 
 - A notebook hátralévő részei: a végén mindenhol [RENDBEN]{.cimke .ok} legyen
-- A `sajat_tesztek` kiegészítése **10 kérdésre** (köztük legalább egy „nincs benne”), és a kiértékelés: `kiertekel(sajat_tesztek, darabok, index)`, aztán a takarított indexszel is (`darabok_t`, `index_t`)
+- A `sajat_tesztek` kiegészítése **10 kérdésre** (köztük legalább egy „nincs benne”); az utolsó kettő félretett
+- A kiértékelés a többi 8-on: `kiertekel(sajat_tesztek[:-2], darabok, index)`, aztán a takarított indexszel is (`darabok_t`, `index_t`)
 - Hol hibázik a lánc? A hibalánc melyik pontján?
 - Ha van időd: szűrés a jelentésre, vagy a rendszerprompt 3. szabálya, mindegyik méréssel (notebook 6. rész vége)
 
