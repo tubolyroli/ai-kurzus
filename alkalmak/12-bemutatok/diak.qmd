@@ -223,13 +223,14 @@ A közgazdász hallgatók többsége a második oszlopban fog élni: TDK, szakdo
 
 - **Hugging Face: AI Agents Course** (ingyenes, angol): az ágensek alapjai, **keretrendszerek** (smolagents, LlamaIndex, LangGraph), **agentic RAG**, záró projekt; külön egység a kiértékelésről és a megfigyelhetőségről
   [huggingface.co/learn/agents-course](https://huggingface.co/learn/agents-course){.halvany}
+- **Ha adatbázissal dolgoztok:** szemantikai réteg (dbt/MetricFlow, Cube, LookML): a mérőszámok definíciója egy helyen, és a lekérdezést kód állítja elő belőle (10. alkalom)
 - **A saját projektetek:** a repó a tiétek; egy új jelentéssel vagy friss adattal ugyanúgy újrafuttatható
 - **Amit a félév után is érdemes megtartani:** `AGENTS.md` minden repóban; a számot script ellenőrzi; átnézés friss munkamenetben
 
 [A kurzus tartalma megnézve 2026-10-10; a félév végén ellenőrizendő.]{.halvany}
 
 ::: notes
-A Hugging Face-kurzus a mi anyagunk természetes folytatása: ott jönnek a keretrendszerek, amelyeket mi szándékosan kihagytunk. Unit 1: ágensek alapjai (ugyanaz, mint nálunk a 7–9. alkalom); Unit 2: smolagents, LlamaIndex, LangGraph; Unit 3: felhasználási esetek (agentic RAG); Unit 4: záró projekt (ágens egy benchmarkra, ranglistával); bónusz egységek: function calling finomhangolás, megfigyelhetőség és kiértékelés, ágens játékokban (Pokémon). Ingyenes, a tanúsítvány is.
+A Hugging Face-kurzus a mi anyagunk természetes folytatása: ott jönnek a keretrendszerek, amelyeket mi szándékosan kihagytunk. Unit 1: ágensek alapjai (ugyanaz, mint nálunk a 7–9. alkalom); Unit 2: smolagents, LlamaIndex, LangGraph; Unit 3: felhasználási esetek (agentic RAG); Unit 4: záró projekt (ágens egy benchmarkra, ranglistával); bónusz egységek: function calling finomhangolás, megfigyelhetőség és kiértékelés, ágens játékokban (Pokémon). Ingyenes, a tanúsítvány is. A szemantikai réteg a „From Chat Windows to AI Analyst” workshop 3. részéből (Future-Proof DS; github.com/Future-Proof-DS/w3-semantic-layer-for-text-to-sql): cégnél ezt használja a BI-riport, a chatbot és a Copilot is, ugyanabból a definícióból.
 :::
 
 ## Zárás

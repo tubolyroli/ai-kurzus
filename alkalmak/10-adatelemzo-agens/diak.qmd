@@ -96,8 +96,8 @@ A kör bezárul: az első órán az AGENTS.md volt az első kontextustervezési 
 | 8–22 | Eszközkészlet; **ti:** eszközleírás (1.1); biztonság (1.2) |
 | 22–32 | Az ágens dönti el a sorrendet (2.1) |
 | 32–50 | Skill: mi az, hogyan töltődik be; skillel és más adattal (3.1) |
-| 50–60 | Adatszótár: nélküle és vele (4.1) |
-| 60–66 | MCP: szabványos eszközkapcsolat |
+| 50–62 | Adatszótár: nélküle és vele (4.1); szemantikai réteg (4.2–4.3) |
+| 62–66 | MCP: szabványos eszközkapcsolat |
 | 66–86 | **Ti:** adatszótár és saját skill a projekthez, a Copilotban |
 | 86–90 | Otthonra; zárás |
 :::
@@ -266,6 +266,39 @@ nincs eszközhívás: „A rendelkezésre álló eszközökkel nem tudom ellenő
 
 ::: notes
 4.1: hív-e eszközt adatszótár nélkül? (Nálam nem.) Mondd el, mit vártál és mi lett: a csapda a Copilotnál (7. alkalom, tenyadat: a HICP-oszlopot is választhatja) és a projekt ellenorzes.py-jában (TENYADAT_FORRASA) élesebb, mint ennél a modellnél. És a következtetés vele is rossz: a 17,6 az alsó szél. Ezért végzi kód az összevetést.
+:::
+
+## Szemantikai réteg: a definíció a kódban
+
+``` python
+MEROSZAMOK = {"inflacio": {"jelentes": "… fogyasztóiár-index, KSH …",
+                           "szinonimak": ["CPI", "pénzromlás", …],
+                           "adatsor": "KSH"}, "hicp": {…}}
+# a modell csak a mérőszámot választja, az adatsort a definíció dönti el
+meroszam("CPI", "2023")
+```
+
+<br>
+
+::: {.kartyak}
+::: {.kartya .rossz}
+**`inflacio(forras, …)`**: 3 kérdésből **1**-nél kért adatot
+
+kétszer visszakérdezett: „KSH vagy Eurostat?”
+:::
+::: {.kartya .ma}
+**`meroszam(nev, …)`**: **3/3**, mindig KSH
+
+adatszótár nélkül; a következtetés így is rossz („a tartomány alatti”)
+:::
+:::
+
+**A promptot a modell követheti. A kódot követnie kell.**
+
+[Ötlet: „From Chat Windows to AI Analyst” workshop, 3. rész (Future-Proof DS), engedéllyel. Valódi eszközök: dbt/MetricFlow, Cube, LookML.]{.halvany}
+
+::: notes
+4.2: mit ad a meroszam("CPI", "2023")? (b: a KSH adatát; a CPI az infláció szinonimája.) 4.3: melyikkel kér többször adatot? (Nálam: meroszam 3, inflacio 1.) A workshopon: webáruház-adatbázis, SQL-t író ágens; csak sémával 4/10, szemantikai réteggel a rendszerpromptban 10/10, ugyanazzal a modellel. Nálunk a réteg nem a promptban, hanem az eszközben van: a modell nem is választhat rossz adatsort. A következtetés viszont nem a definíción múlik: ezért kód az összevetés (osszevet). RAG vs. szemantikai réteg: a RAG szövegből keres kérdésenként; a réteg strukturált adathoz tartozik, kicsi, mindig ott van.
 :::
 
 ## MCP: szabványos dugó az eszközökhöz
